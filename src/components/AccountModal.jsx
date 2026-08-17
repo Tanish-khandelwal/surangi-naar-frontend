@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { X, User, Mail, Phone, ShoppingBag, LogOut, ShieldCheck, MapPin, Sparkles } from 'lucide-react';
+import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles } from 'lucide-react';
+
 
 export default function AccountModal() {
   const {

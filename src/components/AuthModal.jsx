@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
-import { X, Sparkles, Mail, Lock, User, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
+import { X, Sparkles, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
+
 
 export default function AuthModal() {
   const {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useShop } from '../context/ShopContext';
-import { X, Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
+import { X, Heart, ShoppingBag, Trash2 } from 'lucide-react';
+
 
 export default function WishlistDrawer() {
   const { 

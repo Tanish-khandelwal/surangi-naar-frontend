@@ -5,13 +5,11 @@ import {
   Heart, 
   ShoppingBag, 
   Star, 
-  Truck, 
-  ShieldCheck, 
-  RefreshCw, 
   Plus, 
   Minus,
   Check
 } from 'lucide-react';
+
 
 function QuickViewModalContent({ product, onClose }) {
   const { 

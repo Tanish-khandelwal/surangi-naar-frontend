@@ -15,13 +15,10 @@ export default function ProductCard({ product }) {
     product.colors ? product.colors[0] : null
   );
   const [selectedSize, setSelectedSize] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const isWishlisted = isInWishlist(product.id);
-
-  // Fallback secondary image if not explicitly set
-  const secondaryImg = product.secondaryImage || (product.images && product.images[1]) || product.image;
   const availableSizes = product.sizes || ['XS', 'S', 'M', 'L', 'XL'];
+
 
   const handleQuickAddSize = (e, size) => {
     e.stopPropagation();

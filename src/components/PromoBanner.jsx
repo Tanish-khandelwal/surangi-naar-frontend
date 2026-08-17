@@ -8,9 +8,9 @@ export default function PromoBanner({
   description = "Intricate handcrafted zardozi embroidery paired with flowing silk co-ords and festive Anarkali suit sets.",
   ctaText = "Shop Festive Edit",
   categoryLink = "festive-wear",
-  bgImage = "/images/products/real_product_14.jpg",
-  secondaryTheme = false
+  bgImage = "/images/products/real_product_14.jpg"
 }) {
+
   return (
     <section className="relative w-full py-24 sm:py-32 overflow-hidden bg-[#1a1716] border-y border-[#d4a373]/30">
       {/* Background Image with Parallax & Gradient */}

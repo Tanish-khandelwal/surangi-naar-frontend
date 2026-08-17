@@ -13,6 +13,7 @@ import WishlistDrawer from './components/WishlistDrawer';
 import AuthModal from './components/AuthModal';
 import AccountModal from './components/AccountModal';
 import SmoothScroll from './components/SmoothScroll';
+import CustomCursor from './components/CustomCursor';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -28,6 +29,7 @@ function MainLayout() {
 
   return (
     <div className="min-h-screen bg-[#f7f3ee] text-[#39322f] font-sans antialiased flex flex-col selection:bg-[#d4a373]/30">
+      {!isAdmin && <CustomCursor />}
       {!isAdmin && <PromoBar />}
       {!isAdmin && <Navbar />}
 
@@ -68,5 +70,6 @@ export default function App() {
     </Router>
   );
 }
+
 
 

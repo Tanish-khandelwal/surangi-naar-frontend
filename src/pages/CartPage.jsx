@@ -7,14 +7,13 @@ import {
   Plus, 
   Minus, 
   Tag, 
-  Truck, 
   ShieldCheck, 
-  CreditCard, 
   ArrowRight,
   Sparkles,
   ChevronRight,
   FileText
 } from 'lucide-react';
+
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, cartSubtotal, clearCart, discountCodes, addOrder, currentUser, openAuthModal } = useShop();

@@ -7,13 +7,12 @@ import {
   Mail,
   MapPin,
   MessageCircle,
-  Clock,
   Send,
   CheckCircle2,
   ChevronRight,
-  Sparkles,
   ArrowRight
 } from 'lucide-react';
+
 
 export default function AboutContactPage() {
   const { storeSettings } = useShop();

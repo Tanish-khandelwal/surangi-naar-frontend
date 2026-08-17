@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-import { Filter, SlidersHorizontal, ChevronRight, X, Sparkles } from 'lucide-react';
+import { Filter, SlidersHorizontal, ChevronRight, X } from 'lucide-react';
+
 
 export default function CategoryPage() {
   const { slug } = useParams();

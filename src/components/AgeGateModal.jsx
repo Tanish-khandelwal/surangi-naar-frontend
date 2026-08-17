@@ -1,6 +1,7 @@
 import React from 'react';
 import { useShop } from '../context/ShopContext';
-import { ShieldCheck, Sparkles } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
+
 
 export default function AgeGateModal() {
   const { isAgeVerified, handleConfirmAge } = useShop();

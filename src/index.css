@@ -18,6 +18,21 @@
   --color-border-beige: #e8e2d9;
 }
 
+/* Global Reset & Responsive Protection */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (pointer: coarse) {
+  * {
+    cursor: auto !important;
+  }
+}
+
+
 /* Custom Font Utilities */
 .font-cinzel {
   font-family: 'Cinzel', serif;
