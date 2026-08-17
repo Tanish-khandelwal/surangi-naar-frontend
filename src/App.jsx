@@ -12,6 +12,7 @@ import QuickViewModal from './components/QuickViewModal';
 import WishlistDrawer from './components/WishlistDrawer';
 import AuthModal from './components/AuthModal';
 import AccountModal from './components/AccountModal';
+import SmoothScroll from './components/SmoothScroll';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -58,11 +59,14 @@ function MainLayout() {
 export default function App() {
   return (
     <Router>
-      <ShopProvider>
-        <ScrollToTop />
-        <MainLayout />
-      </ShopProvider>
+      <SmoothScroll>
+        <ShopProvider>
+          <ScrollToTop />
+          <MainLayout />
+        </ShopProvider>
+      </SmoothScroll>
     </Router>
   );
 }
+
 
