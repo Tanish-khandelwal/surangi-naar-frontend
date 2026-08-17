@@ -142,28 +142,28 @@ export default function Navbar() {
             <div className="lg:hidden flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="p-2 text-[#2d2624] hover:text-[#d4a373] transition-colors cursor-pointer"
+                className="p-1.5 text-[#2d2624] hover:text-[#d4a373] transition-colors cursor-pointer"
                 aria-label="Open Mobile Menu"
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
             {/* Logo Center */}
             <div className="text-center group cursor-pointer">
-              <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
-                <div className="relative p-0.5 rounded-full bg-gradient-to-tr from-[#d4a373] via-[#f3e3ca] to-[#b58349] shadow-md group-hover:scale-105 transition-transform">
+              <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+                <div className="relative p-0.5 rounded-full bg-gradient-to-tr from-[#d4a373] via-[#f3e3ca] to-[#b58349] shadow-md group-hover:scale-105 transition-transform shrink-0">
                   <img
                     src="/logo.jpg"
                     alt="Surangi Naar Logo"
-                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover border border-white"
+                    className="w-7 h-7 sm:w-10 sm:h-10 rounded-full object-cover border border-white"
                   />
                 </div>
                 <div className="text-left">
-                  <h1 className="font-cinzel text-lg sm:text-2xl font-bold tracking-wider text-[#2d2624] leading-none group-hover:text-[#d4a373] transition-colors">
+                  <h1 className="font-cinzel text-base sm:text-xl lg:text-2xl font-bold tracking-wider text-[#2d2624] leading-none group-hover:text-[#d4a373] transition-colors">
                     Surangi Naar
                   </h1>
-                  <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.28em] text-[#d4a373] font-bold block mt-0.5">
+                  <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.22em] sm:tracking-[0.28em] text-[#d4a373] font-bold block mt-0.5 whitespace-nowrap">
                     Luxury Apparel
                   </span>
                 </div>
@@ -171,28 +171,28 @@ export default function Navbar() {
             </div>
 
             {/* Right Icons: Search, Account / Auth, Admin, Wishlist, Cart */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-1.5 sm:space-x-3">
 
               {/* Search Toggle */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer relative"
+                className="p-1.5 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer relative"
                 aria-label="Search"
               >
-                <Search className="w-5 h-5 stroke-[1.5]" />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
               </button>
 
               {/* Account Button / User Profile */}
               {currentUser ? (
                 <button
                   onClick={openAccountModal}
-                  className="flex items-center gap-2 p-1.5 rounded-full bg-[#d4a373]/15 hover:bg-[#d4a373]/30 border border-[#d4a373]/40 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 p-1 sm:p-1.5 rounded-full bg-[#d4a373]/15 hover:bg-[#d4a373]/30 border border-[#d4a373]/40 transition-all cursor-pointer"
                   title="My Account Profile"
                 >
                   <img
                     src={currentUser.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"}
                     alt={currentUser.name}
-                    className="w-6 h-6 rounded-full object-cover border border-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-white"
                   />
                   <span className="text-xs font-semibold text-[#2d2624] pr-2 hidden md:inline">
                     {currentUser.name.split(' ')[0]}
@@ -201,28 +201,27 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => openAuthModal('login')}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#39322f] text-white hover:bg-[#d4a373] hover:text-[#39322f] transition-all cursor-pointer text-xs font-semibold uppercase tracking-wider shadow-xs"
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#39322f] text-white hover:bg-[#d4a373] hover:text-[#39322f] transition-all cursor-pointer text-[10px] sm:text-xs font-semibold uppercase tracking-wider shadow-xs"
                 >
-                  <User className="w-4 h-4" />
+                  <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Sign In</span>
                 </button>
               )}
 
-              {/* Admin Panel Icon */}
+              {/* Admin Panel Icon (Desktop/Tablet) */}
               <Link
                 to="/admin"
-                className="p-1.5 text-[#d4a373] bg-[#d4a373]/15 hover:bg-[#d4a373] hover:text-[#1a1716] transition-all rounded-lg cursor-pointer border border-[#d4a373]/30 flex items-center gap-1 text-[11px] font-semibold font-sans uppercase tracking-wider"
+                className="hidden md:flex items-center gap-1 p-1.5 text-[#d4a373] bg-[#d4a373]/15 hover:bg-[#d4a373] hover:text-[#1a1716] transition-all rounded-lg cursor-pointer border border-[#d4a373]/30 text-[11px] font-semibold font-sans uppercase tracking-wider"
                 title="Open Admin Panel"
               >
                 <ShieldCheck className="w-4 h-4" />
                 <span className="hidden xl:inline">Admin</span>
               </Link>
 
-
-              {/* Wishlist Trigger */}
+              {/* Wishlist Trigger (Desktop/Tablet) */}
               <button
                 onClick={() => setIsWishlistOpen(true)}
-                className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer"
+                className="hidden sm:flex p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer"
                 aria-label="Wishlist"
               >
                 <Heart className="w-5 h-5 stroke-[1.5]" />
@@ -233,18 +232,15 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* Cart Drawer Trigger */}
+              {/* Cart Drawer Trigger (Always Visible) */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer group"
+                className="p-1 sm:p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer shrink-0"
                 aria-label="Cart"
               >
-                <div className="flex items-center gap-2 bg-[#39322f] text-[#f7f3ee] px-3.5 py-1.5 rounded-full hover:bg-[#d4a373] transition-colors shadow-sm">
-                  <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
-                  <span className="text-xs font-semibold uppercase tracking-wider hidden xs:inline">
-                    Cart
-                  </span>
-                  <span className="bg-[#f7f3ee] text-[#39322f] text-[11px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center ml-0.5">
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-[#39322f] text-[#f7f3ee] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full hover:bg-[#d4a373] transition-colors shadow-sm">
+                  <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
+                  <span className="bg-[#f7f3ee] text-[#39322f] text-[10px] sm:text-[11px] font-bold w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full flex items-center justify-center">
                     {cartCount}
                   </span>
                 </div>
@@ -253,6 +249,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
 
       {/* Secondary Quick-Links Bar */}
       <div className="hidden lg:block bg-[#fcfbfa] border-b border-[#e8e2d9]/60 py-2.5">
@@ -355,17 +352,40 @@ export default function Navbar() {
                   </Link>
                 </div>
 
-                <div className="pt-4 border-t border-[#e8e2d9] space-y-3">
+                <div className="pt-4 border-t border-[#e8e2d9] space-y-2">
+                  <button
+                    onClick={() => { setIsMobileMenuOpen(false); setIsWishlistOpen(true); }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-[#f7f3ee] border border-[#e8e2d9] text-xs uppercase tracking-wider text-[#39322f] font-semibold cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-[#d4a373]" />
+                      Wishlist
+                    </span>
+                    <span className="bg-[#d4a373] text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {wishlist.length}
+                    </span>
+                  </button>
+
                   <Link
                     to="/about"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#39322f] font-semibold block"
+                    className="flex items-center gap-2 p-3 rounded-xl bg-[#f7f3ee] border border-[#e8e2d9] text-xs uppercase tracking-wider text-[#39322f] font-semibold"
                   >
                     <span>About Us & Contact</span>
+                  </Link>
+
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 p-3 rounded-xl bg-[#d4a373]/15 border border-[#d4a373]/40 text-xs uppercase tracking-wider text-[#b58349] font-bold"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Studio Admin Panel</span>
                   </Link>
                 </div>
               </div>
             </div>
+
 
             {/* Footer inside mobile menu */}
             <div className="p-5 bg-[#f7f3ee] border-t border-[#e8e2d9] text-center text-xs text-[#39322f]/70 font-sans">
