@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { NEW_ARRIVALS, PRODUCTS_CURATED } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import ProductCard from './ProductCard';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function ProductGrid() {
+  const { products } = useShop();
   const [selectedFilter, setSelectedFilter] = useState('All');
 
-  // Combine products for grid display
-  const allGridProducts = [...NEW_ARRIVALS, ...PRODUCTS_CURATED];
-
+  const allGridProducts = products && products.length > 0 ? products : [];
   const filterCategories = ['All', 'Kurtis', 'Co-ord Sets', 'Festive Wear'];
 
   const filteredProducts = selectedFilter === 'All' 
     ? allGridProducts 
     : allGridProducts.filter(p => p.category.toLowerCase().includes(selectedFilter.toLowerCase()) || selectedFilter.toLowerCase().includes(p.category.toLowerCase()));
+
 
   return (
     <section id="new-arrivals-section" className="py-20 sm:py-28 bg-[#fdfbf7]">

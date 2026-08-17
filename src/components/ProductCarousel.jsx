@@ -1,10 +1,13 @@
 import React, { useRef } from 'react';
-import { PRODUCTS_CURATED } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import ProductCard from './ProductCard';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 
 export default function ProductCarousel() {
+  const { products } = useShop();
   const scrollRef = useRef(null);
+
+  const carouselItems = products && products.length > 0 ? products : [];
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -57,7 +60,7 @@ export default function ProductCarousel() {
           ref={scrollRef}
           className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-4 pt-1 px-1 -mx-1"
         >
-          {PRODUCTS_CURATED.map((product) => (
+          {carouselItems.map((product) => (
             <div 
               key={product.id} 
               className="w-[260px] sm:w-[300px] lg:w-[320px] shrink-0"
@@ -66,6 +69,7 @@ export default function ProductCarousel() {
             </div>
           ))}
         </div>
+
 
       </div>
     </section>

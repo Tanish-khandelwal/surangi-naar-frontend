@@ -1,18 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BRAND_CONTACT } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import {
   MapPin,
   Mail,
   Phone,
   MessageCircle,
   Clock,
-  Shield,
-  CreditCard,
-  Heart
+  ShieldCheck
 } from 'lucide-react';
 
+
 export default function Footer() {
+  const { storeSettings } = useShop();
+  const contact = storeSettings || {};
+
   return (
     <footer className="bg-[#1a1716] text-[#f8f4ee] pt-16 pb-8 border-t border-[#d4a373]/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,7 +49,7 @@ export default function Footer() {
             {/* Social Icons */}
             <div className="pt-2 flex items-center space-x-3">
               <a
-                href={BRAND_CONTACT.instagram}
+                href={contact.instagram || "https://www.instagram.com/surangi.naar"}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -58,7 +60,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href={BRAND_CONTACT.facebook}
+                href={contact.facebook || "https://www.facebook.com"}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
@@ -79,31 +81,31 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs text-gray-300 font-sans font-light">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#d4a373] shrink-0 mt-0.5" />
-                <a href={BRAND_CONTACT.googleMaps} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors">
-                  {BRAND_CONTACT.address}
+                <a href={contact.googleMaps || "#"} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors">
+                  {contact.address}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <a href={`mailto:${BRAND_CONTACT.email}`} className="hover:text-[#d4a373] transition-colors">
-                  {BRAND_CONTACT.email}
+                <a href={`mailto:${contact.email}`} className="hover:text-[#d4a373] transition-colors">
+                  {contact.email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <a href={`tel:${BRAND_CONTACT.phone}`} className="hover:text-[#d4a373] transition-colors">
-                  {BRAND_CONTACT.displayPhone}
+                <a href={`tel:${contact.phone}`} className="hover:text-[#d4a373] transition-colors">
+                  {contact.displayPhone || contact.phone}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <MessageCircle className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <a href={BRAND_CONTACT.whatsapp} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors font-medium text-emerald-400">
+                <a href={contact.whatsapp || "#"} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors font-medium text-emerald-400">
                   WhatsApp Concierge
                 </a>
               </li>
               <li className="flex items-center gap-2.5 text-gray-400">
                 <Clock className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <span>{BRAND_CONTACT.hours}</span>
+                <span>{contact.hours}</span>
               </li>
             </ul>
           </div>
@@ -118,8 +120,10 @@ export default function Footer() {
               <li><Link to="/category/co-ords" className="hover:text-[#d4a373] transition-colors">Luxury Co-ord Sets</Link></li>
               <li><Link to="/category/festive-wear" className="hover:text-[#d4a373] transition-colors">Festive Wear</Link></li>
               <li><Link to="/shop" className="hover:text-[#d4a373] transition-colors font-semibold text-[#d4a373]">New Arrivals</Link></li>
+              <li className="pt-2"><Link to="/admin" className="text-[#d4a373] font-semibold flex items-center gap-1 hover:underline"><ShieldCheck className="w-3.5 h-3.5" /> Admin Studio Panel</Link></li>
             </ul>
           </div>
+
 
           {/* Column 4: Policy Column */}
           <div className="space-y-3">

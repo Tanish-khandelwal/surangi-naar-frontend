@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { HERO_SLIDES } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import { ChevronLeft, ChevronRight, Pause, Play, Sparkles } from 'lucide-react';
 
 export default function HeroCarousel() {
+  const { heroSlides } = useShop();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
+  const slides = heroSlides && heroSlides.length > 0 ? heroSlides : [];
+
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || slides.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5500);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, slides.length]);
+
+  if (slides.length === 0) return null;
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   return (
     <section className="relative w-full h-[60vh] sm:h-[75vh] lg:h-[85vh] overflow-hidden bg-[#39322f]">
       {/* Slides Stack */}
-      {HERO_SLIDES.map((slide, index) => (
+      {slides.map((slide, index) => (
         <div
-          key={slide.id}
+          key={slide.id || index}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             index === currentSlide ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
           }`}
@@ -61,10 +66,10 @@ export default function HeroCarousel() {
 
               <div className="pt-3 sm:pt-5">
                 <Link
-                  to={`/category/${slide.categorySlug}`}
+                  to={`/category/${slide.categorySlug || 'kurtis'}`}
                   className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#d4a373] via-[#e6c594] to-[#b58349] text-[#1a1716] hover:bg-white hover:text-[#1a1716] px-8 py-3.5 sm:px-9 sm:py-4 rounded-full text-xs font-sans uppercase tracking-widest font-bold transition-all duration-300 transform hover:-translate-y-1 shadow-2xl border border-white/20 cursor-pointer"
                 >
-                  <span>{slide.cta}</span>
+                  <span>{slide.cta || 'Explore Collection'}</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -102,7 +107,7 @@ export default function HeroCarousel() {
         </button>
 
         <div className="flex items-center gap-2">
-          {HERO_SLIDES.map((_, idx) => (
+          {slides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentSlide(idx)}
@@ -119,3 +124,4 @@ export default function HeroCarousel() {
     </section>
   );
 }
+

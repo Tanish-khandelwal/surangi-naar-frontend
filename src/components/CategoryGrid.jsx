@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CATEGORIES_GRID } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import { ArrowRight } from 'lucide-react';
 
 export default function CategoryGrid() {
+  const { categories } = useShop();
+  const cats = categories && categories.length > 0 ? categories : [];
+
   return (
     <section className="py-20 sm:py-28 bg-[#f8f4ee] border-b border-[#d4a373]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,11 +22,11 @@ export default function CategoryGrid() {
           <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-[#d4a373] to-transparent mx-auto mt-4 rounded-full" />
         </div>
 
-        {/* 3 Prominent Category Cards */}
+        {/* Dynamic Category Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {CATEGORIES_GRID.map((cat) => (
+          {cats.map((cat) => (
             <Link
-              key={cat.id}
+              key={cat.id || cat.slug}
               to={`/category/${cat.slug}`}
               className="group relative h-[340px] sm:h-[420px] lg:h-[460px] rounded-3xl overflow-hidden shadow-xl border border-[#d4a373]/35 transition-all duration-700 hover:shadow-2xl hover:border-[#d4a373] gold-glow-hover flex flex-col justify-end p-6 sm:p-8"
             >
@@ -40,7 +43,7 @@ export default function CategoryGrid() {
               {/* Content Box */}
               <div className="relative z-10 space-y-2 text-white">
                 <span className="text-[10px] uppercase font-sans tracking-widest px-3.5 py-1 rounded-full bg-gradient-to-r from-[#d4a373] via-[#e6c594] to-[#b58349] text-[#1a1716] font-extrabold inline-block shadow-md">
-                  {cat.count}
+                  {cat.count || 'Active Collection'}
                 </span>
 
                 <h3 className="font-cinzel text-2xl sm:text-3xl font-bold tracking-wider text-white group-hover:text-[#e6c594] transition-colors">
@@ -64,3 +67,4 @@ export default function CategoryGrid() {
     </section>
   );
 }
+

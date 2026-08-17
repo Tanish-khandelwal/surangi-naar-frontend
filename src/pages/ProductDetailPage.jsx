@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { BRAND_CONTACT, PRODUCTS_CURATED } from '../data/mockData';
 import ProductCard from '../components/ProductCard';
 import { 
   Heart, 
   ShoppingBag, 
   Star, 
-  Truck, 
-  ShieldCheck, 
-  RefreshCw, 
   Plus, 
   Minus, 
   Check, 
@@ -21,9 +17,11 @@ import {
 
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const { allProducts, addToCart, toggleWishlist, isInWishlist } = useShop();
+  const { allProducts, storeSettings, addToCart, toggleWishlist, isInWishlist } = useShop();
+  const BRAND_CONTACT = storeSettings || {};
 
-  const product = allProducts.find(p => p.id === id) || allProducts[0];
+  const product = (allProducts || []).find(p => p.id === id) || (allProducts && allProducts[0]) || {};
+
 
   const [selectedColor, setSelectedColor] = useState(
     product.colors ? product.colors[0] : null

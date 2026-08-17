@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-import { CATEGORIES_GRID } from '../data/mockData';
 import { Filter, SlidersHorizontal, ChevronRight, X, Sparkles } from 'lucide-react';
 
 export default function CategoryPage() {
   const { slug } = useParams();
-  const { allProducts } = useShop();
+  const { allProducts, categories } = useShop();
 
   const [sortBy, setSortBy] = useState('recommended');
   const [maxPrice, setMaxPrice] = useState(40000);
@@ -15,11 +14,13 @@ export default function CategoryPage() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // Find active category info
-  const currentCategory = CATEGORIES_GRID.find(
+  const catList = categories || [];
+  const currentCategory = catList.find(
     c => c.slug === slug || c.id === slug
   );
   
   const categoryTitle = currentCategory ? currentCategory.name : (slug ? slug.replace('-', ' ') : 'All Collections');
+
 
   // Filter products by category (if slug exists), price, and stock status
   let products = allProducts;
@@ -131,14 +132,14 @@ export default function CategoryPage() {
                     All Collections ({allProducts.length})
                   </Link>
                 </li>
-                {CATEGORIES_GRID.map((cat) => (
-                  <li key={cat.id}>
+                {catList.map((cat) => (
+                  <li key={cat.id || cat.slug}>
                     <Link
                       to={`/category/${cat.slug}`}
                       className={`flex items-center justify-between py-1 hover:text-[#d4a373] transition-colors ${slug === cat.slug ? 'font-bold text-[#d4a373]' : 'text-[#39322f]/80'}`}
                     >
                       <span>{cat.name}</span>
-                      <span className="text-[10px] text-[#39322f]/50 font-sans">{cat.count}</span>
+                      <span className="text-[10px] text-[#39322f]/50 font-sans">{cat.count || 'Collection'}</span>
                     </Link>
                   </li>
                 ))}
@@ -160,42 +161,39 @@ export default function CategoryPage() {
               />
             </div>
 
-            {/* In Stock Toggle */}
-            <div className="pt-4 border-t border-[#e8e2d9]">
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-sans text-[#39322f] font-medium">
-                <input
-                  type="checkbox"
-                  checked={inStockOnly}
-                  onChange={(e) => setInStockOnly(e.target.checked)}
-                  className="rounded border-gray-300 accent-[#d4a373]"
-                />
-                <span>In Stock Items Only</span>
-              </label>
+            {/* In Stock Only Toggle */}
+            <div className="flex items-center justify-between pt-4 border-t border-[#e8e2d9]">
+              <span className="text-xs font-sans font-semibold text-[#39322f] uppercase tracking-wider">In Stock Only</span>
+              <button
+                onClick={() => setInStockOnly(!inStockOnly)}
+                className={`w-11 h-6 rounded-full transition-colors p-1 cursor-pointer ${inStockOnly ? 'bg-[#d4a373]' : 'bg-gray-300'}`}
+              >
+                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${inStockOnly ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
             </div>
           </aside>
 
-          {/* Product Grid Area */}
-          <main className="lg:col-span-3">
+          {/* Product Grid Column */}
+          <div className="lg:col-span-3 space-y-6">
             {products.length === 0 ? (
-              <div className="bg-[#fcfbfa] rounded-2xl border border-[#e8e2d9] p-12 text-center space-y-4">
-                <Sparkles className="w-10 h-10 text-[#d4a373] mx-auto" />
-                <h3 className="font-serif text-2xl font-bold text-[#39322f]">No styles match your filters</h3>
-                <p className="text-xs text-[#39322f]/60 font-sans">Try adjusting the price slider or selecting another category.</p>
+              <div className="text-center py-20 bg-[#fcfbfa] rounded-2xl border border-[#e8e2d9]">
+                <p className="font-serif text-xl text-[#39322f] font-semibold">No products found</p>
+                <p className="text-xs text-gray-500 font-sans mt-1">Try adjusting your filters or price slider.</p>
                 <button
                   onClick={() => { setMaxPrice(40000); setInStockOnly(false); }}
-                  className="bg-[#39322f] text-white text-xs uppercase font-sans tracking-widest px-6 py-2.5 rounded-full font-semibold cursor-pointer"
+                  className="mt-4 px-6 py-2 bg-[#39322f] text-white text-xs uppercase tracking-widest font-sans rounded-full cursor-pointer hover:bg-[#d4a373] transition-colors"
                 >
                   Reset Filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                {products.map((p) => (
-                  <ProductCard key={p.id} product={p} />
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                {products.map(product => (
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}
-          </main>
+          </div>
 
         </div>
 
@@ -214,9 +212,9 @@ export default function CategoryPage() {
             <div className="space-y-3">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-[#39322f]">Category</h4>
               <div className="flex flex-col gap-2 text-xs">
-                {CATEGORIES_GRID.map(cat => (
+                {catList.map(cat => (
                   <Link
-                    key={cat.id}
+                    key={cat.id || cat.slug}
                     to={`/category/${cat.slug}`}
                     onClick={() => setIsMobileFilterOpen(false)}
                     className="py-1 text-[#39322f]/80 hover:text-[#d4a373]"

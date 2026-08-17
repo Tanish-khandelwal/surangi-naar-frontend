@@ -17,41 +17,61 @@ import {
 } from 'lucide-react';
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, cartSubtotal, clearCart } = useShop();
+  const { cart, removeFromCart, updateQuantity, cartSubtotal, clearCart, discountCodes, addOrder, currentUser, openAuthModal } = useShop();
 
   const [orderNote, setOrderNote] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [placedOrder, setPlacedOrder] = useState(null);
 
   // Shipping Address Form State
   const [address, setAddress] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
+    fullName: currentUser ? currentUser.name : '',
+    phone: currentUser ? (currentUser.phone || '') : '',
+    email: currentUser ? currentUser.email : '',
     street: '',
     city: '',
     state: '',
     pincode: ''
   });
 
+  // Keep address updated when user logs in
+  React.useEffect(() => {
+    if (currentUser) {
+      setAddress(prev => ({
+        ...prev,
+        fullName: prev.fullName || currentUser.name || '',
+        phone: prev.phone || currentUser.phone || '',
+        email: prev.email || currentUser.email || ''
+      }));
+    }
+  }, [currentUser]);
+
   const handleApplyCoupon = (e) => {
     e.preventDefault();
-    const code = couponCode.trim().toUpperCase();
-    if (code === 'HAPPY5') {
-      const disc = cartSubtotal * 0.05;
-      setDiscountAmount(disc);
-      setAppliedCoupon('HAPPY5 (5% OFF)');
-      setCouponError('');
-    } else if (code === 'LAH10') {
-      const disc = cartSubtotal * 0.10;
-      setDiscountAmount(disc);
-      setAppliedCoupon('LAH10 (10% OFF)');
-      setCouponError('');
-    } else {
-      setCouponError('Invalid coupon. Try HAPPY5 or LAH10.');
+    const codeStr = couponCode.trim().toUpperCase();
+    const foundCode = (discountCodes || []).find(d => d.code === codeStr && d.isActive);
+
+    if (!foundCode) {
+      setCouponError('Invalid or inactive coupon code.');
+      setDiscountAmount(0);
+      setAppliedCoupon('');
+      return;
     }
+
+    if (foundCode.minSpend && cartSubtotal < foundCode.minSpend) {
+      setCouponError(`Min order amount of ₹${foundCode.minSpend} required for this coupon.`);
+      setDiscountAmount(0);
+      setAppliedCoupon('');
+      return;
+    }
+
+    const disc = (cartSubtotal * foundCode.discountPercent) / 100;
+    setDiscountAmount(disc);
+    setAppliedCoupon(`${foundCode.code} (${foundCode.discountPercent}% OFF)`);
+    setCouponError('');
   };
 
   const freeShippingThreshold = 5000;
@@ -61,9 +81,43 @@ export default function CartPage() {
 
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
-    alert("Thank you! Your order has been placed successfully in test mode.");
+
+    if (!currentUser) {
+      openAuthModal('login');
+      return;
+    }
+
+    if (!address.fullName || !address.phone) {
+      alert("Please fill in your full name and contact phone number.");
+      return;
+    }
+
+    const newOrderData = {
+      customer: {
+        name: address.fullName,
+        email: address.email || currentUser.email || 'customer@example.com',
+        phone: address.phone,
+        address: `${address.street}, ${address.city}, ${address.state} - ${address.pincode}`
+      },
+
+      items: cart.map(item => ({
+        id: item.product.id,
+        name: item.product.name,
+        size: item.size || 'Free Size',
+        color: item.color?.name || 'Standard',
+        quantity: item.quantity,
+        price: item.product.price
+      })),
+      total: finalTotal,
+      status: 'Pending',
+      paymentMethod: 'Prepaid (UPI / Card)'
+    };
+
+    const created = addOrder ? addOrder(newOrderData) : { id: `ORD-${Date.now().toString().slice(-4)}` };
+    setPlacedOrder(created);
     clearCart();
   };
+
 
   return (
     <div className="bg-[#f7f3ee] min-h-screen py-10">
@@ -348,6 +402,50 @@ export default function CartPage() {
         )}
 
       </div>
+
+      {/* Order Confirmation Modal */}
+      {placedOrder && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-8 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-[#d4a373]/15 text-[#b58349] rounded-full flex items-center justify-center mx-auto border border-[#d4a373]/40">
+              <Sparkles className="w-8 h-8" />
+            </div>
+
+            <div>
+              <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#b58349]">Order Confirmed</span>
+              <h3 className="font-cinzel text-2xl font-bold text-[#2d2624] mt-1">Thank You for Shopping!</h3>
+              <p className="text-xs text-gray-600 font-sans mt-2">
+                Your order <span className="font-mono font-bold text-[#39322f]">{placedOrder.id}</span> has been successfully placed.
+              </p>
+            </div>
+
+            <div className="bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl p-4 text-xs font-sans text-[#39322f] space-y-1.5 text-left">
+              <p className="flex justify-between">
+                <span className="text-gray-500">Total Amount:</span>
+                <span className="font-bold text-[#b58349]">₹{placedOrder.total?.toLocaleString()}</span>
+              </p>
+              <p className="flex justify-between">
+                <span className="text-gray-500">Status:</span>
+                <span className="font-bold text-emerald-700">● {placedOrder.status}</span>
+              </p>
+              <p className="text-[10px] text-gray-500 pt-1 border-t border-[#e8e2d9] mt-2">
+                Order details are now viewable in the <Link to="/admin" className="text-[#b58349] font-bold underline">Admin Studio Orders Tab</Link>!
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Link
+                to="/shop"
+                onClick={() => setPlacedOrder(null)}
+                className="flex-1 bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-semibold py-3 px-4 rounded-xl text-xs uppercase tracking-widest transition-all"
+              >
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

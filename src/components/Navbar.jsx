@@ -10,14 +10,16 @@ import {
   Menu,
   X,
   ChevronDown,
-  Truck,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck
 } from 'lucide-react';
+
 
 export default function Navbar() {
   const navigate = useNavigate();
   const {
+    categories,
     cartCount,
     setIsCartOpen,
     wishlist,
@@ -25,8 +27,13 @@ export default function Navbar() {
     isSearchOpen,
     setIsSearchOpen,
     searchQuery,
-    setSearchQuery
+    setSearchQuery,
+    currentUser,
+    openAuthModal,
+    openAccountModal
   } = useShop();
+
+  const navCategories = categories && categories.length > 0 ? categories : CATEGORIES_LIST;
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
@@ -91,8 +98,8 @@ export default function Navbar() {
                     </div>
 
                     <ul className="space-y-3">
-                      {CATEGORIES_LIST.map((cat) => (
-                        <li key={cat.slug}>
+                      {navCategories.map((cat) => (
+                        <li key={cat.slug || cat.id}>
                           <Link 
                             to={`/category/${cat.slug}`}
                             onClick={() => setIsMegaMenuOpen(false)}
@@ -103,48 +110,31 @@ export default function Navbar() {
                                 {cat.name}
                               </div>
                               <p className="text-[10px] text-[#2d2624]/60 font-sans">
-                                {cat.description}
+                                {cat.description || cat.tagline}
                               </p>
                             </div>
                             <span className="text-[9px] bg-[#d4a373]/15 text-[#b58349] px-2 py-0.5 rounded-full font-bold">
-                              {cat.tag}
+                              {cat.tag || 'Explore'}
                             </span>
                           </Link>
                         </li>
                       ))}
                     </ul>
-
-                    <div className="pt-2 border-t border-[#e8e2d9]">
-                      <Link 
-                        to="/shop" 
-                        onClick={() => setIsMegaMenuOpen(false)}
-                        className="text-xs font-semibold tracking-wider uppercase text-[#2d2624] hover:text-[#d4a373] flex items-center justify-between"
-                      >
-                        <span>View All Products</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Direct Links for 3 Categories */}
-              {CATEGORIES_LIST.map((cat) => (
-                <Link
-                  key={cat.slug}
-                  to={`/category/${cat.slug}`}
-                  className="text-xs uppercase tracking-widest font-medium text-[#2d2624]/80 hover:text-[#d4a373] transition-colors"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-
-              {/* About & Contact Link */}
+              <Link
+                to="/shop"
+                className="uppercase text-xs tracking-widest font-semibold text-[#2d2624] hover:text-[#d4a373] transition-colors py-2"
+              >
+                All Products
+              </Link>
               <Link
                 to="/about"
-                className="text-xs uppercase tracking-widest font-medium text-[#2d2624]/80 hover:text-[#d4a373] transition-colors"
+                className="uppercase text-xs tracking-widest font-semibold text-[#2d2624] hover:text-[#d4a373] transition-colors py-2"
               >
-                <span>About & Contact</span>
+                Our Story
               </Link>
             </div>
 
@@ -180,8 +170,8 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Right Icons: Search, Account, Wishlist, Cart */}
-            <div className="flex items-center space-x-3 sm:space-x-5">
+            {/* Right Icons: Search, Account / Auth, Admin, Wishlist, Cart */}
+            <div className="flex items-center space-x-2 sm:space-x-4">
 
               {/* Search Toggle */}
               <button
@@ -192,14 +182,42 @@ export default function Navbar() {
                 <Search className="w-5 h-5 stroke-[1.5]" />
               </button>
 
-              {/* Account Icon */}
+              {/* Account Button / User Profile */}
+              {currentUser ? (
+                <button
+                  onClick={openAccountModal}
+                  className="flex items-center gap-2 p-1.5 rounded-full bg-[#d4a373]/15 hover:bg-[#d4a373]/30 border border-[#d4a373]/40 transition-all cursor-pointer"
+                  title="My Account Profile"
+                >
+                  <img
+                    src={currentUser.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"}
+                    alt={currentUser.name}
+                    className="w-6 h-6 rounded-full object-cover border border-white"
+                  />
+                  <span className="text-xs font-semibold text-[#2d2624] pr-2 hidden md:inline">
+                    {currentUser.name.split(' ')[0]}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#39322f] text-white hover:bg-[#d4a373] hover:text-[#39322f] transition-all cursor-pointer text-xs font-semibold uppercase tracking-wider shadow-xs"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </button>
+              )}
+
+              {/* Admin Panel Icon */}
               <Link
-                to="/contact"
-                className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors hidden sm:block cursor-pointer"
-                aria-label="Account"
+                to="/admin"
+                className="p-1.5 text-[#d4a373] bg-[#d4a373]/15 hover:bg-[#d4a373] hover:text-[#1a1716] transition-all rounded-lg cursor-pointer border border-[#d4a373]/30 flex items-center gap-1 text-[11px] font-semibold font-sans uppercase tracking-wider"
+                title="Open Admin Panel"
               >
-                <User className="w-5 h-5 stroke-[1.5]" />
+                <ShieldCheck className="w-4 h-4" />
+                <span className="hidden xl:inline">Admin</span>
               </Link>
+
 
               {/* Wishlist Trigger */}
               <button
@@ -240,12 +258,12 @@ export default function Navbar() {
       <div className="hidden lg:block bg-[#fcfbfa] border-b border-[#e8e2d9]/60 py-2.5">
         <div className="max-w-7xl mx-auto px-4">
           <ul className="flex items-center justify-center space-x-12 text-xs tracking-widest uppercase font-semibold text-[#39322f]">
-            {CATEGORIES_LIST.map((cat) => (
-              <li key={cat.slug}>
+            {navCategories.map((cat) => (
+              <li key={cat.slug || cat.id}>
                 <Link to={`/category/${cat.slug}`} className="hover:text-[#d4a373] transition-colors flex items-center gap-1.5">
                   <span>{cat.name}</span>
                   <span className="text-[9px] bg-[#f7f3ee] border border-[#e8e2d9] px-2 py-0.5 rounded-full font-bold text-[#d4a373]">
-                    {cat.tag}
+                    {cat.tag || 'Explore'}
                   </span>
                 </Link>
               </li>
@@ -261,76 +279,68 @@ export default function Navbar() {
       {isSearchOpen && (
         <div className="bg-[#fcfbfa] border-b border-[#e8e2d9] p-4 shadow-lg animate-in slide-in-from-top-2 duration-300">
           <div className="max-w-3xl mx-auto relative flex items-center">
-            <form onSubmit={handleSearchSubmit} className="w-full flex items-center gap-3">
-              <Search className="w-5 h-5 text-[#39322f]/50" />
+            <form onSubmit={handleSearchSubmit} className="w-full relative flex items-center">
+              <Search className="w-5 h-5 absolute left-4 text-[#39322f]/50" />
               <input
                 type="text"
-                placeholder="Search Kurtis, Co-ord Sets, Festive Wear..."
+                placeholder="Search products by title, category, fabric..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                className="w-full bg-transparent border-none outline-none text-sm font-sans text-[#39322f] placeholder-[#39322f]/40 py-2"
+                className="w-full bg-[#f7f3ee] border border-[#e8e2d9] rounded-full pl-12 pr-24 py-3 text-xs font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373]"
               />
               <button
-                type="button"
-                onClick={() => setIsSearchOpen(false)}
-                className="p-1 text-[#39322f]/60 hover:text-[#39322f] cursor-pointer"
+                type="submit"
+                className="absolute right-2 bg-[#39322f] text-white text-xs font-sans uppercase tracking-widest px-5 py-2 rounded-full font-semibold hover:bg-[#d4a373] transition-colors cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                Search
               </button>
             </form>
+            <button
+              onClick={() => setIsSearchOpen(false)}
+              className="ml-3 p-2 text-[#39322f]/60 hover:text-[#39322f] cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
       )}
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-
-          <div className="relative w-4/5 max-w-sm bg-[#fcfbfa] h-full shadow-2xl flex flex-col justify-between z-10 animate-in slide-in-from-left duration-300">
+        <div className="fixed inset-0 z-50 flex lg:hidden animate-in fade-in duration-300">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setIsMobileMenuOpen(false)} />
+          <div className="relative w-4/5 max-w-sm bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto">
+            
             <div>
-              {/* Header */}
-              <div className="p-5 border-b border-[#e8e2d9] flex items-center justify-between bg-[#f7f3ee]">
-                <div className="flex items-center gap-2.5">
-                  <img
-                    src="/logo.jpg"
-                    alt="Surangi Naar Logo"
-                    className="w-9 h-9 rounded-full object-cover border border-[#d4a373]/40 shadow-xs"
-                  />
-                  <div>
-                    <h3 className="font-serif font-bold text-lg text-[#39322f] leading-tight">Surangi Naar</h3>
-                    <span className="text-[8px] uppercase tracking-widest text-[#d4a373] font-semibold block">Jaipur</span>
-                  </div>
+              <div className="p-5 border-b border-[#e8e2d9] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-white" />
+                  <span className="font-cinzel text-lg font-bold text-[#39322f]">Surangi Naar</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 text-[#39322f] hover:text-[#d4a373]"
+                  className="p-1.5 rounded-full hover:bg-gray-100 text-[#39322f]"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Category Links List */}
               <div className="p-5 space-y-4">
                 <div className="text-[10px] uppercase font-sans tracking-[0.25em] text-[#d4a373] font-bold">
                   Categories
                 </div>
 
                 <div className="space-y-2">
-                  {CATEGORIES_LIST.map((cat) => (
+                  {navCategories.map((cat) => (
                     <Link
-                      key={cat.slug}
+                      key={cat.slug || cat.id}
                       to={`/category/${cat.slug}`}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="flex items-center justify-between p-3 rounded-xl bg-[#f7f3ee]/60 border border-[#e8e2d9]/60 text-sm font-sans text-[#39322f] font-semibold uppercase tracking-wide hover:border-[#d4a373]"
                     >
                       <span>{cat.name}</span>
                       <span className="text-[9px] bg-[#d4a373]/20 text-[#b58349] px-2 py-0.5 rounded-full font-bold">
-                        {cat.tag}
+                        {cat.tag || 'Explore'}
                       </span>
                     </Link>
                   ))}

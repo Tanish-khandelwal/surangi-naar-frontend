@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { PROMO_MESSAGES } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function PromoBar() {
+  const { promoMessages } = useShop();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const messages = promoMessages && promoMessages.length > 0 ? promoMessages : ["Welcome to Surangi Naar Boutique"];
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % PROMO_MESSAGES.length);
+      setCurrentIndex((prev) => (prev + 1) % messages.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [messages.length]);
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + PROMO_MESSAGES.length) % PROMO_MESSAGES.length);
+    setCurrentIndex((prev) => (prev - 1 + messages.length) % messages.length);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % PROMO_MESSAGES.length);
+    setCurrentIndex((prev) => (prev + 1) % messages.length);
   };
 
   return (
@@ -34,7 +37,7 @@ export default function PromoBar() {
         <div className="flex-1 text-center flex items-center justify-center gap-2 transition-all duration-500 ease-in-out">
           <Sparkles className="w-3.5 h-3.5 text-[#d4a373] animate-pulse shrink-0 hidden xs:inline" />
           <span className="font-semibold text-[10px] sm:text-xs text-[#e6c594] tracking-[0.15em]">
-            {PROMO_MESSAGES[currentIndex]}
+            {messages[currentIndex % messages.length]}
           </span>
           <Sparkles className="w-3.5 h-3.5 text-[#d4a373] animate-pulse shrink-0 hidden xs:inline" />
         </div>
@@ -50,3 +53,4 @@ export default function PromoBar() {
     </div>
   );
 }
+

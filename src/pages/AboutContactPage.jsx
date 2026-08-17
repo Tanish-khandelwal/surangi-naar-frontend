@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import FounderSection from '../components/FounderSection';
-import { BRAND_CONTACT } from '../data/mockData';
+import { useShop } from '../context/ShopContext';
 import {
   Phone,
   Mail,
@@ -16,6 +16,9 @@ import {
 } from 'lucide-react';
 
 export default function AboutContactPage() {
+  const { storeSettings } = useShop();
+  const BRAND_CONTACT = storeSettings || {};
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,6 +27,7 @@ export default function AboutContactPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
