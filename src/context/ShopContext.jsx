@@ -227,7 +227,8 @@ export const ShopProvider = ({ children }) => {
       localStorage.setItem('surangi_age_verified', 'true');
       setIsAgeVerified(true);
     } else {
-      alert("You must be 18 or older to browse surangi naar fashion boutique.");
+      alert("You must be 18 or older to browse Surangi Naar.");
+
     }
   };
 
@@ -304,33 +305,29 @@ export const ShopProvider = ({ children }) => {
     setHeroSlides(prev => prev.filter(s => s.id !== id));
   };
 
-  // Promo Messages CRUD
+  // Announcement Bar Messages CRUD
   const updatePromoMessages = (messages) => {
     setPromoMessages(messages);
   };
 
   const addPromoMessage = (msg) => {
-    if (msg.trim()) {
-      setPromoMessages(prev => [...prev, msg.trim()]);
-    }
+    setPromoMessages(prev => [...prev, msg]);
   };
 
   const deletePromoMessage = (index) => {
     setPromoMessages(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Order CRUD
+  // Orders CRUD
   const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    setOrders(prev => prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o)));
   };
 
   const addOrder = (orderData) => {
     const newOrder = {
+      ...orderData,
       id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
-      date: new Date().toISOString(),
-      status: "Pending",
-      paymentMethod: "Prepaid",
-      ...orderData
+      date: new Date().toISOString().split('T')[0]
     };
     setOrders(prev => [newOrder, ...prev]);
     return newOrder;
@@ -342,24 +339,26 @@ export const ShopProvider = ({ children }) => {
   };
 
   const toggleDiscountCode = (codeStr) => {
-    setDiscountCodes(prev => prev.map(d => d.code === codeStr ? { ...d, isActive: !d.isActive } : d));
+    setDiscountCodes(prev =>
+      prev.map(d => (d.code === codeStr ? { ...d, isActive: !d.isActive } : d))
+    );
   };
 
   const deleteDiscountCode = (codeStr) => {
     setDiscountCodes(prev => prev.filter(d => d.code !== codeStr));
   };
 
-  // Store Settings CRUD
+  // Store Contact Settings CRUD
   const updateStoreSettings = (newSettings) => {
     setStoreSettings(prev => ({ ...prev, ...newSettings }));
   };
 
-  // Reset to default data
+  // Reset to initial mock data state
   const resetToDefaultData = () => {
     setProducts(INITIAL_PRODUCTS);
-    setCategories(CATEGORIES_GRID);
-    setHeroSlides(HERO_SLIDES);
-    setPromoMessages(PROMO_MESSAGES);
+    setCategories(INITIAL_CATEGORIES);
+    setHeroSlides(INITIAL_HERO_SLIDES);
+    setPromoMessages(INITIAL_PROMOS);
     setOrders(INITIAL_ORDERS);
     setDiscountCodes(INITIAL_DISCOUNTS);
     setStoreSettings(BRAND_CONTACT);
@@ -413,7 +412,7 @@ export const ShopProvider = ({ children }) => {
 
     const user = {
       id: `usr_${Date.now()}`,
-      name: formattedName || "Boutique Member",
+      name: formattedName || "Atelier Member",
       email: email,
       phone: "+91 98765 43210",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",

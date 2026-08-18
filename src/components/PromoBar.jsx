@@ -6,7 +6,8 @@ export default function PromoBar() {
   const { promoMessages } = useShop();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const messages = promoMessages && promoMessages.length > 0 ? promoMessages : ["Welcome to Surangi Naar Boutique"];
+  const messages = promoMessages && promoMessages.length > 0 ? promoMessages : ["Welcome to Surangi Naar"];
+
 
   useEffect(() => {
     const timer = setInterval(() => {

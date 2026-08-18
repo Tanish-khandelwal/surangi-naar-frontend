@@ -43,7 +43,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-gray-300 font-sans font-light leading-relaxed max-w-sm">
-              Luxury Indian ethnic and contemporary western boutique curated with handcrafted fabrics, artisanal embroidery, and timeless silhouettes.
+              Luxury Indian ethnic and contemporary western apparel curated with handcrafted fabrics, artisanal embroidery, and timeless silhouettes.
             </p>
 
             {/* Social Icons */}
@@ -64,7 +64,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#d4a373] text-white flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#d4a373] text-[#f8f4ee] flex items-center justify-center transition-colors"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -76,8 +76,9 @@ export default function Footer() {
           {/* Column 2: Contact Info */}
           <div className="space-y-3">
             <h4 className="font-serif font-semibold text-base text-white tracking-wide border-b border-white/10 pb-2">
-              Contact Boutique
+              Contact Studio
             </h4>
+
             <ul className="space-y-2.5 text-xs text-gray-300 font-sans font-light">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#d4a373] shrink-0 mt-0.5" />

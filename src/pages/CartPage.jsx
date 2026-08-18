@@ -132,8 +132,9 @@ export default function CartPage() {
         {/* Page Header */}
         <div className="mb-10 text-center sm:text-left">
           <span className="text-xs uppercase font-sans tracking-[0.25em] text-[#d4a373] font-semibold">
-            Boutique Checkout
+            Studio Checkout
           </span>
+
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#39322f] mt-1">
             Shopping Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})
           </h1>

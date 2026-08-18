@@ -118,7 +118,7 @@ export default function AboutContactPage() {
               to="/shop"
               className="inline-flex items-center gap-3 bg-[#39322f] hover:bg-[#d4a373] text-white px-10 py-4 rounded-full text-xs font-sans uppercase tracking-widest font-semibold transition-all shadow-lg"
             >
-              <span>Explore Boutique Catalog</span>
+              <span>Explore Studio Catalog</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -144,7 +144,7 @@ export default function AboutContactPage() {
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-[#fcfbfa] rounded-3xl p-6 sm:p-8 border border-[#e8e2d9] shadow-xs space-y-6">
                 <h3 className="font-serif font-bold text-xl text-[#39322f] border-b border-[#e8e2d9] pb-4">
-                  Boutique Contact Details
+                  Studio Contact Details
                 </h3>
 
                 <ul className="space-y-5 text-xs font-sans text-[#39322f]">

@@ -30,8 +30,9 @@ export default function AgeGateModal() {
         </div>
 
         <p className="text-sm font-sans text-[#39322f]/80 font-light leading-relaxed">
-          Please confirm your age to enter our luxury fashion boutique. Are you 18 years of age or older?
+          Please confirm your age to enter our luxury fashion studio. Are you 18 years of age or older?
         </p>
+
 
         {/* Buttons */}
         <div className="grid grid-cols-2 gap-4 pt-2">

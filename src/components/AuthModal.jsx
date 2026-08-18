@@ -226,7 +226,8 @@ export default function AuthModal() {
               type="submit"
               className="w-full bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-bold py-3.5 px-6 rounded-2xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 mt-3"
             >
-              <span>Create Boutique Account</span>
+              <span>Create Account</span>
+
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>

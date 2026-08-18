@@ -64,8 +64,9 @@ export default function CategoryPage() {
         <div className="bg-[#fcfbfa] border border-[#e8e2d9] rounded-2xl p-8 sm:p-12 mb-10 text-center relative overflow-hidden shadow-xs">
           <div className="max-w-2xl mx-auto space-y-3">
             <span className="text-xs uppercase font-sans tracking-[0.25em] text-[#d4a373] font-semibold">
-              Boutique Edit
+              Curated Edit
             </span>
+
             <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#39322f] capitalize">
               {categoryTitle}
             </h1>

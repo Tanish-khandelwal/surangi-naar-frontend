@@ -99,7 +99,8 @@ export default function AccountModal() {
           {userOrders.length === 0 ? (
             <div className="bg-[#f8f4ee] rounded-2xl p-6 text-center space-y-2 border border-[#e8e2d9]">
               <p className="text-xs text-gray-600 font-medium">No order history yet.</p>
-              <p className="text-[10px] text-gray-400">Your placed boutique orders will appear here automatically!</p>
+              <p className="text-[10px] text-gray-400">Your placed studio orders will appear here automatically!</p>
+
             </div>
           ) : (
             <div className="space-y-3">
