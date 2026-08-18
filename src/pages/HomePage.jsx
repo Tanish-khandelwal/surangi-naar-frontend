@@ -1,7 +1,6 @@
 import React from 'react';
 import HeroCarousel from '../components/HeroCarousel';
 import CategoryGrid from '../components/CategoryGrid';
-import LuxuryBadges from '../components/LuxuryBadges';
 import ProductCarousel from '../components/ProductCarousel';
 import PromoBanner from '../components/PromoBanner';
 import FeatureCards from '../components/FeatureCards';
@@ -14,11 +13,9 @@ export default function HomePage() {
       {/* Hero Carousel */}
       <HeroCarousel />
 
-      {/* Artisanal Heritage Brand Badges */}
-      <LuxuryBadges />
-
       {/* Explore by Category Thumbnails */}
       <CategoryGrid />
+
 
       {/* Curated by Prints Product Carousel */}
       <ProductCarousel />
