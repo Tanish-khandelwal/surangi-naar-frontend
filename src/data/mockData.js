@@ -202,8 +202,8 @@ export const PRODUCTS_CURATED = [
     price: 3799,
     originalPrice: 4799,
     colors: [
-      { name: "Blush Pink", hex: "#e8b4b8" },
-      { name: "Ivory", hex: "#fffff0" }
+      { name: "Royal Red", hex: "#c83228" },
+      { name: "Rust Red", hex: "#a8241c" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_6.jpg",
