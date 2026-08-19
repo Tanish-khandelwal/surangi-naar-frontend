@@ -54,9 +54,17 @@ const INITIAL_ORDERS = [
   }
 ];
 
+const CURRENT_DATA_VERSION = 'v3_single_color_catalog';
+
 export const ShopProvider = ({ children }) => {
   // Dynamic Products State with localStorage persistence
   const [products, setProducts] = useState(() => {
+    const version = localStorage.getItem('surangi_data_version');
+    if (version !== CURRENT_DATA_VERSION) {
+      localStorage.setItem('surangi_data_version', CURRENT_DATA_VERSION);
+      localStorage.setItem('surangi_products', JSON.stringify(INITIAL_PRODUCTS));
+      return INITIAL_PRODUCTS;
+    }
     const saved = localStorage.getItem('surangi_products');
     return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
   });
@@ -362,6 +370,7 @@ export const ShopProvider = ({ children }) => {
     setOrders(INITIAL_ORDERS);
     setDiscountCodes(INITIAL_DISCOUNTS);
     setStoreSettings(BRAND_CONTACT);
+    localStorage.setItem('surangi_data_version', CURRENT_DATA_VERSION);
     localStorage.removeItem('surangi_products');
     localStorage.removeItem('surangi_categories');
     localStorage.removeItem('surangi_hero_slides');
