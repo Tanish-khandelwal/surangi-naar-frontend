@@ -92,8 +92,7 @@ export const PRODUCTS_CURATED = [
     price: 3999,
     originalPrice: 4999,
     colors: [
-      { name: "Lavender Lilac", hex: "#b497d6" },
-      { name: "Sage Green", hex: "#95a383" }
+      { name: "Lavender Lilac", hex: "#b497d6" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_1.jpg",
@@ -114,8 +113,7 @@ export const PRODUCTS_CURATED = [
     price: 3999,
     originalPrice: 4999,
     colors: [
-      { name: "Sage Green", hex: "#95a383" },
-      { name: "Lavender Lilac", hex: "#b497d6" }
+      { name: "Sage Green", hex: "#95a383" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_2.jpg",
@@ -136,8 +134,7 @@ export const PRODUCTS_CURATED = [
     price: 4299,
     originalPrice: 5499,
     colors: [
-      { name: "Slate Grey", hex: "#87888a" },
-      { name: "Dusty Beige", hex: "#c2b69d" }
+      { name: "Slate Grey", hex: "#87888a" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_3.jpg",
@@ -158,8 +155,7 @@ export const PRODUCTS_CURATED = [
     price: 4599,
     originalPrice: 5999,
     colors: [
-      { name: "Mustard Gold", hex: "#d4a017" },
-      { name: "Rust Amber", hex: "#b7410e" }
+      { name: "Mustard Gold", hex: "#d4a017" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_4.jpg",
@@ -180,8 +176,7 @@ export const PRODUCTS_CURATED = [
     price: 4999,
     originalPrice: 6499,
     colors: [
-      { name: "Royal Purple", hex: "#5a2d82" },
-      { name: "Plum Magenta", hex: "#4a154b" }
+      { name: "Royal Purple", hex: "#5a2d82" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_5.jpg",
@@ -202,8 +197,7 @@ export const PRODUCTS_CURATED = [
     price: 3799,
     originalPrice: 4799,
     colors: [
-      { name: "Royal Red", hex: "#c83228" },
-      { name: "Rust Red", hex: "#a8241c" }
+      { name: "Royal Red", hex: "#c83228" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "/images/products/real_product_6.jpg",
@@ -226,8 +220,7 @@ export const PRODUCTS_CURATED = [
     price: 7499,
     originalPrice: 8999,
     colors: [
-      { name: "Champagne Gold", hex: "#e0c9a6" },
-      { name: "Emerald Green", hex: "#1b4332" }
+      { name: "Champagne Gold", hex: "#e0c9a6" }
     ],
     sizes: ["XS", "S", "M", "L", "XL"],
     image: "/images/products/real_product_9.jpg",
@@ -248,8 +241,7 @@ export const PRODUCTS_CURATED = [
     price: 6999,
     originalPrice: 8499,
     colors: [
-      { name: "Terracotta", hex: "#c86d51" },
-      { name: "Ivory Cream", hex: "#fdfbf7" }
+      { name: "Terracotta Earth", hex: "#c86d51" }
     ],
     sizes: ["S", "M", "L", "XL"],
     image: "/images/products/real_product_10.jpg",
@@ -270,8 +262,7 @@ export const PRODUCTS_CURATED = [
     price: 8499,
     originalPrice: 9999,
     colors: [
-      { name: "Olive Palm", hex: "#4b5320" },
-      { name: "Navy Cobalt", hex: "#002366" }
+      { name: "Olive Palm", hex: "#4b5320" }
     ],
     sizes: ["XS", "S", "M", "L"],
     image: "/images/products/real_product_11.jpg",
@@ -294,8 +285,7 @@ export const PRODUCTS_CURATED = [
     price: 18500,
     originalPrice: 22000,
     colors: [
-      { name: "Royal Emerald", hex: "#1b4332" },
-      { name: "Midnight Navy", hex: "#1d2d44" }
+      { name: "Royal Emerald", hex: "#1b4332" }
     ],
     sizes: ["S", "M", "L", "XL"],
     image: "/images/products/real_product_14.jpg",
@@ -316,8 +306,7 @@ export const PRODUCTS_CURATED = [
     price: 21000,
     originalPrice: 25000,
     colors: [
-      { name: "Crimson Red", hex: "#8b0000" },
-      { name: "Royal Gold", hex: "#d4a373" }
+      { name: "Crimson Red", hex: "#8b0000" }
     ],
     sizes: ["S", "M", "L", "Custom"],
     image: "/images/products/real_product_15.jpg",
@@ -338,8 +327,7 @@ export const PRODUCTS_CURATED = [
     price: 24500,
     originalPrice: 29000,
     colors: [
-      { name: "Deep Ruby", hex: "#5c1325" },
-      { name: "Dusty Rose", hex: "#dcae96" }
+      { name: "Deep Ruby", hex: "#5c1325" }
     ],
     sizes: ["S", "M", "L", "Custom"],
     image: "/images/products/real_product_16.jpg",
@@ -363,8 +351,7 @@ export const NEW_ARRIVALS = [
     price: 5499,
     originalPrice: 6999,
     colors: [
-      { name: "Rust Orange", hex: "#d9531e" },
-      { name: "Terracotta Gold", hex: "#c85a32" }
+      { name: "Rust Orange", hex: "#d9531e" }
     ],
     sizes: ["S", "M", "L", "XL"],
     image: "/images/products/real_product_7.jpg",
@@ -384,8 +371,7 @@ export const NEW_ARRIVALS = [
     price: 7999,
     originalPrice: 9499,
     colors: [
-      { name: "Olive Green", hex: "#556b2f" },
-      { name: "Ivory", hex: "#fffdd0" }
+      { name: "Olive Green", hex: "#556b2f" }
     ],
     sizes: ["XS", "S", "M", "L"],
     image: "/images/products/real_product_12.jpg",
@@ -405,8 +391,7 @@ export const NEW_ARRIVALS = [
     price: 16999,
     originalPrice: 19999,
     colors: [
-      { name: "Royal Purple", hex: "#5a2d82" },
-      { name: "Plum Violet", hex: "#4a1236" }
+      { name: "Royal Purple", hex: "#5a2d82" }
     ],
     sizes: ["S", "M", "L"],
     image: "/images/products/real_product_17.jpg",
