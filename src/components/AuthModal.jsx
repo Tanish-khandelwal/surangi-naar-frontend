@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
 import { X, Sparkles, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
 
@@ -20,6 +20,17 @@ export default function AuthModal() {
   const [phone, setPhone] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
 
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAuthModalOpen]);
+
   if (!isAuthModalOpen) return null;
 
   const handleLoginSubmit = (e) => {
@@ -36,7 +47,10 @@ export default function AuthModal() {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-[#39322f] overflow-hidden">
+      <div 
+        className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-[#39322f] max-h-[90vh] overflow-y-auto overscroll-contain"
+        data-lenis-prevent
+      >
         
         {/* Close Button */}
         <button

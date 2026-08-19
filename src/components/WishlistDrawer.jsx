@@ -14,6 +14,17 @@ export default function WishlistDrawer() {
     setQuickViewProduct
   } = useShop();
 
+  React.useEffect(() => {
+    if (isWishlistOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isWishlistOpen]);
+
   if (!isWishlistOpen) return null;
 
   const wishlistedProducts = allProducts.filter(p => wishlist.includes(p.id));
@@ -27,7 +38,10 @@ export default function WishlistDrawer() {
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-md bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between animate-in slide-in-from-right duration-300">
+      <div 
+        className="relative w-full max-w-md bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between animate-in slide-in-from-right duration-300 overscroll-contain"
+        data-lenis-prevent
+      >
         
         {/* Header */}
         <div className="p-5 border-b border-[#e8e2d9] flex items-center justify-between bg-[#f7f3ee]">

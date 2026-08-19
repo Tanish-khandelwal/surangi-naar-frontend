@@ -117,9 +117,9 @@ export const ShopProvider = ({ children }) => {
 
   // Dynamic Store Settings State
   const [storeSettings, setStoreSettings] = useState(() => {
-    const saved = localStorage.getItem('surangi_store_settings');
-    return saved ? JSON.parse(saved) : BRAND_CONTACT;
+    return BRAND_CONTACT;
   });
+
 
   useEffect(() => {
     localStorage.setItem('surangi_store_settings', JSON.stringify(storeSettings));
@@ -241,7 +241,7 @@ export const ShopProvider = ({ children }) => {
       id: newId,
       rating: 5.0,
       isSoldOut: false,
-      colors: [{ name: "Standard", hex: "#000000" }],
+      colors: [{ name: "Rust Orange", hex: "#d9531e" }, { name: "Royal Gold", hex: "#d4a373" }],
       sizes: ["S", "M", "L", "XL"],
       badge: "New Arrival",
       secondaryImage: newProdData.image || "/images/products/real_product_1.jpg",
@@ -356,9 +356,9 @@ export const ShopProvider = ({ children }) => {
   // Reset to initial mock data state
   const resetToDefaultData = () => {
     setProducts(INITIAL_PRODUCTS);
-    setCategories(INITIAL_CATEGORIES);
-    setHeroSlides(INITIAL_HERO_SLIDES);
-    setPromoMessages(INITIAL_PROMOS);
+    setCategories(CATEGORIES_GRID);
+    setHeroSlides(HERO_SLIDES);
+    setPromoMessages(PROMO_MESSAGES);
     setOrders(INITIAL_ORDERS);
     setDiscountCodes(INITIAL_DISCOUNTS);
     setStoreSettings(BRAND_CONTACT);

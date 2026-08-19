@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
@@ -22,16 +22,26 @@ export default function ProductDetailPage() {
 
   const product = (allProducts || []).find(p => p.id === id) || (allProducts && allProducts[0]) || {};
 
+  const productColors = product.colors && product.colors.length > 0
+    ? product.colors
+    : [{ name: 'Royal Purple', hex: '#5a2d82' }];
 
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors ? product.colors[0] : null
-  );
+  const [selectedColor, setSelectedColor] = useState(productColors[0]);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(product.image);
+  const activeImage = product.image;
   const [activeTab, setActiveTab] = useState('description');
+
+  useEffect(() => {
+    const cols = product.colors && product.colors.length > 0
+      ? product.colors
+      : [{ name: 'Royal Purple', hex: '#5a2d82' }];
+    setSelectedColor(cols[0]);
+    setSelectedSize(product.sizes ? product.sizes[0] : 'Free Size');
+    setQuantity(1);
+  }, [product.id, product.colors, product.sizes]);
 
   const isWishlisted = isInWishlist(product.id);
   const relatedProducts = allProducts.filter(p => p.id !== product.id).slice(0, 4);
@@ -82,28 +92,6 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Thumbnail Row */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setActiveImage(product.image)}
-                className={`w-20 h-24 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                  activeImage === product.image ? 'border-[#d4a373] ring-2 ring-[#d4a373]/30 scale-105' : 'border-transparent opacity-70 hover:opacity-100'
-                }`}
-              >
-                <img src={product.image} alt="Thumbnail 1" className="w-full h-full object-cover" />
-              </button>
-
-              {product.secondaryImage && (
-                <button
-                  onClick={() => setActiveImage(product.secondaryImage)}
-                  className={`w-20 h-24 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                    activeImage === product.secondaryImage ? 'border-[#d4a373] ring-2 ring-[#d4a373]/30 scale-105' : 'border-transparent opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <img src={product.secondaryImage} alt="Thumbnail 2" className="w-full h-full object-cover" />
-                </button>
-              )}
-            </div>
           </div>
 
           {/* Right Column: Product Form & Info */}
@@ -153,27 +141,34 @@ export default function ProductDetailPage() {
               </p>
 
               {/* Color Swatch Picker */}
-              {product.colors && product.colors.length > 0 && (
+              {productColors && productColors.length > 0 && (
                 <div className="space-y-2.5">
                   <label className="block text-xs uppercase font-semibold text-[#39322f] tracking-wider">
-                    Select Color: <span className="text-[#d4a373]">{selectedColor?.name}</span>
+                    Select Color: <span className="text-[#d4a373]">{selectedColor?.name || productColors[0]?.name}</span>
                   </label>
                   <div className="flex items-center gap-3">
-                    {product.colors.map((col, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedColor(col)}
-                        title={col.name}
-                        className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
-                          selectedColor?.name === col.name ? 'ring-2 ring-[#d4a373] border-white scale-110' : 'border-gray-300'
-                        }`}
-                        style={{ backgroundColor: col.hex }}
-                      >
-                        {selectedColor?.name === col.name && (
-                          <Check className="w-4 h-4 text-white drop-shadow-xs" />
-                        )}
-                      </button>
-                    ))}
+                    {productColors.map((col, idx) => {
+                      const hexColor = (typeof col === 'object' ? col.hex : col) || '#5a2d82';
+                      const colorName = (typeof col === 'object' ? col.name : col) || 'Royal Purple';
+                      const isSelected = (selectedColor?.name === colorName) || (selectedColor?.hex === hexColor);
+                      const isLightColor = ['#ffffff', '#fff', '#fffff0', '#fdfbf7', '#f8f4ee'].includes(hexColor.toLowerCase());
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedColor(col)}
+                          title={colorName}
+                          className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
+                            isSelected ? 'ring-2 ring-[#d4a373] border-white scale-110 shadow-sm' : 'border-gray-300 hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: hexColor }}
+                        >
+                          {isSelected && (
+                            <Check className={`w-4 h-4 ${isLightColor ? 'text-gray-900' : 'text-white'} drop-shadow-xs`} />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}

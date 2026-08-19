@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
 import { Filter, SlidersHorizontal, ChevronRight, X } from 'lucide-react';
@@ -7,6 +7,8 @@ import { Filter, SlidersHorizontal, ChevronRight, X } from 'lucide-react';
 
 export default function CategoryPage() {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
   const { allProducts, categories } = useShop();
 
   const [sortBy, setSortBy] = useState('recommended');
@@ -20,15 +22,27 @@ export default function CategoryPage() {
     c => c.slug === slug || c.id === slug
   );
   
-  const categoryTitle = currentCategory ? currentCategory.name : (slug ? slug.replace('-', ' ') : 'All Collections');
+  const categoryTitle = searchQuery 
+    ? `Search Results for "${searchQuery}"`
+    : (currentCategory ? currentCategory.name : (slug ? slug.replace('-', ' ') : 'All Collections'));
 
 
-  // Filter products by category (if slug exists), price, and stock status
+  // Filter products by category (if slug exists), search query, price, and stock status
   let products = allProducts;
 
   if (slug && slug !== 'all') {
     products = products.filter(
       p => p.categorySlug === slug || p.category.toLowerCase().replace(/\s+/g, '-') === slug
+    );
+  }
+
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase().trim();
+    products = products.filter(
+      p => p.name.toLowerCase().includes(q) ||
+           p.category.toLowerCase().includes(q) ||
+           (p.description && p.description.toLowerCase().includes(q)) ||
+           (p.fabric && p.fabric.toLowerCase().includes(q))
     );
   }
 

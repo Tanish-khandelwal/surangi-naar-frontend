@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles } from 'lucide-react';
@@ -13,6 +13,17 @@ export default function AccountModal() {
     orders
   } = useShop();
 
+  useEffect(() => {
+    if (isAccountModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAccountModalOpen]);
+
   if (!isAccountModalOpen || !currentUser) return null;
 
   // Filter orders for current user or default demo history
@@ -23,7 +34,10 @@ export default function AccountModal() {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative text-[#39322f] max-h-[90vh] overflow-y-auto">
+      <div 
+        className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative text-[#39322f] max-h-[90vh] overflow-y-auto overscroll-contain"
+        data-lenis-prevent
+      >
         
         {/* Close Button */}
         <button

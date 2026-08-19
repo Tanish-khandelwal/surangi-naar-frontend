@@ -363,8 +363,8 @@ export const NEW_ARRIVALS = [
     price: 5499,
     originalPrice: 6999,
     colors: [
-      { name: "Deep Ruby", hex: "#5c1325" },
-      { name: "Plum Violet", hex: "#4a1236" }
+      { name: "Rust Orange", hex: "#d9531e" },
+      { name: "Terracotta Gold", hex: "#c85a32" }
     ],
     sizes: ["S", "M", "L", "XL"],
     image: "/images/products/real_product_7.jpg",
@@ -405,8 +405,8 @@ export const NEW_ARRIVALS = [
     price: 16999,
     originalPrice: 19999,
     colors: [
-      { name: "Dusty Gold", hex: "#c59b27" },
-      { name: "Soft Blush", hex: "#e8b4b8" }
+      { name: "Royal Purple", hex: "#5a2d82" },
+      { name: "Plum Violet", hex: "#4a1236" }
     ],
     sizes: ["S", "M", "L"],
     image: "/images/products/real_product_17.jpg",

@@ -80,7 +80,9 @@ export default function AdminPage() {
     description: '',
     fabric: '',
     care: 'Dry Clean Only.',
-    isSoldOut: false
+    isSoldOut: false,
+    colorName: 'Royal Purple',
+    colorHex: '#5a2d82'
   });
 
   // Category Modal State
@@ -118,6 +120,19 @@ export default function AdminPage() {
 
   // Notifications / Toast
   const [toastMessage, setToastMessage] = useState('');
+
+  // Lock body scroll when any admin modal is open
+  React.useEffect(() => {
+    const isAnyModalOpen = isProductModalOpen || isCatModalOpen || isSlideModalOpen || isDiscountModalOpen;
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isProductModalOpen, isCatModalOpen, isSlideModalOpen, isDiscountModalOpen]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -157,13 +172,19 @@ export default function AdminPage() {
       description: '',
       fabric: '',
       care: 'Dry Clean Only.',
-      isSoldOut: false
+      isSoldOut: false,
+      colorName: 'Royal Purple',
+      colorHex: '#5a2d82'
     });
     setIsProductModalOpen(true);
   };
 
   const handleOpenEditProductModal = (product) => {
     setEditingProduct(product);
+    const firstCol = (product.colors && product.colors.length > 0) ? product.colors[0] : null;
+    const colName = (typeof firstCol === 'object' ? firstCol?.name : firstCol) || 'Royal Purple';
+    const colHex = (typeof firstCol === 'object' ? firstCol?.hex : '') || '#5a2d82';
+
     setProductForm({
       name: product.name,
       category: product.category,
@@ -175,7 +196,9 @@ export default function AdminPage() {
       description: product.description || '',
       fabric: product.fabric || '',
       care: product.care || 'Dry Clean Only.',
-      isSoldOut: product.isSoldOut || false
+      isSoldOut: product.isSoldOut || false,
+      colorName: colName,
+      colorHex: colHex
     });
     setIsProductModalOpen(true);
   };
@@ -189,10 +212,17 @@ export default function AdminPage() {
 
     const priceNum = Number(productForm.price);
     const origPriceNum = productForm.originalPrice ? Number(productForm.originalPrice) : Math.round(priceNum * 1.25);
+    const colorsArray = [
+      {
+        name: productForm.colorName.trim() || 'Royal Purple',
+        hex: productForm.colorHex || '#5a2d82'
+      }
+    ];
 
     if (editingProduct) {
       updateProduct(editingProduct.id, {
         ...productForm,
+        colors: colorsArray,
         price: priceNum,
         originalPrice: origPriceNum
       });
@@ -200,6 +230,7 @@ export default function AdminPage() {
     } else {
       addProduct({
         ...productForm,
+        colors: colorsArray,
         price: priceNum,
         originalPrice: origPriceNum
       });
@@ -1061,7 +1092,7 @@ export default function AdminPage() {
       {/* PRODUCT ADD/EDIT MODAL */}
       {isProductModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f]">
+          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f] overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
               <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">
                 {editingProduct ? 'Edit Product Details' : 'Add New Catalog Product'}
@@ -1143,6 +1174,81 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Garment Color Specification */}
+              <div className="p-4 bg-[#f8f4ee] rounded-2xl border border-[#d4a373]/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block uppercase tracking-wider text-[#b58349] font-bold">Product Color Specification</label>
+                  <span className="text-[10px] text-gray-500 font-sans">Sets the "Select Color" swatch for this item</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Color Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Royal Purple, Rust Orange"
+                      value={productForm.colorName}
+                      onChange={(e) => setProductForm({ ...productForm, colorName: e.target.value })}
+                      className="w-full bg-white border border-[#e8e2d9] rounded-xl px-3.5 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Color Hex Code</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={productForm.colorHex || '#5a2d82'}
+                        onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                        className="w-9 h-9 rounded-xl cursor-pointer border border-[#e8e2d9] p-0.5 bg-white shrink-0"
+                      />
+                      <input
+                        type="text"
+                        placeholder="#5a2d82"
+                        value={productForm.colorHex}
+                        onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                        className="w-full bg-white border border-[#e8e2d9] rounded-xl px-3 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] uppercase font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1-Click Popular Color Presets */}
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-[#b58349] tracking-wider block mb-1.5">
+                    Quick Color Presets:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { name: "Royal Purple", hex: "#5a2d82" },
+                      { name: "Rust Orange", hex: "#d9531e" },
+                      { name: "Lavender Lilac", hex: "#b497d6" },
+                      { name: "Sage Green", hex: "#95a383" },
+                      { name: "Mustard Gold", hex: "#d4a017" },
+                      { name: "Slate Grey", hex: "#87888a" },
+                      { name: "Deep Ruby", hex: "#8b0000" },
+                      { name: "Blush Pink", hex: "#e8b4b8" },
+                      { name: "Champagne Gold", hex: "#e0c9a6" },
+                      { name: "Midnight Navy", hex: "#1d2d44" },
+                      { name: "Charcoal Black", hex: "#231f1e" }
+                    ].map((preset) => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => setProductForm({ ...productForm, colorName: preset.name, colorHex: preset.hex })}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] border transition-all cursor-pointer font-sans ${
+                          productForm.colorName === preset.name ? 'bg-[#39322f] text-white border-[#39322f] font-bold shadow-xs' : 'bg-white text-gray-700 border-gray-200 hover:border-[#d4a373]'
+                        }`}
+                      >
+                        <span className="w-2.5 h-2.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: preset.hex }} />
+                        <span>{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Product Image URL</label>
                 <input
@@ -1197,7 +1303,7 @@ export default function AdminPage() {
       {/* CATEGORY EDIT MODAL */}
       {isCatModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-[#39322f]">
+          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f] overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
               <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">
                 {editingCat ? 'Edit Category' : 'Add Category'}
@@ -1249,7 +1355,7 @@ export default function AdminPage() {
       {/* HERO SLIDE MODAL */}
       {isSlideModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-[#39322f]">
+          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f] overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
               <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">Add Hero Banner Slide</h3>
               <button onClick={() => setIsSlideModalOpen(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer font-bold">✕</button>
@@ -1299,7 +1405,7 @@ export default function AdminPage() {
       {/* DISCOUNT MODAL */}
       {isDiscountModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-[#39322f]">
+          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f] overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
               <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">Create Discount Coupon</h3>
               <button onClick={() => setIsDiscountModalOpen(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer font-bold">✕</button>

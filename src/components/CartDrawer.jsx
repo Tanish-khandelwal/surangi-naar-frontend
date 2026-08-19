@@ -32,6 +32,17 @@ export default function CartDrawer() {
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
 
+  React.useEffect(() => {
+    if (isCartOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCartOpen]);
+
   if (!isCartOpen) return null;
 
   const handleApplyCoupon = (e) => {
@@ -65,7 +76,10 @@ export default function CartDrawer() {
       />
 
       {/* Slide-out Drawer Box */}
-      <div className="relative w-full max-w-md bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between animate-in slide-in-from-right duration-300">
+      <div 
+        className="relative w-full max-w-md bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between animate-in slide-in-from-right duration-300 overscroll-contain"
+        data-lenis-prevent
+      >
         
         {/* Header */}
         <div className="p-5 border-b border-[#e8e2d9] flex items-center justify-between bg-[#f7f3ee]">
@@ -111,7 +125,10 @@ export default function CartDrawer() {
         </div>
 
         {/* Cart Contents Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div 
+          className="flex-1 overflow-y-auto p-5 space-y-4 overscroll-contain"
+          data-lenis-prevent
+        >
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12">
               <div className="w-16 h-16 rounded-full bg-[#f7f3ee] flex items-center justify-center text-[#39322f]/40 border border-[#e8e2d9]">

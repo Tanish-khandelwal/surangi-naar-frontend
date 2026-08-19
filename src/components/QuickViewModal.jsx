@@ -25,7 +25,7 @@ function QuickViewModalContent({ product, onClose }) {
     product.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(product.image);
+  const selectedImage = product.image;
 
   const isWishlisted = isInWishlist(product.id);
 
@@ -37,7 +37,10 @@ function QuickViewModalContent({ product, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300">
-      <div className="relative w-full max-w-4xl bg-[#fcfbfa] rounded-2xl shadow-2xl overflow-hidden border border-[#e8e2d9] grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto">
+      <div 
+        className="relative w-full max-w-4xl bg-[#fcfbfa] rounded-2xl shadow-2xl overflow-hidden border border-[#e8e2d9] grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto overscroll-contain"
+        data-lenis-prevent
+      >
         
         {/* Close Button */}
         <button
@@ -63,27 +66,6 @@ function QuickViewModalContent({ product, onClose }) {
             )}
           </div>
 
-          {/* Thumbnails if available */}
-          <div className="flex gap-3 overflow-x-auto pb-1">
-            <button
-              onClick={() => setSelectedImage(product.image)}
-              className={`w-16 h-20 rounded-lg overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
-                selectedImage === product.image ? 'border-[#d4a373] shadow-xs' : 'border-transparent opacity-70 hover:opacity-100'
-              }`}
-            >
-              <img src={product.image} alt="Thumbnail 1" className="w-full h-full object-cover" />
-            </button>
-            {product.secondaryImage && (
-              <button
-                onClick={() => setSelectedImage(product.secondaryImage)}
-                className={`w-16 h-20 rounded-lg overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
-                  selectedImage === product.secondaryImage ? 'border-[#d4a373] shadow-xs' : 'border-transparent opacity-70 hover:opacity-100'
-                }`}
-              >
-                <img src={product.secondaryImage} alt="Thumbnail 2" className="w-full h-full object-cover" />
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Details & Customization Column */}
@@ -231,6 +213,17 @@ function QuickViewModalContent({ product, onClose }) {
 
 export default function QuickViewModal() {
   const { quickViewProduct, setQuickViewProduct } = useShop();
+
+  React.useEffect(() => {
+    if (quickViewProduct) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [quickViewProduct]);
 
   if (!quickViewProduct) return null;
 

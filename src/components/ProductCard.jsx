@@ -11,9 +11,8 @@ export default function ProductCard({ product }) {
     setQuickViewProduct 
   } = useShop();
 
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors ? product.colors[0] : null
-  );
+  const cardColors = product.colors && product.colors.length > 0 ? product.colors : [{ name: 'Royal Purple', hex: '#5a2d82' }];
+  const [selectedColor, setSelectedColor] = useState(cardColors[0]);
   const [selectedSize, setSelectedSize] = useState(null);
 
   const isWishlisted = isInWishlist(product.id);
@@ -37,8 +36,6 @@ export default function ProductCard({ product }) {
   return (
     <div 
       className="group relative flex flex-col luxury-glass border border-[#d4a373]/30 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:border-[#d4a373] gold-glow-hover"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Dual Image Container */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f8f4ee]">
@@ -149,24 +146,22 @@ export default function ProductCard({ product }) {
           </Link>
 
           {/* Color Swatches Row */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="flex items-center gap-1.5 mt-2 mb-1.5">
-              {product.colors.map((color, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedColor(color)}
-                  title={color.name}
-                  className={`w-3.5 h-3.5 rounded-full border border-gray-300 transition-all cursor-pointer ${
-                    selectedColor?.name === color.name ? 'ring-2 ring-[#d4a373] scale-110' : 'hover:scale-105'
-                  }`}
-                  style={{ backgroundColor: color.hex }}
-                />
-              ))}
-              <span className="text-[9px] sm:text-[10px] text-[#39322f]/60 font-sans ml-0.5 line-clamp-1">
-                {selectedColor?.name || ''}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 mt-2 mb-1.5">
+            {cardColors.map((color, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedColor(color)}
+                title={color.name}
+                className={`w-3.5 h-3.5 rounded-full border border-gray-300 transition-all cursor-pointer ${
+                  selectedColor?.name === color.name ? 'ring-2 ring-[#d4a373] scale-110' : 'hover:scale-105'
+                }`}
+                style={{ backgroundColor: color.hex || '#5a2d82' }}
+              />
+            ))}
+            <span className="text-[9px] sm:text-[10px] text-[#39322f]/60 font-sans ml-0.5 line-clamp-1">
+              {selectedColor?.name || cardColors[0]?.name}
+            </span>
+          </div>
         </div>
 
         {/* Price & Action Button Footer */}
