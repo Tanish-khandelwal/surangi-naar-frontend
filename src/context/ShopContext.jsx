@@ -265,39 +265,29 @@ export const ShopProvider = ({ children }) => {
 
   // --- CART METHODS ---
   const addToCart = async (product, color = null, size = null, quantity = 1) => {
+    if (!currentUser) {
+      toast.error('Please sign in to add items to your cart');
+      openAuthModal('login');
+      return;
+    }
+
     const chosenColor = color || (product.colors && product.colors[0]) || { name: 'Standard', hex: '#000' };
     const chosenSize = size || (product.sizes && product.sizes[0]) || 'Free Size';
 
-    if (currentUser) {
-      try {
-        await api.post('/cart', {
-          productId: product.id,
-          colorName: chosenColor.name,
-          size: chosenSize,
-          quantity,
-        });
-        await fetchUserCartAndWishlist();
-      } catch (err) {
-        console.error('Error adding to server cart:', err);
-      }
-    } else {
-      setCart(prevCart => {
-        const existingIndex = prevCart.findIndex(
-          item => item.product.id === product.id && item.color?.name === chosenColor?.name && item.size === chosenSize
-        );
-        let updated;
-        if (existingIndex > -1) {
-          updated = [...prevCart];
-          updated[existingIndex].quantity += quantity;
-        } else {
-          updated = [...prevCart, { product, color: chosenColor, size: chosenSize, quantity }];
-        }
-        localStorage.setItem('surangi_guest_cart', JSON.stringify(updated));
-        return updated;
+    try {
+      await api.post('/cart', {
+        productId: product.id,
+        colorName: chosenColor.name,
+        size: chosenSize,
+        quantity,
       });
+      await fetchUserCartAndWishlist();
+      setIsCartOpen(true);
+      toast.success('Added to cart!');
+    } catch (err) {
+      console.error('Error adding to server cart:', err);
+      toast.error('Failed to add item to cart');
     }
-    setIsCartOpen(true);
-    toast.success('Added to cart!');
   };
 
   const removeFromCart = async (indexOrId) => {
@@ -371,36 +361,24 @@ export const ShopProvider = ({ children }) => {
 
   // --- WISHLIST METHODS ---
   const toggleWishlist = async (productId) => {
-    if (currentUser) {
-      try {
-        const res = await api.post('/wishlist', { productId });
-        if (res.data?.added) {
-          setWishlist(prev => [...prev, productId]);
-          toast.success('Added to wishlist!');
-        } else {
-          setWishlist(prev => prev.filter(id => id !== productId));
-          toast.success('Removed from wishlist');
-        }
-        return;
-      } catch (err) {
-        console.error('Error toggling wishlist:', err);
-        toast.error('Failed to update wishlist');
-        return;
-      }
+    if (!currentUser) {
+      toast.error('Please sign in to save items to your wishlist');
+      openAuthModal('login');
+      return;
     }
 
-    const isWish = wishlist.includes(productId);
-    const updated = isWish
-      ? wishlist.filter(id => id !== productId)
-      : [...wishlist, productId];
-    
-    setWishlist(updated);
-    localStorage.setItem('surangi_guest_wishlist', JSON.stringify(updated));
-
-    if (isWish) {
-      toast.success('Removed from wishlist');
-    } else {
-      toast.success('Added to wishlist!');
+    try {
+      const res = await api.post('/wishlist', { productId });
+      if (res.data?.added) {
+        setWishlist(prev => [...prev, productId]);
+        toast.success('Added to wishlist!');
+      } else {
+        setWishlist(prev => prev.filter(id => id !== productId));
+        toast.success('Removed from wishlist');
+      }
+    } catch (err) {
+      console.error('Error toggling wishlist:', err);
+      toast.error('Failed to update wishlist');
     }
   };
 
