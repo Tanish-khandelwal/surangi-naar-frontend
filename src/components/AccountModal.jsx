@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useShop } from '../context/ShopContext';
 import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
-
 
 export default function AccountModal() {
   const {
@@ -13,6 +13,51 @@ export default function AccountModal() {
     deleteUserAccount,
     orders
   } = useShop();
+
+  const handleConfirmDeleteAccount = () => {
+    toast((t) => (
+      <div className="space-y-2.5 p-1 text-left min-w-[260px]">
+        <div className="flex items-center gap-2 text-rose-700 font-bold text-xs">
+          <Trash2 className="w-4 h-4 shrink-0" />
+          <span>Delete Account Permanently?</span>
+        </div>
+        <p className="text-[11px] text-[#39322f]/80 leading-relaxed font-sans">
+          Are you sure you want to delete your account? This action cannot be undone.
+        </p>
+        <div className="flex items-center justify-end gap-2 pt-1">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1.5 rounded-xl bg-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-300 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                await deleteUserAccount();
+              } catch (e) {
+                // Handled in context
+              }
+            }}
+            className="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 transition-colors cursor-pointer shadow-xs"
+          >
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 8000,
+      position: 'top-center',
+      style: {
+        background: '#f7f3ee',
+        border: '1.5px solid #d4a373',
+        borderRadius: '20px',
+        padding: '14px',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+      },
+    });
+  };
 
   useEffect(() => {
     if (isAccountModalOpen) {
@@ -161,15 +206,7 @@ export default function AccountModal() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={async () => {
-                if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
-                  try {
-                    await deleteUserAccount();
-                  } catch (e) {
-                    // Handled in context
-                  }
-                }
-              }}
+              onClick={handleConfirmDeleteAccount}
               className="px-3 py-2 rounded-2xl bg-gray-100 text-gray-600 hover:bg-rose-600 hover:text-white border border-gray-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
               title="Permanently Delete Account"
             >

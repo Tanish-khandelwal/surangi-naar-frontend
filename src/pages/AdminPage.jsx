@@ -221,6 +221,47 @@ export default function AdminPage() {
     }
   };
 
+  const confirmAction = (message, onConfirm, confirmText = 'Confirm') => {
+    toast((t) => (
+      <div className="space-y-2.5 p-1 text-left min-w-[260px]">
+        <div className="flex items-center gap-2 text-[#39322f] font-bold text-xs">
+          <Sparkles className="w-4 h-4 text-[#d4a373] shrink-0" />
+          <span>Confirm Action</span>
+        </div>
+        <p className="text-[11px] text-[#39322f]/80 leading-relaxed font-sans">
+          {message}
+        </p>
+        <div className="flex items-center justify-end gap-2 pt-1">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1.5 rounded-xl bg-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-300 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              onConfirm();
+            }}
+            className="px-3.5 py-1.5 rounded-xl bg-[#39322f] text-white text-xs font-semibold hover:bg-[#d4a373] hover:text-[#39322f] transition-colors cursor-pointer shadow-xs"
+          >
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 8000,
+      position: 'top-center',
+      style: {
+        background: '#f7f3ee',
+        border: '1.5px solid #d4a373',
+        borderRadius: '20px',
+        padding: '14px',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+      },
+    });
+  };
+
   // Auth Handler
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -341,10 +382,14 @@ export default function AdminPage() {
   };
 
   const handleDeleteProduct = (id, name) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
-      deleteProduct(id);
-      showToast(`Product deleted`);
-    }
+    confirmAction(
+      `Are you sure you want to delete "${name}"?`,
+      () => {
+        deleteProduct(id);
+        showToast(`Product deleted`);
+      },
+      'Delete Product'
+    );
   };
 
   // Category Handlers
@@ -537,10 +582,14 @@ export default function AdminPage() {
 
             <button
               onClick={() => {
-                if (window.confirm('Reset all catalog, orders, and banners back to original defaults?')) {
-                  resetToDefaultData();
-                  showToast('Restored original store data');
-                }
+                confirmAction(
+                  'Reset all catalog, orders, and banners back to original defaults?',
+                  () => {
+                    resetToDefaultData();
+                    showToast('Restored original store data');
+                  },
+                  'Reset Defaults'
+                );
               }}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 text-xs font-semibold transition-colors cursor-pointer"
               title="Reset state to default mock data"
@@ -990,10 +1039,14 @@ export default function AdminPage() {
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm(`Delete category "${cat.name}"?`)) {
-                            deleteCategory(cat.id);
-                            showToast('Category deleted');
-                          }
+                          confirmAction(
+                            `Delete category "${cat.name}"?`,
+                            () => {
+                              deleteCategory(cat.id);
+                              showToast('Category deleted');
+                            },
+                            'Delete Category'
+                          );
                         }}
                         className="p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer"
                       >
