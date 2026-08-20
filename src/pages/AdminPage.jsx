@@ -828,7 +828,7 @@ export default function AdminPage() {
                 >
                   <option value="all">All Categories</option>
                   <option value="kurtis">Kurtis</option>
-                  <option value="short-kurties">Short Kurties</option>
+                  <option value="short-kurtis">Short Kurtis</option>
                   <option value="festive-wear">Festive Wear</option>
                 </select>
               </div>
@@ -1319,7 +1319,7 @@ export default function AdminPage() {
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   >
                     <option value="kurtis">Kurtis</option>
-                    <option value="short-kurties">Short Kurties</option>
+                    <option value="short-kurtis">Short Kurtis</option>
                     <option value="festive-wear">Festive Wear</option>
                   </select>
                 </div>

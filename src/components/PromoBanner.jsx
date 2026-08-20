@@ -5,7 +5,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 export default function PromoBanner({
   title = "The Royal Festive Wardrobe",
   subtitle = "Limited Edition 2026 Collection",
-  description = "Intricate handcrafted zardozi embroidery paired with flowing silk short kurties and festive Anarkali suit sets.",
+  description = "Intricate handcrafted zardozi embroidery paired with flowing silk short kurtis and festive Anarkali suit sets.",
   ctaText = "Shop Festive Edit",
   categoryLink = "festive-wear",
   bgImage = "/images/products/real_product_14.jpg"

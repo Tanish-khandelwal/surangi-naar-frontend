@@ -234,7 +234,7 @@ export default function CartPage() {
               Your cart is currently empty
             </h2>
             <p className="text-xs text-[#39322f]/60 font-sans leading-relaxed">
-              Explore our handcrafted kurtis, designer short kurties, and festive Anarkali suit ensembles.
+              Explore our handcrafted kurtis, designer short kurtis, and festive Anarkali suit ensembles.
             </p>
             <Link
               to="/shop"

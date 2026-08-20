@@ -140,7 +140,7 @@ export default function CartDrawer() {
                 Your cart is currently empty
               </h4>
               <p className="text-xs text-[#39322f]/60 font-sans max-w-xs leading-relaxed">
-                Explore our handcrafted kurtis, luxury short kurties, and festive Anarkalis to add to your wardrobe.
+                Explore our handcrafted kurtis, luxury short kurtis, and festive Anarkalis to add to your wardrobe.
               </p>
               <button
                 onClick={() => setIsCartOpen(false)}

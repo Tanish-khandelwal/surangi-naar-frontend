@@ -22,7 +22,7 @@ export const PROMO_MESSAGES = [
 // Core 3 Categories
 export const CATEGORIES_LIST = [
   { name: "Kurtis", slug: "kurtis", tag: "New Drop", description: "Everyday & Designer Handprinted Kurtis" },
-  { name: "Short Kurties", slug: "short-kurties", tag: "Trending", description: "Modern Silk & Linen Short Kurties" },
+  { name: "Short Kurtis", slug: "short-kurtis", tag: "Trending", description: "Modern Silk & Linen Short Kurtis" },
   { name: "Festive Wear", slug: "festive-wear", tag: "Exclusive", description: "Royal Zardosi & Gota Patti Festive Wear" }
 ];
 
@@ -36,9 +36,9 @@ export const CATEGORIES_GRID = [
     tagline: "Handprinted Malmal & Chanderi Tunics"
   },
   {
-    id: "short-kurties",
-    slug: "short-kurties",
-    name: "Short Kurties",
+    id: "short-kurtis",
+    slug: "short-kurtis",
+    name: "Short Kurtis",
     count: "24 Styles",
     image: "/images/products/real_product_6.jpg",
     tagline: "Resort Luxe & Linen Sets"
@@ -66,10 +66,10 @@ export const HERO_SLIDES = [
   {
     id: 2,
     subtitle: "Contemporary Silk Staples",
-    title: "Luxe Short Kurties",
+    title: "Luxe Short Kurtis",
     description: "Flowing breathable fabrics designed for sunshine, warm breezes, and effortless elegance.",
-    cta: "Shop Short Kurties",
-    categorySlug: "short-kurties",
+    cta: "Shop Short Kurtis",
+    categorySlug: "short-kurtis",
     image: "/images/products/real_product_4.jpg"
   },
   {
@@ -211,12 +211,12 @@ export const PRODUCTS_CURATED = [
     shipping: "Dispatched within 2 days."
   },
 
-  // Short Kurties
+  // Short Kurtis
   {
     id: "p7",
-    name: "Luxe Silk Satin Resort Short Kurtie Set",
-    category: "Short Kurties",
-    categorySlug: "short-kurties",
+    name: "Luxe Silk Satin Resort Short Kurti Set",
+    category: "Short Kurtis",
+    categorySlug: "short-kurtis",
     price: 7499,
     originalPrice: 8999,
     colors: [
@@ -228,16 +228,16 @@ export const PRODUCTS_CURATED = [
     badge: "Trending",
     rating: 4.89,
     isSoldOut: false,
-    description: "Flowing silk satin short kurtie and trouser set designed for summer retreats and evening gatherings.",
+    description: "Flowing silk satin short kurti and trouser set designed for summer retreats and evening gatherings.",
     fabric: "100% Mulberry Silk Satin",
     care: "Dry Clean Only.",
     shipping: "Dispatched within 2-4 business days."
   },
   {
     id: "p8",
-    name: "Organic European Linen Short Kurtie Set",
-    category: "Short Kurties",
-    categorySlug: "short-kurties",
+    name: "Organic European Linen Short Kurti Set",
+    category: "Short Kurtis",
+    categorySlug: "short-kurtis",
     price: 6999,
     originalPrice: 8499,
     colors: [
@@ -249,16 +249,16 @@ export const PRODUCTS_CURATED = [
     badge: "Resort Luxe",
     rating: 4.91,
     isSoldOut: false,
-    description: "Tailored organic linen short kurtie and wide-leg pant set with mother-of-pearl buttons.",
+    description: "Tailored organic linen short kurti and wide-leg pant set with mother-of-pearl buttons.",
     fabric: "100% Organic European Linen",
     care: "Gentle cold hand wash.",
     shipping: "Dispatched within 3 business days."
   },
   {
     id: "p9",
-    name: "Botanical Printed Silk Lounge Short Kurtie",
-    category: "Short Kurties",
-    categorySlug: "short-kurties",
+    name: "Botanical Printed Silk Lounge Short Kurti",
+    category: "Short Kurtis",
+    categorySlug: "short-kurtis",
     price: 8499,
     originalPrice: 9999,
     colors: [
@@ -270,7 +270,7 @@ export const PRODUCTS_CURATED = [
     badge: "Must Have",
     rating: 4.86,
     isSoldOut: false,
-    description: "Contemporary fluid botanical print short kurtie and high-waisted trousers ensemble.",
+    description: "Contemporary fluid botanical print short kurti and high-waisted trousers ensemble.",
     fabric: "Pure Silk Chiffon & Satin Base",
     care: "Dry Clean Only.",
     shipping: "Dispatched within 3 days."
@@ -365,9 +365,9 @@ export const NEW_ARRIVALS = [
   },
   {
     id: "na2",
-    name: "Resort Linen Chic Short Kurtie Set",
-    category: "Short Kurties",
-    categorySlug: "short-kurties",
+    name: "Resort Linen Chic Short Kurti Set",
+    category: "Short Kurtis",
+    categorySlug: "short-kurtis",
     price: 7999,
     originalPrice: 9499,
     colors: [
@@ -378,7 +378,7 @@ export const NEW_ARRIVALS = [
     secondaryImage: "/images/products/real_product_13.jpg",
     isSoldOut: false,
     rating: 4.88,
-    description: "Breathable natural linen resort short kurtie set with tailored high-rise pants.",
+    description: "Breathable natural linen resort short kurti set with tailored high-rise pants.",
     fabric: "100% Organic Linen",
     care: "Gentle cold hand wash.",
     shipping: "Dispatched within 3-5 business days."
@@ -415,9 +415,9 @@ export const EXCLUSIVE_COLLECTION = [
   },
   {
     id: "ex2",
-    title: "Luxury Silk Short Kurties",
+    title: "Luxury Silk Short Kurtis",
     tagline: "Fluid resort silhouettes woven with pure Mulberry silk and organic linen.",
-    categorySlug: "short-kurties",
+    categorySlug: "short-kurtis",
     image: "/images/products/real_product_9.jpg"
   },
   {
@@ -434,7 +434,7 @@ export const FOUNDER_INFO = {
   role: "Creative Director & Founder",
   quote: "“Fashion at Surangi Naar is not merely attire — it is an emotional ode to traditional Indian craftsmanship re-imagined for the global woman.”",
   storyParagraph1: "Surangi Naar emerged from a passion for preserving India’s rich textile heritage while catering to modern aesthetic sensibilities. Each garment tells a story of dedicated master artisans, hand-selected pure fabrics, and meticulous embroidery.",
-  storyParagraph2: "From royal Chanderi weaves to contemporary fluid short kurties, the label blends understated luxury with expressive, feminine grace — creating timeless pieces crafted to be cherished across generations.",
+  storyParagraph2: "From royal Chanderi weaves to contemporary fluid short kurtis, the label blends understated luxury with expressive, feminine grace — creating timeless pieces crafted to be cherished across generations.",
   image: "/images/products/real_product_18.jpg",
   badges: [
     { label: "Handcrafted in India", icon: "Sparkles" },
