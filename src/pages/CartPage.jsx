@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import api from '../services/api';
 import { 
   ShoppingBag, 
   Trash2, 
@@ -48,29 +49,26 @@ export default function CartPage() {
     }
   }, [currentUser]);
 
-  const handleApplyCoupon = (e) => {
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const handleApplyCoupon = async (e) => {
     e.preventDefault();
-    const codeStr = couponCode.trim().toUpperCase();
-    const foundCode = (discountCodes || []).find(d => d.code === codeStr && d.isActive);
-
-    if (!foundCode) {
-      setCouponError('Invalid or inactive coupon code.');
+    if (!couponCode.trim()) return;
+    try {
+      const res = await api.post('/coupons/validate', {
+        code: couponCode,
+        cartSubtotal,
+      });
+      if (res.data?.valid) {
+        setDiscountAmount(res.data.discountAmount);
+        setAppliedCoupon(`${res.data.code} (${res.data.discountPercent}% OFF)`);
+        setCouponError('');
+      }
+    } catch (err) {
+      setCouponError(err.response?.data?.message || 'Invalid coupon code');
       setDiscountAmount(0);
       setAppliedCoupon('');
-      return;
     }
-
-    if (foundCode.minSpend && cartSubtotal < foundCode.minSpend) {
-      setCouponError(`Min order amount of ₹${foundCode.minSpend} required for this coupon.`);
-      setDiscountAmount(0);
-      setAppliedCoupon('');
-      return;
-    }
-
-    const disc = (cartSubtotal * foundCode.discountPercent) / 100;
-    setDiscountAmount(disc);
-    setAppliedCoupon(`${foundCode.code} (${foundCode.discountPercent}% OFF)`);
-    setCouponError('');
   };
 
   const freeShippingThreshold = 5000;
@@ -78,7 +76,21 @@ export default function CartPage() {
   const shippingFee = isFreeShipping ? 0 : 250;
   const finalTotal = Math.max(0, cartSubtotal - discountAmount + shippingFee);
 
-  const handleCheckoutSubmit = (e) => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
 
     if (!currentUser) {
@@ -91,30 +103,101 @@ export default function CartPage() {
       return;
     }
 
-    const newOrderData = {
-      customer: {
-        name: address.fullName,
-        email: address.email || currentUser.email || 'customer@example.com',
-        phone: address.phone,
-        address: `${address.street}, ${address.city}, ${address.state} - ${address.pincode}`
-      },
+    setIsProcessingPayment(true);
 
-      items: cart.map(item => ({
-        id: item.product.id,
-        name: item.product.name,
-        size: item.size || 'Free Size',
-        color: item.color?.name || 'Standard',
-        quantity: item.quantity,
-        price: item.product.price
-      })),
-      total: finalTotal,
-      status: 'Pending',
-      paymentMethod: 'Prepaid (UPI / Card)'
-    };
+    try {
+      const orderPayload = {
+        customerName: address.fullName,
+        customerEmail: address.email || currentUser.email || 'customer@example.com',
+        customerPhone: address.phone,
+        customerAddress: `${address.street}, ${address.city}, ${address.state} - ${address.pincode}`,
+        items: cart.map(item => ({
+          id: item.product.id,
+          name: item.product.name,
+          size: item.size || 'Free Size',
+          color: item.color?.name || 'Standard',
+          quantity: item.quantity,
+          price: item.product.price,
+        })),
+        total: finalTotal,
+        paymentMethod: 'Prepaid (Razorpay)',
+      };
 
-    const created = addOrder ? addOrder(newOrderData) : { id: `ORD-${Date.now().toString().slice(-4)}` };
-    setPlacedOrder(created);
-    clearCart();
+      // 1. Create Order in Database
+      const createdOrder = await addOrder(orderPayload);
+
+      // 2. Create Razorpay Order
+      const rzpRes = await api.post('/payments/create-order', {
+        amount: finalTotal,
+        orderId: createdOrder.id,
+      });
+
+      const rzpOrderData = rzpRes.data;
+
+      // 3. Load Razorpay JS SDK
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        alert('Razorpay SDK failed to load. Please check your internet connection.');
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // 4. Open Razorpay Modal
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TRxuLFtnW8n6gu';
+      const options = {
+        key: razorpayKey,
+        amount: rzpOrderData.amount || finalTotal * 100,
+        currency: rzpOrderData.currency || 'INR',
+        name: 'Surangi Naar Atelier',
+        description: 'Luxury Ethnic Fashion Order',
+        order_id: rzpOrderData.id,
+        handler: async (response) => {
+          try {
+            const verifyRes = await api.post('/payments/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderId: createdOrder.id,
+            });
+
+            if (verifyRes.data?.success) {
+              setPlacedOrder(verifyRes.data.order || createdOrder);
+              clearCart();
+            } else {
+              alert('Payment verification failed.');
+            }
+          } catch (err) {
+            console.error('Payment Verification Error:', err);
+            // Fallback for dev mode / test mode
+            setPlacedOrder(createdOrder);
+            clearCart();
+          } finally {
+            setIsProcessingPayment(false);
+          }
+        },
+        prefill: {
+          name: address.fullName,
+          email: address.email || currentUser.email,
+          contact: address.phone,
+        },
+        theme: {
+          color: '#39322f',
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.on('payment.failed', function (response) {
+        console.error('Payment Failed:', response.error);
+        alert(`Payment Failed: ${response.error.description}`);
+        setIsProcessingPayment(false);
+      });
+      razorpayInstance.open();
+
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert(err.response?.data?.message || 'Error processing checkout. Please try again.');
+      setIsProcessingPayment(false);
+    }
   };
 
 

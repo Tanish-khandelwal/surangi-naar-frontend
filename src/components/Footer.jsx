@@ -10,7 +10,6 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
-
 export default function Footer() {
   const { storeSettings } = useShop();
   const contact = storeSettings || {};
@@ -37,13 +36,13 @@ export default function Footer() {
                   Surangi Naar
                 </h3>
                 <span className="text-[9px] uppercase tracking-[0.28em] text-[#e6c594] font-semibold block mt-1">
-                  Luxury Apparel
+                  Jaipur Artisanal Fashion
                 </span>
               </div>
             </div>
 
             <p className="text-xs text-gray-300 font-sans font-light leading-relaxed max-w-sm">
-              Luxury Indian ethnic and contemporary western apparel curated with handcrafted fabrics, artisanal embroidery, and timeless silhouettes.
+              Luxury Indian ethnic apparel handcrafted with fine fabrics, Jaipur hand-block prints, and timeless silhouettes.
             </p>
 
             {/* Social Icons */}
@@ -83,70 +82,66 @@ export default function Footer() {
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#d4a373] shrink-0 mt-0.5" />
                 <a href={contact.googleMaps || "#"} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors">
-                  {contact.address}
+                  {contact.address || "13-16, Paras Apartment, Chopra Enclave, Mangyawas, Mansarovar, Jaipur, Rajasthan, India"}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <a href={`mailto:${contact.email}`} className="hover:text-[#d4a373] transition-colors">
-                  {contact.email}
+                <a href={`mailto:${contact.email || "surangi.naar@gmail.com"}`} className="hover:text-[#d4a373] transition-colors">
+                  {contact.email || "surangi.naar@gmail.com"}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <a href={`tel:${contact.phone}`} className="hover:text-[#d4a373] transition-colors">
-                  {contact.displayPhone || contact.phone}
+                <a href={`tel:${contact.phone || "+919116655814"}`} className="hover:text-[#d4a373] transition-colors">
+                  {contact.displayPhone || contact.phone || "+91 91166 55814"}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <MessageCircle className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <a href={contact.whatsapp || "#"} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors font-medium text-emerald-400">
-                  WhatsApp Concierge
+                <a href={contact.whatsapp || "https://wa.me/919116655814"} target="_blank" rel="noreferrer" className="hover:text-[#d4a373] transition-colors font-medium text-emerald-400">
+                  WhatsApp Support (+91 9116655814)
                 </a>
               </li>
               <li className="flex items-center gap-2.5 text-gray-400">
                 <Clock className="w-4 h-4 text-[#d4a373] shrink-0" />
-                <span>{contact.hours}</span>
+                <span>{contact.hours || "Mon - Sat: 10:30 AM - 7:30 PM IST"}</span>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Quick Links */}
+          {/* Column 3: Information Links */}
           <div className="space-y-3">
             <h4 className="font-serif font-semibold text-base text-white tracking-wide border-b border-white/10 pb-2">
-              Quick Links
+              Information
             </h4>
             <ul className="space-y-2 text-xs text-gray-300 font-sans font-light">
-              <li><Link to="/category/kurtis" className="hover:text-[#d4a373] transition-colors">Handcrafted Kurtis</Link></li>
-              <li><Link to="/category/co-ords" className="hover:text-[#d4a373] transition-colors">Luxury Co-ord Sets</Link></li>
-              <li><Link to="/category/festive-wear" className="hover:text-[#d4a373] transition-colors">Festive Wear</Link></li>
-              <li><Link to="/shop" className="hover:text-[#d4a373] transition-colors font-semibold text-[#d4a373]">New Arrivals</Link></li>
+              <li><Link to="/about" className="hover:text-[#d4a373] transition-colors">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-[#d4a373] transition-colors">Contact Us</Link></li>
+              <li><Link to="/shop" className="hover:text-[#d4a373] transition-colors">Shop Catalog</Link></li>
               <li className="pt-2"><Link to="/admin" className="text-[#d4a373] font-semibold flex items-center gap-1 hover:underline"><ShieldCheck className="w-3.5 h-3.5" /> Admin Studio Panel</Link></li>
             </ul>
           </div>
 
-
-          {/* Column 4: Policy Column */}
+          {/* Column 4: Legal Links */}
           <div className="space-y-3">
             <h4 className="font-serif font-semibold text-base text-white tracking-wide border-b border-white/10 pb-2">
-              Customer Care & Pages
+              Legal
             </h4>
             <ul className="space-y-2 text-xs text-gray-300 font-sans font-light">
-              <li><Link to="/about" className="hover:text-[#d4a373] transition-colors font-medium text-[#d4a373]">About Us & Contact</Link></li>
-              <li><Link to="/cart" className="hover:text-[#d4a373] transition-colors">View Cart & Checkout</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-[#d4a373] transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/refund-exchange-policy" className="hover:text-[#d4a373] transition-colors">Refund & Exchange Policy</Link></li>
+              <li><Link to="/disclaimer" className="hover:text-[#d4a373] transition-colors">Disclaimer</Link></li>
             </ul>
           </div>
 
         </div>
 
-        {/* Bottom Bar: Copyright & Payment Method Icons Row */}
+        {/* Bottom Bar: Copyright */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400 font-sans">
-
           <div className="flex items-center gap-1">
             <span>© {new Date().getFullYear()} Surangi Naar. All Rights Reserved.</span>
           </div>
-
-
         </div>
 
       </div>

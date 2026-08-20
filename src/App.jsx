@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ShopProvider } from './context/ShopContext';
 
 // Components
@@ -20,6 +21,11 @@ import HomePage from './pages/HomePage';
 import CategoryPage from './pages/CategoryPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import RefundExchangePolicyPage from './pages/RefundExchangePolicyPage';
+import DisclaimerPage from './pages/DisclaimerPage';
 import AboutContactPage from './pages/AboutContactPage';
 import AdminPage from './pages/AdminPage';
 
@@ -40,8 +46,19 @@ function MainLayout() {
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/about" element={<AboutContactPage />} />
-          <Route path="/contact" element={<AboutContactPage />} />
+          
+          {/* Information Routes */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/about-us" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/contact-us" element={<ContactPage />} />
+
+          {/* Legal Routes */}
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/refund-exchange-policy" element={<RefundExchangePolicyPage />} />
+          <Route path="/refund-policy" element={<RefundExchangePolicyPage />} />
+          <Route path="/disclaimer" element={<DisclaimerPage />} />
+
           <Route path="/about-contact" element={<AboutContactPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
@@ -57,19 +74,19 @@ function MainLayout() {
   );
 }
 
-
 export default function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
   return (
-    <Router>
-      <SmoothScroll>
-        <ShopProvider>
-          <ScrollToTop />
-          <MainLayout />
-        </ShopProvider>
-      </SmoothScroll>
-    </Router>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <Router>
+        <SmoothScroll>
+          <ShopProvider>
+            <ScrollToTop />
+            <MainLayout />
+          </ShopProvider>
+        </SmoothScroll>
+      </Router>
+    </GoogleOAuthProvider>
   );
 }
-
-
-

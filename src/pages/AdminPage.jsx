@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import api from '../services/api';
 import {
   LayoutDashboard,
   Package,
@@ -54,8 +55,10 @@ export default function AdminPage() {
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem('surangi_admin_auth') === 'true';
+    return !!(sessionStorage.getItem('surangi_admin_token') || localStorage.getItem('surangi_admin_token'));
   });
+  const [adminEmailInput, setAdminEmailInput] = useState('surangi.naar.admin@gmail.com');
+  const [adminPasswordInput, setAdminPasswordInput] = useState('admin@1234');
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
 
@@ -180,20 +183,33 @@ export default function AdminPage() {
   };
 
   // Auth Handler
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (pinInput === '1234') {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('surangi_admin_auth', 'true');
-      setPinError(false);
-      showToast('Welcome back, Admin!');
-    } else {
+    try {
+      const res = await api.post('/admin/login', {
+        email: adminEmailInput,
+        password: adminPasswordInput,
+        pin: pinInput,
+      });
+
+      if (res.data?.token) {
+        sessionStorage.setItem('surangi_admin_token', res.data.token);
+        localStorage.setItem('surangi_admin_token', res.data.token);
+        setIsAuthenticated(true);
+        setPinError(false);
+        showToast('Welcome back, Admin!');
+      }
+    } catch (err) {
+      console.error('Admin login error:', err);
       setPinError(true);
+      showToast(err.response?.data?.message || 'Invalid Admin Credentials');
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    sessionStorage.removeItem('surangi_admin_token');
+    localStorage.removeItem('surangi_admin_token');
     sessionStorage.removeItem('surangi_admin_auth');
     setPinInput('');
   };
@@ -364,32 +380,60 @@ export default function AdminPage() {
             <p className="text-xs text-[#b58349] tracking-widest uppercase font-semibold mt-1">Light Admin Control Panel</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs uppercase tracking-wider text-[#b58349] mb-2 font-bold">
-                Enter Admin Access PIN
+              <label className="block text-xs uppercase tracking-wider text-[#b58349] mb-1 font-bold">
+                Admin Email
+              </label>
+              <input
+                type="email"
+                required
+                value={adminEmailInput}
+                onChange={(e) => setAdminEmailInput(e.target.value)}
+                placeholder="admin@suranginaar.com"
+                className="w-full bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#b58349] mb-1 font-bold">
+                Admin Password
+              </label>
+              <input
+                type="password"
+                required
+                value={adminPasswordInput}
+                onChange={(e) => setAdminPasswordInput(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#b58349] mb-1 font-bold">
+                Or Quick Access PIN
               </label>
               <input
                 type="password"
                 maxLength={8}
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
-                placeholder="••••"
-                className={`w-full bg-[#f8f4ee] border ${pinError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-3.5 text-center text-xl text-[#39322f] tracking-widest focus:outline-none focus:border-[#d4a373] transition-colors`}
+                placeholder="1234"
+                className={`w-full bg-[#f8f4ee] border ${pinError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-2.5 text-center text-lg text-[#39322f] tracking-widest focus:outline-none focus:border-[#d4a373] transition-colors`}
               />
               {pinError && (
                 <p className="text-rose-600 text-xs mt-2 text-center font-medium">
-                  Incorrect PIN. (Hint: Default PIN is <span className="underline font-bold">1234</span>)
+                  Invalid email, password, or PIN.
                 </p>
               )}
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-semibold py-3.5 px-6 rounded-2xl transition-all cursor-pointer shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-widest"
+              className="w-full bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-semibold py-3.5 px-6 rounded-2xl transition-all cursor-pointer shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-widest mt-2"
             >
               <Unlock className="w-4 h-4" />
-              Authenticate Access
+              Authenticate Admin Access
             </button>
           </form>
 
