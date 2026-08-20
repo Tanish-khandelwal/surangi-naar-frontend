@@ -385,21 +385,23 @@ export const ShopProvider = ({ children }) => {
       } catch (err) {
         console.error('Error toggling wishlist:', err);
         toast.error('Failed to update wishlist');
+        return;
       }
     }
-    setWishlist(prev => {
-      const isWish = prev.includes(productId);
-      const updated = isWish
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId];
-      if (!currentUser) localStorage.setItem('surangi_guest_wishlist', JSON.stringify(updated));
-      if (isWish) {
-        toast.success('Removed from wishlist');
-      } else {
-        toast.success('Added to wishlist!');
-      }
-      return updated;
-    });
+
+    const isWish = wishlist.includes(productId);
+    const updated = isWish
+      ? wishlist.filter(id => id !== productId)
+      : [...wishlist, productId];
+    
+    setWishlist(updated);
+    localStorage.setItem('surangi_guest_wishlist', JSON.stringify(updated));
+
+    if (isWish) {
+      toast.success('Removed from wishlist');
+    } else {
+      toast.success('Added to wishlist!');
+    }
   };
 
   const isInWishlist = (productId) => wishlist.includes(productId);
