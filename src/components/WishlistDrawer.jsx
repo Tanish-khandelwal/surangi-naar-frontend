@@ -72,7 +72,7 @@ export default function WishlistDrawer() {
                 Your wishlist is empty
               </h4>
               <p className="text-xs text-[#39322f]/60 font-sans max-w-xs leading-relaxed">
-                Save your favorite handcrafted kurtis, co-ord sets, and festive wear to revisit anytime.
+                Save your favorite handcrafted kurtis, short kurties, and festive wear to revisit anytime.
               </p>
               <button
                 onClick={() => setIsWishlistOpen(false)}

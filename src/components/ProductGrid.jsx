@@ -9,7 +9,7 @@ export default function ProductGrid() {
   const [selectedFilter, setSelectedFilter] = useState('All');
 
   const allGridProducts = products && products.length > 0 ? products : [];
-  const filterCategories = ['All', 'Kurtis', 'Co-ord Sets', 'Festive Wear'];
+  const filterCategories = ['All', 'Kurtis', 'Short Kurties', 'Festive Wear'];
 
   const filteredProducts = selectedFilter === 'All' 
     ? allGridProducts 

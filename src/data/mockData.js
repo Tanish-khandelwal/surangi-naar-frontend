@@ -22,7 +22,7 @@ export const PROMO_MESSAGES = [
 // Core 3 Categories
 export const CATEGORIES_LIST = [
   { name: "Kurtis", slug: "kurtis", tag: "New Drop", description: "Everyday & Designer Handprinted Kurtis" },
-  { name: "Co-ord Sets", slug: "co-ords", tag: "Trending", description: "Modern Silk & Linen Co-Ord Ensembles" },
+  { name: "Short Kurties", slug: "short-kurties", tag: "Trending", description: "Modern Silk & Linen Short Kurties" },
   { name: "Festive Wear", slug: "festive-wear", tag: "Exclusive", description: "Royal Zardosi & Gota Patti Festive Wear" }
 ];
 
@@ -36,9 +36,9 @@ export const CATEGORIES_GRID = [
     tagline: "Handprinted Malmal & Chanderi Tunics"
   },
   {
-    id: "co-ords",
-    slug: "co-ords",
-    name: "Co-ord Sets",
+    id: "short-kurties",
+    slug: "short-kurties",
+    name: "Short Kurties",
     count: "24 Styles",
     image: "/images/products/real_product_6.jpg",
     tagline: "Resort Luxe & Linen Sets"
@@ -66,10 +66,10 @@ export const HERO_SLIDES = [
   {
     id: 2,
     subtitle: "Contemporary Silk Staples",
-    title: "Luxe Co-Ord Sets",
+    title: "Luxe Short Kurties",
     description: "Flowing breathable fabrics designed for sunshine, warm breezes, and effortless elegance.",
-    cta: "Shop Co-ord Sets",
-    categorySlug: "co-ords",
+    cta: "Shop Short Kurties",
+    categorySlug: "short-kurties",
     image: "/images/products/real_product_4.jpg"
   },
   {
@@ -211,12 +211,12 @@ export const PRODUCTS_CURATED = [
     shipping: "Dispatched within 2 days."
   },
 
-  // Co-ord Sets
+  // Short Kurties
   {
     id: "p7",
-    name: "Luxe Silk Satin Resort Co-ord Set",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Luxe Silk Satin Resort Short Kurtie Set",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 7499,
     originalPrice: 8999,
     colors: [
@@ -228,16 +228,16 @@ export const PRODUCTS_CURATED = [
     badge: "Trending",
     rating: 4.89,
     isSoldOut: false,
-    description: "Flowing silk satin tunic and trouser co-ord set designed for summer retreats and evening gatherings.",
+    description: "Flowing silk satin short kurtie and trouser set designed for summer retreats and evening gatherings.",
     fabric: "100% Mulberry Silk Satin",
     care: "Dry Clean Only.",
     shipping: "Dispatched within 2-4 business days."
   },
   {
     id: "p8",
-    name: "Organic European Linen Co-ord Set",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Organic European Linen Short Kurtie Set",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 6999,
     originalPrice: 8499,
     colors: [
@@ -249,16 +249,16 @@ export const PRODUCTS_CURATED = [
     badge: "Resort Luxe",
     rating: 4.91,
     isSoldOut: false,
-    description: "Tailored organic linen jacket and wide-leg pant co-ord with mother-of-pearl buttons.",
+    description: "Tailored organic linen short kurtie and wide-leg pant set with mother-of-pearl buttons.",
     fabric: "100% Organic European Linen",
     care: "Gentle cold hand wash.",
     shipping: "Dispatched within 3 business days."
   },
   {
     id: "p9",
-    name: "Botanical Printed Silk Lounge Co-ord",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Botanical Printed Silk Lounge Short Kurtie",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 8499,
     originalPrice: 9999,
     colors: [
@@ -270,7 +270,7 @@ export const PRODUCTS_CURATED = [
     badge: "Must Have",
     rating: 4.86,
     isSoldOut: false,
-    description: "Contemporary fluid botanical print shirt and high-waisted trousers co-ord ensemble.",
+    description: "Contemporary fluid botanical print short kurtie and high-waisted trousers ensemble.",
     fabric: "Pure Silk Chiffon & Satin Base",
     care: "Dry Clean Only.",
     shipping: "Dispatched within 3 days."
@@ -365,9 +365,9 @@ export const NEW_ARRIVALS = [
   },
   {
     id: "na2",
-    name: "Resort Linen Chic Co-ord Set",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Resort Linen Chic Short Kurtie Set",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 7999,
     originalPrice: 9499,
     colors: [
@@ -378,7 +378,7 @@ export const NEW_ARRIVALS = [
     secondaryImage: "/images/products/real_product_13.jpg",
     isSoldOut: false,
     rating: 4.88,
-    description: "Breathable natural linen resort co-ord set with tailored high-rise pants.",
+    description: "Breathable natural linen resort short kurtie set with tailored high-rise pants.",
     fabric: "100% Organic Linen",
     care: "Gentle cold hand wash.",
     shipping: "Dispatched within 3-5 business days."
@@ -415,9 +415,9 @@ export const EXCLUSIVE_COLLECTION = [
   },
   {
     id: "ex2",
-    title: "Luxury Silk Co-Ord Sets",
+    title: "Luxury Silk Short Kurties",
     tagline: "Fluid resort silhouettes woven with pure Mulberry silk and organic linen.",
-    categorySlug: "co-ords",
+    categorySlug: "short-kurties",
     image: "/images/products/real_product_9.jpg"
   },
   {
@@ -434,7 +434,7 @@ export const FOUNDER_INFO = {
   role: "Creative Director & Founder",
   quote: "“Fashion at Surangi Naar is not merely attire — it is an emotional ode to traditional Indian craftsmanship re-imagined for the global woman.”",
   storyParagraph1: "Surangi Naar emerged from a passion for preserving India’s rich textile heritage while catering to modern aesthetic sensibilities. Each garment tells a story of dedicated master artisans, hand-selected pure fabrics, and meticulous embroidery.",
-  storyParagraph2: "From royal Chanderi weaves to contemporary fluid co-ords, the label blends understated luxury with expressive, feminine grace — creating timeless pieces crafted to be cherished across generations.",
+  storyParagraph2: "From royal Chanderi weaves to contemporary fluid short kurties, the label blends understated luxury with expressive, feminine grace — creating timeless pieces crafted to be cherished across generations.",
   image: "/images/products/real_product_18.jpg",
   badges: [
     { label: "Handcrafted in India", icon: "Sparkles" },

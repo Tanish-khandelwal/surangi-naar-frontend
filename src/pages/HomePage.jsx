@@ -35,11 +35,11 @@ export default function HomePage() {
 
       {/* Promo Banner #2 */}
       <PromoBanner 
-        title="Contemporary Resort Co-Ords"
+        title="Contemporary Resort Short Kurties"
         subtitle="100% Mulberry Silk & Organic Linen"
-        description="Effortless luxury co-ord sets designed for summer retreats and serene evening gatherings."
-        ctaText="Discover Co-ords"
-        categoryLink="co-ords"
+        description="Effortless luxury short kurties designed for summer retreats and serene evening gatherings."
+        ctaText="Discover Short Kurties"
+        categoryLink="short-kurties"
         bgImage="/images/products/real_product_9.jpg"
         secondaryTheme={true}
       />

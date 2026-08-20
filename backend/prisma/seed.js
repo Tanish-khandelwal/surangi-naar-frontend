@@ -33,9 +33,9 @@ const CATEGORIES_GRID = [
     tagline: "Handprinted Malmal & Chanderi Tunics"
   },
   {
-    id: "co-ords",
-    slug: "co-ords",
-    name: "Co-ord Sets",
+    id: "short-kurties",
+    slug: "short-kurties",
+    name: "Short Kurties",
     count: "24 Styles",
     image: "/images/products/real_product_6.jpg",
     tagline: "Resort Luxe & Linen Sets"
@@ -64,10 +64,10 @@ const HERO_SLIDES = [
   {
     id: 2,
     subtitle: "Contemporary Silk Staples",
-    title: "Luxe Co-Ord Sets",
+    title: "Luxe Short Kurties",
     description: "Flowing breathable fabrics designed for sunshine, warm breezes, and effortless elegance.",
-    cta: "Shop Co-ord Sets",
-    categorySlug: "co-ords",
+    cta: "Shop Short Kurties",
+    categorySlug: "short-kurties",
     image: "/images/products/real_product_4.jpg",
     order: 2
   },
@@ -200,9 +200,9 @@ const PRODUCTS_CURATED = [
   },
   {
     id: "p7",
-    name: "Luxe Silk Satin Resort Co-ord Set",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Luxe Silk Satin Resort Short Kurtie Set",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 7499,
     originalPrice: 8999,
     colors: [{ name: "Champagne Gold", hex: "#e0c9a6" }],
@@ -212,16 +212,16 @@ const PRODUCTS_CURATED = [
     badge: "Trending",
     rating: 4.89,
     isSoldOut: false,
-    description: "Flowing silk satin tunic and trouser co-ord set designed for summer retreats and evening gatherings.",
+    description: "Flowing silk satin short kurtie and trouser set designed for summer retreats and evening gatherings.",
     fabric: "100% Mulberry Silk Satin",
     care: "Dry Clean Only.",
     shipping: "Dispatched within 2-4 business days."
   },
   {
     id: "p8",
-    name: "Organic European Linen Co-ord Set",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Organic European Linen Short Kurtie Set",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 6999,
     originalPrice: 8499,
     colors: [{ name: "Terracotta Earth", hex: "#c86d51" }],
@@ -231,16 +231,16 @@ const PRODUCTS_CURATED = [
     badge: "Resort Luxe",
     rating: 4.91,
     isSoldOut: false,
-    description: "Tailored organic linen jacket and wide-leg pant co-ord with mother-of-pearl buttons.",
+    description: "Tailored organic linen short kurtie and wide-leg pant set with mother-of-pearl buttons.",
     fabric: "100% Organic European Linen",
     care: "Gentle cold hand wash.",
     shipping: "Dispatched within 3 business days."
   },
   {
     id: "p9",
-    name: "Botanical Printed Silk Lounge Co-ord",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Botanical Printed Silk Lounge Short Kurtie",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 8499,
     originalPrice: 9999,
     colors: [{ name: "Olive Palm", hex: "#4b5320" }],
@@ -250,7 +250,7 @@ const PRODUCTS_CURATED = [
     badge: "Must Have",
     rating: 4.86,
     isSoldOut: false,
-    description: "Contemporary fluid botanical print shirt and high-waisted trousers co-ord ensemble.",
+    description: "Contemporary fluid botanical print short kurtie and high-waisted trousers ensemble.",
     fabric: "Pure Silk Chiffon & Satin Base",
     care: "Dry Clean Only.",
     shipping: "Dispatched within 3 days."
@@ -333,9 +333,9 @@ const PRODUCTS_CURATED = [
   },
   {
     id: "na2",
-    name: "Resort Linen Chic Co-ord Set",
-    category: "Co-ord Sets",
-    categorySlug: "co-ords",
+    name: "Resort Linen Chic Short Kurtie Set",
+    category: "Short Kurties",
+    categorySlug: "short-kurties",
     price: 7999,
     originalPrice: 9499,
     colors: [{ name: "Olive Green", hex: "#556b2f" }],
@@ -345,7 +345,7 @@ const PRODUCTS_CURATED = [
     badge: "New Arrival",
     isSoldOut: false,
     rating: 4.88,
-    description: "Breathable natural linen resort co-ord set with tailored high-rise pants.",
+    description: "Breathable natural linen resort short kurtie set with tailored high-rise pants.",
     fabric: "100% Organic Linen",
     care: "Gentle cold hand wash.",
     shipping: "Dispatched within 3-5 business days."
@@ -413,7 +413,7 @@ const INITIAL_ORDERS = [
     customerPhone: "+91 99001 22334",
     customerAddress: "14 Sterling Apartments, Bandra West, Mumbai 400050",
     items: [
-      { id: "p7", name: "Luxe Silk Satin Resort Co-ord Set", size: "S", color: "Champagne Gold", quantity: 1, price: 7499 }
+      { id: "p7", name: "Luxe Silk Satin Resort Short Kurtie Set", size: "S", color: "Champagne Gold", quantity: 1, price: 7499 }
     ],
     total: 7499,
     status: "Pending",
