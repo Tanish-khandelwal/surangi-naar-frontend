@@ -446,11 +446,10 @@ async function main() {
   console.log('✅ Promo Messages seeded');
 
   // 3. Categories
+  await prisma.category.deleteMany({});
   for (const cat of CATEGORIES_GRID) {
-    await prisma.category.upsert({
-      where: { id: cat.id },
-      update: cat,
-      create: cat,
+    await prisma.category.create({
+      data: cat,
     });
   }
   console.log('✅ Categories seeded');
@@ -465,11 +464,10 @@ async function main() {
   console.log('✅ Hero Slides seeded');
 
   // 5. Products
+  await prisma.product.deleteMany({});
   for (const prod of PRODUCTS_CURATED) {
-    await prisma.product.upsert({
-      where: { id: prod.id },
-      update: prod,
-      create: prod,
+    await prisma.product.create({
+      data: prod,
     });
   }
   console.log('✅ Products seeded');
