@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
+import { getImageUrl } from '../utils/image';
 import { 
   Heart, 
   ShoppingBag, 
@@ -73,7 +74,7 @@ export default function ProductDetailPage() {
           <div className="lg:col-span-6 space-y-4">
             <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#f7f3ee] border border-[#e8e2d9] relative shadow-inner">
               <img
-                src={activeImage}
+                src={getImageUrl(activeImage)}
                 alt={product.name}
                 className="w-full h-full object-cover object-center transition-all duration-500"
               />

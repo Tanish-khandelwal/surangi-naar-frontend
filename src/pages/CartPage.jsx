@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import { getImageUrl } from '../utils/image';
 import api from '../services/api';
 import { 
   ShoppingBag, 
@@ -262,7 +263,7 @@ export default function CartPage() {
                     >
                       <div className="flex gap-4 items-center w-full sm:w-auto">
                         <Link to={`/product/${item.product.id}`} className="w-20 h-24 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-[#e8e2d9]">
-                          <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(item.product?.image)} alt={item.product?.name} className="w-full h-full object-cover" />
                         </Link>
                         <div>
                           <Link to={`/product/${item.product.id}`} className="font-serif font-semibold text-base text-[#39322f] hover:text-[#d4a373] line-clamp-1">

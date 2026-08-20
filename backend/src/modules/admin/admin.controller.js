@@ -284,3 +284,7 @@ export const updateStoreSettings = async (req, res) => {
     return sendError(res, 400, error.message);
   }
 };
+
+export const verifyAdmin = async (req, res) => {
+  return sendSuccess(res, 200, { valid: true, user: req.user }, 'Admin token verified');
+};

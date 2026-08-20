@@ -9,6 +9,8 @@ const router = Router();
 router.post('/login', adminRateLimiter, adminController.adminLogin);
 
 // PROTECTED ADMIN ROUTES (Require valid admin JWT)
+router.get('/verify', requireAdmin, adminController.verifyAdmin);
+
 // Products
 router.post('/products', requireAdmin, adminController.createProduct);
 router.put('/products/:id', requireAdmin, adminController.updateProduct);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import api from '../services/api';
+import { getImageUrl } from '../utils/image';
 import {
   LayoutDashboard,
   Package,
@@ -53,12 +54,46 @@ export default function AdminPage() {
     resetToDefaultData
   } = useShop();
 
-  // Authentication State
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return !!(sessionStorage.getItem('surangi_admin_token') || localStorage.getItem('surangi_admin_token'));
-  });
-  const [adminEmailInput, setAdminEmailInput] = useState('surangi.naar.admin@gmail.com');
-  const [adminPasswordInput, setAdminPasswordInput] = useState('admin@1234');
+  // Authentication & Verification State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isVerifyingAuth, setIsVerifyingAuth] = useState(true);
+
+  // Verify Admin Token on Mount (Session-based)
+  React.useEffect(() => {
+    // Purge legacy persistent localStorage admin token if present
+    localStorage.removeItem('surangi_admin_token');
+
+    const verifyAdminSession = async () => {
+      const token = sessionStorage.getItem('surangi_admin_token');
+      if (!token) {
+        setIsAuthenticated(false);
+        setIsVerifyingAuth(false);
+        return;
+      }
+
+      try {
+        const res = await api.get('/admin/verify');
+        if (res.data?.success) {
+          setIsAuthenticated(true);
+        } else {
+          sessionStorage.removeItem('surangi_admin_token');
+          sessionStorage.removeItem('surangi_admin_auth');
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        console.error('Admin token verification failed:', err);
+        sessionStorage.removeItem('surangi_admin_token');
+        sessionStorage.removeItem('surangi_admin_auth');
+        setIsAuthenticated(false);
+      } finally {
+        setIsVerifyingAuth(false);
+      }
+    };
+
+    verifyAdminSession();
+  }, []);
+  const [adminEmailInput, setAdminEmailInput] = useState('');
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
 
@@ -135,7 +170,7 @@ export default function AdminPage() {
 
     try {
       const apiBase = import.meta.env.VITE_API_BASE_URL || '';
-      const adminToken = sessionStorage.getItem('surangi_admin_token') || localStorage.getItem('surangi_admin_token') || '';
+      const adminToken = sessionStorage.getItem('surangi_admin_token') || '';
       const res = await fetch(`${apiBase}/api/admin/upload`, {
         method: 'POST',
         headers: {
@@ -194,9 +229,12 @@ export default function AdminPage() {
 
       if (res.data?.token) {
         sessionStorage.setItem('surangi_admin_token', res.data.token);
-        localStorage.setItem('surangi_admin_token', res.data.token);
+        localStorage.removeItem('surangi_admin_token');
         setIsAuthenticated(true);
         setPinError(false);
+        setAdminEmailInput('');
+        setAdminPasswordInput('');
+        setPinInput('');
         showToast('Welcome back, Admin!');
       }
     } catch (err) {
@@ -209,8 +247,10 @@ export default function AdminPage() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('surangi_admin_token');
-    localStorage.removeItem('surangi_admin_token');
     sessionStorage.removeItem('surangi_admin_auth');
+    localStorage.removeItem('surangi_admin_token');
+    setAdminEmailInput('');
+    setAdminPasswordInput('');
     setPinInput('');
   };
 
@@ -364,6 +404,20 @@ export default function AdminPage() {
   const activeProductsCount = products.filter(p => !p.isSoldOut).length;
   const soldOutCount = products.filter(p => p.isSoldOut).length;
 
+  // Render Loading Screen while verifying admin session
+  if (isVerifyingAuth) {
+    return (
+      <div className="min-h-screen bg-[#f8f4ee] flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-4 border-[#d4a373] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs uppercase tracking-widest text-[#39322f] font-semibold">
+            Verifying Admin Session...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Render PIN Auth Screen if not logged in
   if (!isAuthenticated) {
     return (
@@ -387,10 +441,9 @@ export default function AdminPage() {
               </label>
               <input
                 type="email"
-                required
                 value={adminEmailInput}
                 onChange={(e) => setAdminEmailInput(e.target.value)}
-                placeholder="admin@suranginaar.com"
+                placeholder="Enter admin email"
                 className="w-full bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors"
               />
             </div>
@@ -401,10 +454,9 @@ export default function AdminPage() {
               </label>
               <input
                 type="password"
-                required
                 value={adminPasswordInput}
                 onChange={(e) => setAdminPasswordInput(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Enter password"
                 className="w-full bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors"
               />
             </div>
@@ -418,7 +470,7 @@ export default function AdminPage() {
                 maxLength={8}
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
-                placeholder="1234"
+                placeholder="••••"
                 className={`w-full bg-[#f8f4ee] border ${pinError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-2.5 text-center text-lg text-[#39322f] tracking-widest focus:outline-none focus:border-[#d4a373] transition-colors`}
               />
               {pinError && (
@@ -437,16 +489,7 @@ export default function AdminPage() {
             </button>
           </form>
 
-          {/* Helper hint for instant login */}
-          <div className="mt-6 pt-6 border-t border-[#e8e2d9] text-center">
-            <button
-              type="button"
-              onClick={() => { setPinInput('1234'); setPinError(false); }}
-              className="text-xs text-[#b58349] hover:text-[#39322f] underline font-medium transition-colors cursor-pointer"
-            >
-              Fill Default Demo PIN (1234)
-            </button>
-          </div>
+
         </div>
       </div>
     );
@@ -764,7 +807,7 @@ export default function AdminPage() {
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={product.image}
+                              src={getImageUrl(product.image)}
                               alt={product.name}
                               className="w-12 h-14 object-cover rounded-lg border border-[#e8e2d9]"
                             />

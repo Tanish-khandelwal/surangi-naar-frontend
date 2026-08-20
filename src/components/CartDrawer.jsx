@@ -13,6 +13,7 @@ import {
   Sparkles,
   Gift
 } from 'lucide-react';
+import { getImageUrl } from '../utils/image';
 
 export default function CartDrawer() {
   const { 
@@ -156,8 +157,8 @@ export default function CartDrawer() {
                 {/* Thumbnail */}
                 <div className="w-20 h-24 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-[#e8e2d9]">
                   <img
-                    src={item.product.image}
-                    alt={item.product.name}
+                    src={getImageUrl(item.product?.image)}
+                    alt={item.product?.name}
                     className="w-full h-full object-cover"
                   />
                 </div>

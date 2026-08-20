@@ -12,11 +12,11 @@ const api = axios.create({
 // Request Interceptor: Attach Access Token or Admin Token
 api.interceptors.request.use(
   (config) => {
-    // Check for admin token first if making admin requests, otherwise user token
-    const adminToken = sessionStorage.getItem('surangi_admin_token') || localStorage.getItem('surangi_admin_token');
+    const adminToken = sessionStorage.getItem('surangi_admin_token');
     const userToken = localStorage.getItem('surangi_access_token');
 
-    const token = config.url?.includes('/admin') && adminToken ? adminToken : (userToken || adminToken);
+    // For admin routes, strictly use adminToken from sessionStorage
+    const token = config.url?.includes('/admin') ? adminToken : (userToken || adminToken);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

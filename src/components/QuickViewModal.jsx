@@ -9,6 +9,7 @@ import {
   Minus,
   Check
 } from 'lucide-react';
+import { getImageUrl } from '../utils/image';
 
 
 function QuickViewModalContent({ product, onClose }) {
@@ -55,7 +56,7 @@ function QuickViewModalContent({ product, onClose }) {
         <div className="p-6 bg-[#f7f3ee] flex flex-col justify-between">
           <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-inner border border-[#e8e2d9] bg-white mb-4">
             <img 
-              src={selectedImage} 
+              src={getImageUrl(selectedImage)} 
               alt={product.name} 
               className="w-full h-full object-cover object-center transition-all duration-300"
             />

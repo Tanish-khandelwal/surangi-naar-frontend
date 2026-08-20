@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import { getImageUrl } from '../utils/image';
 import { Heart, Eye, ShoppingBag, Star } from 'lucide-react';
 
 export default function ProductCard({ product }) {
@@ -43,7 +44,7 @@ export default function ProductCard({ product }) {
         {/* Link to Product Details */}
         <Link to={`/product/${product.id}`} className="block w-full h-full relative overflow-hidden">
           <img
-            src={product.image}
+            src={getImageUrl(product.image)}
             alt={product.name}
             className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
           />
