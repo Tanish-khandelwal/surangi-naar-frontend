@@ -167,15 +167,16 @@ export default function AuthModal() {
 
         {/* SIGN IN FORM */}
         {authModalTab === 'login' ? (
-          <form onSubmit={handleLoginSubmit} autoComplete="off" className="space-y-4 text-xs font-sans">
+          <form onSubmit={handleLoginSubmit} autoComplete="on" className="space-y-4 text-xs font-sans">
             <div>
               <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Email Address</label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
+                  name="email"
                   required
-                  autoComplete="off"
+                  autoComplete="username"
                   placeholder="ananya.sharma@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -190,8 +191,9 @@ export default function AuthModal() {
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
+                  name="password"
                   required
-                  autoComplete="new-password"
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -226,15 +228,16 @@ export default function AuthModal() {
           </form>
         ) : (
           /* CREATE ACCOUNT FORM */
-          <form onSubmit={handleRegisterSubmit} autoComplete="off" className="space-y-3.5 text-xs font-sans">
+          <form onSubmit={handleRegisterSubmit} autoComplete="on" className="space-y-3.5 text-xs font-sans">
             <div>
               <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Full Name</label>
               <div className="relative">
                 <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
+                  name="name"
                   required
-                  autoComplete="off"
+                  autoComplete="name"
                   placeholder="Ananya Sharma"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -249,8 +252,9 @@ export default function AuthModal() {
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
+                  name="email"
                   required
-                  autoComplete="off"
+                  autoComplete="username"
                   placeholder="ananya.sharma@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -265,7 +269,8 @@ export default function AuthModal() {
                 <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="tel"
-                  autoComplete="off"
+                  name="phone"
+                  autoComplete="tel"
                   placeholder="+91 98765 43210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -280,6 +285,7 @@ export default function AuthModal() {
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
+                  name="password"
                   required
                   autoComplete="new-password"
                   placeholder="Create a strong password"
