@@ -120,6 +120,46 @@ export default function AdminPage() {
 
   // Notifications / Toast
   const [toastMessage, setToastMessage] = useState('');
+  const [uploadingField, setUploadingField] = useState(null);
+
+  const handleFileUpload = async (e, field) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingField(field);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+      const adminToken = sessionStorage.getItem('surangi_admin_token') || localStorage.getItem('surangi_admin_token') || '';
+      const res = await fetch(`${apiBase}/api/admin/upload`, {
+        method: 'POST',
+        headers: {
+          ...(adminToken ? { Authorization: `Bearer ${adminToken}` } : {}),
+        },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        if (field === 'product') {
+          setProductForm(prev => ({ ...prev, image: data.url }));
+        } else if (field === 'cat') {
+          setCatForm(prev => ({ ...prev, image: data.url }));
+        } else if (field === 'slide') {
+          setSlideForm(prev => ({ ...prev, image: data.url }));
+        }
+        showToast('Image uploaded successfully!');
+      } else {
+        showToast(data.message || 'Image upload failed');
+      }
+    } catch (err) {
+      console.error('File upload error:', err);
+      showToast('Failed to upload image');
+    } finally {
+      setUploadingField(null);
+    }
+  };
 
   // Lock body scroll when any admin modal is open
   React.useEffect(() => {
@@ -1250,13 +1290,22 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Product Image URL</label>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Product Image</label>
                 <input
-                  type="text"
-                  value={productForm.image}
-                  onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'product')}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold hover:file:bg-[#d4a373] hover:file:text-[#39322f] cursor-pointer"
                 />
+                {uploadingField === 'product' && (
+                  <p className="text-xs text-[#d4a373] mt-1 animate-pulse font-medium">Uploading to Cloudinary...</p>
+                )}
+                {productForm.image && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <img src={productForm.image} alt="Preview" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
+                    <span className="text-xs text-gray-500 truncate max-w-xs">{productForm.image}</span>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -1334,13 +1383,22 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Image URL</label>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Category Image</label>
                 <input
-                  type="text"
-                  value={catForm.image}
-                  onChange={(e) => setCatForm({ ...catForm, image: e.target.value })}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'cat')}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold hover:file:bg-[#d4a373] hover:file:text-[#39322f] cursor-pointer"
                 />
+                {uploadingField === 'cat' && (
+                  <p className="text-xs text-[#d4a373] mt-1 animate-pulse font-medium">Uploading to Cloudinary...</p>
+                )}
+                {catForm.image && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <img src={catForm.image} alt="Preview" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
+                    <span className="text-xs text-gray-500 truncate max-w-xs">{catForm.image}</span>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
@@ -1384,13 +1442,22 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Image URL</label>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Hero Slide Image</label>
                 <input
-                  type="text"
-                  value={slideForm.image}
-                  onChange={(e) => setSlideForm({ ...slideForm, image: e.target.value })}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'slide')}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold hover:file:bg-[#d4a373] hover:file:text-[#39322f] cursor-pointer"
                 />
+                {uploadingField === 'slide' && (
+                  <p className="text-xs text-[#d4a373] mt-1 animate-pulse font-medium">Uploading to Cloudinary...</p>
+                )}
+                {slideForm.image && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <img src={slideForm.image} alt="Preview" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
+                    <span className="text-xs text-gray-500 truncate max-w-xs">{slideForm.image}</span>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
