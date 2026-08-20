@@ -154,16 +154,19 @@ export const ShopProvider = ({ children }) => {
     if (!guestCartStr) return;
     try {
       const guestItems = JSON.parse(guestCartStr);
-      for (const item of guestItems) {
-        if (item.product?.id) {
-          await api.post('/cart', {
-            productId: item.product.id,
-            colorName: item.color?.name || 'Standard',
-            size: item.size || 'M',
-            quantity: item.quantity || 1,
-          });
-        }
-      }
+      await Promise.all(
+        guestItems.map(item => {
+          if (item.product?.id) {
+            return api.post('/cart', {
+              productId: item.product.id,
+              colorName: item.color?.name || 'Standard',
+              size: item.size || 'M',
+              quantity: item.quantity || 1,
+            });
+          }
+          return Promise.resolve();
+        })
+      );
       localStorage.removeItem('surangi_guest_cart');
     } catch (e) {
       console.error('Error merging guest cart:', e);

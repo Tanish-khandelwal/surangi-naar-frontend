@@ -61,11 +61,16 @@ export default function AuthModal() {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    if (!name || name.trim().length < 2) {
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phone.trim();
+
+    if (!trimmedName || trimmedName.length < 2) {
       setErrorMessage('Full name must be at least 2 characters.');
       return;
     }
-    if (!email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
@@ -75,7 +80,7 @@ export default function AuthModal() {
     }
     setIsSubmitting(true);
     try {
-      await registerWithEmail(name, email, phone, password);
+      await registerWithEmail(trimmedName, trimmedEmail, trimmedPhone, password);
     } catch (err) {
       const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Registration failed.';
       setErrorMessage(msg);
