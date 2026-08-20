@@ -20,6 +20,15 @@ export default function AuthModal() {
   const [phone, setPhone] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+    setName('');
+    setPhone('');
+    setErrorMessage('');
+  }, [authModalTab, isAuthModalOpen]);
 
   useEffect(() => {
     if (isAuthModalOpen) {
@@ -36,12 +45,14 @@ export default function AuthModal() {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
     if (!email || !password) return;
     setIsSubmitting(true);
     try {
       await loginWithEmail(email, password);
     } catch (err) {
-      // Error handled in ShopContext alert
+      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -49,12 +60,25 @@ export default function AuthModal() {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !name || !password) return;
+    setErrorMessage('');
+    if (!name || name.trim().length < 2) {
+      setErrorMessage('Full name must be at least 2 characters.');
+      return;
+    }
+    if (!email) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    if (!password || password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      return;
+    }
     setIsSubmitting(true);
     try {
       await registerWithEmail(name, email, phone, password);
     } catch (err) {
-      // Error handled in ShopContext alert
+      const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Registration failed.';
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -83,6 +107,13 @@ export default function AuthModal() {
           <h2 className="font-cinzel text-2xl font-bold text-[#2d2624]">Surangi Naar Atelier</h2>
           <p className="text-xs text-gray-500 font-sans mt-1">Sign in to access your luxury account & order history</p>
         </div>
+
+        {/* Error Banner */}
+        {errorMessage && (
+          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-semibold text-center animate-in fade-in duration-200">
+            {errorMessage}
+          </div>
+        )}
 
         {/* Tab Switcher */}
         <div className="flex bg-[#f8f4ee] p-1 rounded-2xl border border-[#e8e2d9] mb-6">
@@ -136,7 +167,7 @@ export default function AuthModal() {
 
         {/* SIGN IN FORM */}
         {authModalTab === 'login' ? (
-          <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs font-sans">
+          <form onSubmit={handleLoginSubmit} autoComplete="off" className="space-y-4 text-xs font-sans">
             <div>
               <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Email Address</label>
               <div className="relative">
@@ -144,6 +175,7 @@ export default function AuthModal() {
                 <input
                   type="email"
                   required
+                  autoComplete="off"
                   placeholder="ananya.sharma@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -159,6 +191,7 @@ export default function AuthModal() {
                 <input
                   type="password"
                   required
+                  autoComplete="new-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -193,7 +226,7 @@ export default function AuthModal() {
           </form>
         ) : (
           /* CREATE ACCOUNT FORM */
-          <form onSubmit={handleRegisterSubmit} className="space-y-3.5 text-xs font-sans">
+          <form onSubmit={handleRegisterSubmit} autoComplete="off" className="space-y-3.5 text-xs font-sans">
             <div>
               <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Full Name</label>
               <div className="relative">
@@ -201,6 +234,7 @@ export default function AuthModal() {
                 <input
                   type="text"
                   required
+                  autoComplete="off"
                   placeholder="Ananya Sharma"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -216,6 +250,7 @@ export default function AuthModal() {
                 <input
                   type="email"
                   required
+                  autoComplete="off"
                   placeholder="ananya.sharma@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -230,6 +265,7 @@ export default function AuthModal() {
                 <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="tel"
+                  autoComplete="off"
                   placeholder="+91 98765 43210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -245,6 +281,7 @@ export default function AuthModal() {
                 <input
                   type="password"
                   required
+                  autoComplete="new-password"
                   placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

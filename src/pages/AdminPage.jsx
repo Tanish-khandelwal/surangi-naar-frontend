@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useShop } from '../context/ShopContext';
 import api from '../services/api';
 import { getImageUrl } from '../utils/image';
@@ -212,9 +213,12 @@ export default function AdminPage() {
     };
   }, [isProductModalOpen, isCatModalOpen, isSlideModalOpen, isDiscountModalOpen]);
 
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
+  const showToast = (msg, isError = false) => {
+    if (isError) {
+      toast.error(msg);
+    } else {
+      toast.success(msg);
+    }
   };
 
   // Auth Handler
@@ -235,12 +239,12 @@ export default function AdminPage() {
         setAdminEmailInput('');
         setAdminPasswordInput('');
         setPinInput('');
-        showToast('Welcome back, Admin!');
+        toast.success('Welcome back, Admin!');
       }
     } catch (err) {
       console.error('Admin login error:', err);
       setPinError(true);
-      showToast(err.response?.data?.message || 'Invalid Admin Credentials');
+      toast.error(err.response?.data?.message || 'Invalid Admin Credentials');
     }
   };
 
@@ -252,6 +256,7 @@ export default function AdminPage() {
     setAdminEmailInput('');
     setAdminPasswordInput('');
     setPinInput('');
+    toast.success('Logged out of Admin Panel');
   };
 
   // Product Handlers
@@ -302,7 +307,7 @@ export default function AdminPage() {
   const handleSaveProduct = (e) => {
     e.preventDefault();
     if (!productForm.name || !productForm.price) {
-      alert('Please provide product name and price.');
+      toast.error('Please provide product name and price.');
       return;
     }
 

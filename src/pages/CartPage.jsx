@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useShop } from '../context/ShopContext';
 import { getImageUrl } from '../utils/image';
 import api from '../services/api';
@@ -100,7 +101,7 @@ export default function CartPage() {
     }
 
     if (!address.fullName || !address.phone) {
-      alert("Please fill in your full name and contact phone number.");
+      toast.error("Please fill in your full name and contact phone number.");
       return;
     }
 
@@ -138,7 +139,7 @@ export default function CartPage() {
       // 3. Load Razorpay JS SDK
       const isLoaded = await loadRazorpayScript();
       if (!isLoaded) {
-        alert('Razorpay SDK failed to load. Please check your internet connection.');
+        toast.error('Razorpay SDK failed to load. Please check your internet connection.');
         setIsProcessingPayment(false);
         return;
       }
@@ -165,7 +166,7 @@ export default function CartPage() {
               setPlacedOrder(verifyRes.data.order || createdOrder);
               clearCart();
             } else {
-              alert('Payment verification failed.');
+              toast.error('Payment verification failed.');
             }
           } catch (err) {
             console.error('Payment Verification Error:', err);
@@ -189,14 +190,14 @@ export default function CartPage() {
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.on('payment.failed', function (response) {
         console.error('Payment Failed:', response.error);
-        alert(`Payment Failed: ${response.error.description}`);
+        toast.error(`Payment Failed: ${response.error?.description || 'Transaction declined.'}`);
         setIsProcessingPayment(false);
       });
       razorpayInstance.open();
 
     } catch (err) {
       console.error('Checkout error:', err);
-      alert(err.response?.data?.message || 'Error processing checkout. Please try again.');
+      toast.error(err.response?.data?.message || 'Error processing checkout. Please try again.');
       setIsProcessingPayment(false);
     }
   };

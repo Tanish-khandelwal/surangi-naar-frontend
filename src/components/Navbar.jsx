@@ -40,6 +40,17 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 30) {
         setIsScrolled(true);
@@ -60,7 +71,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full transition-all duration-300">
       {/* Main Navbar */}
       <div
         className={`w-full transition-all duration-300 border-b border-[#d4a373]/25 ${isScrolled
@@ -304,19 +315,22 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex lg:hidden animate-in fade-in duration-300">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setIsMobileMenuOpen(false)} />
-          <div className="relative w-4/5 max-w-sm bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto">
-            
+          <div 
+            className="relative w-4/5 max-w-sm bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto overscroll-contain"
+            data-lenis-prevent
+          >
             <div>
-              <div className="p-5 border-b border-[#e8e2d9] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-white" />
-                  <span className="font-cinzel text-lg font-bold text-[#39322f]">Surangi Naar</span>
+              <div className="pt-6 pb-4 px-5 border-b border-[#e8e2d9] flex items-center justify-between bg-[#f7f3ee]">
+                <div className="flex items-center gap-2.5">
+                  <img src="/logo.jpg" alt="Surangi Naar Logo" className="w-8 h-8 rounded-full border border-white shadow-xs shrink-0" />
+                  <span className="font-cinzel text-lg font-bold text-[#39322f] leading-none">Surangi Naar</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1.5 rounded-full hover:bg-gray-100 text-[#39322f]"
+                  className="p-1.5 rounded-full hover:bg-gray-200/60 text-[#39322f] transition-colors cursor-pointer"
+                  aria-label="Close Mobile Menu"
                 >
                   <X className="w-5 h-5" />
                 </button>

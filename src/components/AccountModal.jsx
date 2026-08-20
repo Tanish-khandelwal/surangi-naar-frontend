@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
 
 
 export default function AccountModal() {
@@ -10,6 +10,7 @@ export default function AccountModal() {
     isAccountModalOpen,
     closeAccountModal,
     logoutUser,
+    deleteUserAccount,
     orders
   } = useShop();
 
@@ -157,14 +158,34 @@ export default function AccountModal() {
             <Sparkles className="w-3.5 h-3.5" /> Studio Admin Panel
           </Link>
 
-          <button
-            type="button"
-            onClick={logoutUser}
-            className="px-4 py-2 rounded-2xl bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 transition-colors text-xs font-bold flex items-center gap-2 cursor-pointer"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={async () => {
+                if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+                  try {
+                    await deleteUserAccount();
+                  } catch (e) {
+                    // Handled in context
+                  }
+                }
+              }}
+              className="px-3 py-2 rounded-2xl bg-gray-100 text-gray-600 hover:bg-rose-600 hover:text-white border border-gray-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              title="Permanently Delete Account"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Delete Account</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={logoutUser}
+              className="px-4 py-2 rounded-2xl bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
 
       </div>

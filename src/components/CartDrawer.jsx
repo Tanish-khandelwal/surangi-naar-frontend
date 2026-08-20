@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { 
   X, 
@@ -330,13 +331,14 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            <button
-              onClick={() => alert("Proceeding to secure checkout portal.")}
+            <Link
+              to="/cart"
+              onClick={() => setIsCartOpen(false)}
               className="w-full bg-[#39322f] hover:bg-[#d4a373] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-semibold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Proceed to Checkout</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
 
             <p className="text-[10px] text-center text-[#39322f]/50 font-sans">
               Taxes and duties calculated at checkout.

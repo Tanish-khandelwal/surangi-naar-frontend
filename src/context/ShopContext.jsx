@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import api from '../services/api';
 import {
   PRODUCTS_CURATED,
@@ -180,11 +181,13 @@ export const ShopProvider = ({ children }) => {
         await mergeGuestCart();
         await fetchUserCartAndWishlist();
         closeAuthModal();
+        toast.success('Signed in successfully!');
         return res.data.user;
       }
     } catch (err) {
       console.error('Login Error:', err);
-      alert(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      toast.error(msg);
       throw err;
     }
   };
@@ -199,11 +202,13 @@ export const ShopProvider = ({ children }) => {
         await mergeGuestCart();
         await fetchUserCartAndWishlist();
         closeAuthModal();
+        toast.success('Account created successfully!');
         return res.data.user;
       }
     } catch (err) {
       console.error('Register Error:', err);
-      alert(err.response?.data?.message || 'Registration failed.');
+      const errMsg = err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Registration failed.';
+      toast.error(errMsg);
       throw err;
     }
   };
@@ -218,11 +223,13 @@ export const ShopProvider = ({ children }) => {
         await mergeGuestCart();
         await fetchUserCartAndWishlist();
         closeAuthModal();
+        toast.success('Google login successful!');
         return res.data.user;
       }
     } catch (err) {
       console.error('Google Auth Error:', err);
-      alert(err.response?.data?.message || 'Google Login failed.');
+      const msg = err.response?.data?.message || 'Google Login failed.';
+      toast.error(msg);
       throw err;
     }
   };
@@ -239,6 +246,20 @@ export const ShopProvider = ({ children }) => {
       setCart([]);
       setWishlist([]);
       closeAccountModal();
+      toast.success('Signed out successfully');
+    }
+  };
+
+  const deleteUserAccount = async () => {
+    try {
+      await api.delete('/users/me');
+      await logoutUser();
+      toast.success('Your account has been permanently deleted.');
+    } catch (err) {
+      console.error('Delete Account Error:', err);
+      const errMsg = err.response?.data?.message || 'Failed to delete account.';
+      toast.error(errMsg);
+      throw err;
     }
   };
 
@@ -276,6 +297,7 @@ export const ShopProvider = ({ children }) => {
       });
     }
     setIsCartOpen(true);
+    toast.success('Added to cart!');
   };
 
   const removeFromCart = async (indexOrId) => {
@@ -354,19 +376,28 @@ export const ShopProvider = ({ children }) => {
         const res = await api.post('/wishlist', { productId });
         if (res.data?.added) {
           setWishlist(prev => [...prev, productId]);
+          toast.success('Added to wishlist!');
         } else {
           setWishlist(prev => prev.filter(id => id !== productId));
+          toast.success('Removed from wishlist');
         }
         return;
       } catch (err) {
         console.error('Error toggling wishlist:', err);
+        toast.error('Failed to update wishlist');
       }
     }
     setWishlist(prev => {
-      const updated = prev.includes(productId)
+      const isWish = prev.includes(productId);
+      const updated = isWish
         ? prev.filter(id => id !== productId)
         : [...prev, productId];
       if (!currentUser) localStorage.setItem('surangi_guest_wishlist', JSON.stringify(updated));
+      if (isWish) {
+        toast.success('Removed from wishlist');
+      } else {
+        toast.success('Added to wishlist!');
+      }
       return updated;
     });
   };
@@ -536,10 +567,12 @@ export const ShopProvider = ({ children }) => {
       if (res.data?.order) {
         setOrders(prev => [res.data.order, ...prev]);
         clearCart();
+        toast.success('Order placed successfully!');
         return res.data.order;
       }
     } catch (err) {
       console.error('Error adding order:', err);
+      toast.error(err.response?.data?.message || 'Failed to place order.');
       throw err;
     }
   };
@@ -612,8 +645,9 @@ export const ShopProvider = ({ children }) => {
     if (is18Plus) {
       localStorage.setItem('surangi_age_verified', 'true');
       setIsAgeVerified(true);
+      toast.success('Welcome to Surangi Naar!');
     } else {
-      alert("You must be 18 or older to browse Surangi Naar.");
+      toast.error("You must be 18 or older to browse Surangi Naar.");
     }
   };
 
@@ -646,6 +680,7 @@ export const ShopProvider = ({ children }) => {
       registerWithEmail,
       loginWithGoogle,
       logoutUser,
+      deleteUserAccount,
 
       // Cart & Wishlist
       cart,

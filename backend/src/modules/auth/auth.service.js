@@ -170,3 +170,10 @@ export const getCurrentUser = async (userId) => {
 
   return user;
 };
+
+export const deleteUserAccount = async (userId) => {
+  await prisma.user.delete({
+    where: { id: userId },
+  });
+  return { success: true };
+};

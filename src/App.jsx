@@ -74,6 +74,8 @@ function MainLayout() {
   );
 }
 
+import { Toaster } from 'react-hot-toast';
+
 export default function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -83,6 +85,34 @@ export default function App() {
         <SmoothScroll>
           <ShopProvider>
             <ScrollToTop />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3000,
+                style: {
+                  background: '#f7f3ee',
+                  color: '#39322f',
+                  border: '1px solid #d4a373',
+                  borderRadius: '16px',
+                  padding: '12px 16px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                },
+                success: {
+                  iconTheme: {
+                    primary: '#d4a373',
+                    secondary: '#f7f3ee',
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: '#e11d48',
+                    secondary: '#f7f3ee',
+                  },
+                },
+              }}
+            />
             <MainLayout />
           </ShopProvider>
         </SmoothScroll>

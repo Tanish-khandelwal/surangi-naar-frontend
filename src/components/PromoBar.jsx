@@ -25,7 +25,7 @@ export default function PromoBar() {
   };
 
   return (
-    <div className="bg-[#1a1716] text-[#f8f4ee] text-xs font-sans tracking-widest uppercase py-2.5 px-4 relative z-50 border-b border-[#d4a373]/30 shadow-md">
+    <div className="bg-[#1a1716] text-[#f8f4ee] text-xs font-sans tracking-widest uppercase py-2.5 px-4 relative z-20 border-b border-[#d4a373]/30 shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <button 
           onClick={handlePrev}

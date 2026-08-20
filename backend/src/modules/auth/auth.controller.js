@@ -9,7 +9,8 @@ export const register = async (req, res, next) => {
     return sendSuccess(res, 201, result, 'User registered successfully');
   } catch (error) {
     if (error.name === 'ZodError') {
-      return sendError(res, 400, 'Validation Error', error.errors);
+      const firstMsg = error.errors?.[0]?.message || 'Validation Error';
+      return sendError(res, 400, firstMsg, error.errors);
     }
     return sendError(res, 400, error.message);
   }
@@ -22,7 +23,8 @@ export const login = async (req, res, next) => {
     return sendSuccess(res, 200, result, 'Logged in successfully');
   } catch (error) {
     if (error.name === 'ZodError') {
-      return sendError(res, 400, 'Validation Error', error.errors);
+      const firstMsg = error.errors?.[0]?.message || 'Validation Error';
+      return sendError(res, 400, firstMsg, error.errors);
     }
     return sendError(res, 401, error.message);
   }
@@ -35,7 +37,8 @@ export const googleLogin = async (req, res, next) => {
     return sendSuccess(res, 200, result, 'Google login successful');
   } catch (error) {
     if (error.name === 'ZodError') {
-      return sendError(res, 400, 'Validation Error', error.errors);
+      const firstMsg = error.errors?.[0]?.message || 'Validation Error';
+      return sendError(res, 400, firstMsg, error.errors);
     }
     return sendError(res, 401, error.message);
   }
@@ -64,5 +67,14 @@ export const me = async (req, res, next) => {
     return sendSuccess(res, 200, { user }, 'User details fetched');
   } catch (error) {
     return sendError(res, 404, error.message);
+  }
+};
+
+export const deleteAccount = async (req, res, next) => {
+  try {
+    await authService.deleteUserAccount(req.user.id);
+    return sendSuccess(res, 200, {}, 'Account permanently deleted');
+  } catch (error) {
+    return sendError(res, 400, error.message);
   }
 };
