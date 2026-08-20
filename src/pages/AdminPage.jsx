@@ -739,8 +739,8 @@ export default function AdminPage() {
                       {orders.slice(0, 5).map(order => (
                         <tr key={order.id} className="hover:bg-[#f8f4ee]/60 transition-colors">
                           <td className="py-3.5 px-3 font-mono font-bold text-[#39322f]">{order.id}</td>
-                          <td className="py-3.5 px-3 font-semibold text-[#2d2624]">{order.customer.name}</td>
-                          <td className="py-3.5 px-3 font-bold text-[#b58349]">₹{order.total.toLocaleString()}</td>
+                          <td className="py-3.5 px-3 font-semibold text-[#2d2624]">{order.customerName || order.customer?.name || 'Guest Customer'}</td>
+                          <td className="py-3.5 px-3 font-bold text-[#b58349]">₹{(order.total || 0).toLocaleString()}</td>
                           <td className="py-3.5 px-3">
                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
                               order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
@@ -948,12 +948,12 @@ export default function AdminPage() {
                       <tr key={order.id} className="hover:bg-[#f8f4ee]/60 transition-colors">
                         <td className="py-4 px-4">
                           <span className="font-mono font-bold text-[#b58349] block">{order.id}</span>
-                          <span className="text-[10px] text-gray-500">{new Date(order.date).toLocaleDateString()}</span>
+                          <span className="text-[10px] text-gray-500">{new Date(order.createdAt || order.date || Date.now()).toLocaleDateString()}</span>
                         </td>
                         <td className="py-4 px-4">
-                          <div className="font-bold text-[#2d2624]">{order.customer.name}</div>
-                          <div className="text-[10px] text-gray-600">{order.customer.phone}</div>
-                          <div className="text-[10px] text-gray-500 truncate max-w-xs">{order.customer.address}</div>
+                          <div className="font-bold text-[#2d2624]">{order.customerName || order.customer?.name || 'Guest Customer'}</div>
+                          <div className="text-[10px] text-gray-600">{order.customerPhone || order.customer?.phone || 'N/A'}</div>
+                          <div className="text-[10px] text-gray-500 truncate max-w-xs">{order.customerAddress || order.customer?.address || 'N/A'}</div>
                         </td>
                         <td className="py-4 px-4">
                           {order.items.map((item, idx) => (
