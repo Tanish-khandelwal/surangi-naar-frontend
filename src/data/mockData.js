@@ -32,7 +32,7 @@ export const CATEGORIES_GRID = [
     slug: "kurtis",
     name: "Kurtis",
     count: "28 Styles",
-    image: "/images/products/real_product_3.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236587/surangi-naar/products/real_product_3.jpg",
     tagline: "Handprinted Malmal & Chanderi Tunics"
   },
   {
@@ -40,7 +40,7 @@ export const CATEGORIES_GRID = [
     slug: "short-kurtis",
     name: "Short Kurtis",
     count: "24 Styles",
-    image: "/images/products/real_product_6.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236591/surangi-naar/products/real_product_6.jpg",
     tagline: "Resort Luxe & Linen Sets"
   },
   {
@@ -48,7 +48,7 @@ export const CATEGORIES_GRID = [
     slug: "festive-wear",
     name: "Festive Wear",
     count: "32 Styles",
-    image: "/images/products/real_product_5.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236590/surangi-naar/products/real_product_5.jpg",
     tagline: "Heavy Embroidered Anarkalis & Festive Sets"
   }
 ];
@@ -61,7 +61,7 @@ export const HERO_SLIDES = [
     description: "Intricate hand-highlighted Zardosi & Gota Patti festive ensembles for grand celebrations.",
     cta: "Explore Festive Wear",
     categorySlug: "festive-wear",
-    image: "/images/products/real_product_7.jpg"
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg"
   },
   {
     id: 2,
@@ -70,7 +70,7 @@ export const HERO_SLIDES = [
     description: "Flowing breathable fabrics designed for sunshine, warm breezes, and effortless elegance.",
     cta: "Shop Short Kurtis",
     categorySlug: "short-kurtis",
-    image: "/images/products/real_product_4.jpg"
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236588/surangi-naar/products/real_product_4.jpg"
   },
   {
     id: 3,
@@ -79,7 +79,7 @@ export const HERO_SLIDES = [
     description: "Versatile Mul Chanderi & Soft Cotton Kurtis featuring authentic Jaipur embroidery and prints.",
     cta: "Discover Kurtis",
     categorySlug: "kurtis",
-    image: "/images/products/real_product_2.jpg"
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236586/surangi-naar/products/real_product_2.jpg"
   }
 ];
 
@@ -95,8 +95,8 @@ export const PRODUCTS_CURATED = [
       { name: "Lavender Lilac", hex: "#b497d6" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
-    image: "/images/products/real_product_1.jpg",
-    secondaryImage: "/images/products/real_product_2.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236586/surangi-naar/products/real_product_2.jpg",
     badge: "Bestseller",
     rating: 4.9,
     isSoldOut: false,
@@ -116,8 +116,8 @@ export const PRODUCTS_CURATED = [
       { name: "Sage Green", hex: "#95a383" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
-    image: "/images/products/real_product_2.jpg",
-    secondaryImage: "/images/products/real_product_1.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236586/surangi-naar/products/real_product_2.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg",
     badge: "New Arrival",
     rating: 4.92,
     isSoldOut: false,
@@ -137,8 +137,8 @@ export const PRODUCTS_CURATED = [
       { name: "Slate Grey", hex: "#87888a" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
-    image: "/images/products/real_product_3.jpg",
-    secondaryImage: "/images/products/real_product_4.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236587/surangi-naar/products/real_product_3.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236588/surangi-naar/products/real_product_4.jpg",
     badge: "Trending",
     rating: 4.88,
     isSoldOut: false,
@@ -158,8 +158,8 @@ export const PRODUCTS_CURATED = [
       { name: "Mustard Gold", hex: "#d4a017" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
-    image: "/images/products/real_product_4.jpg",
-    secondaryImage: "/images/products/real_product_5.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236588/surangi-naar/products/real_product_4.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236590/surangi-naar/products/real_product_5.jpg",
     badge: "Featured",
     rating: 4.85,
     isSoldOut: false,
@@ -179,8 +179,8 @@ export const PRODUCTS_CURATED = [
       { name: "Royal Purple", hex: "#5a2d82" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
-    image: "/images/products/real_product_5.jpg",
-    secondaryImage: "/images/products/real_product_6.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236590/surangi-naar/products/real_product_5.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236591/surangi-naar/products/real_product_6.jpg",
     badge: "Glamour Edit",
     rating: 4.95,
     isSoldOut: false,
@@ -200,8 +200,8 @@ export const PRODUCTS_CURATED = [
       { name: "Royal Red", hex: "#c83228" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
-    image: "/images/products/real_product_6.jpg",
-    secondaryImage: "/images/products/real_product_7.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236591/surangi-naar/products/real_product_6.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg",
     badge: "Popular",
     rating: 4.8,
     isSoldOut: false,
@@ -223,8 +223,8 @@ export const PRODUCTS_CURATED = [
       { name: "Champagne Gold", hex: "#e0c9a6" }
     ],
     sizes: ["XS", "S", "M", "L", "XL"],
-    image: "/images/products/real_product_9.jpg",
-    secondaryImage: "/images/products/real_product_10.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg",
     badge: "Trending",
     rating: 4.89,
     isSoldOut: false,
@@ -244,8 +244,8 @@ export const PRODUCTS_CURATED = [
       { name: "Terracotta Earth", hex: "#c86d51" }
     ],
     sizes: ["S", "M", "L", "XL"],
-    image: "/images/products/real_product_10.jpg",
-    secondaryImage: "/images/products/real_product_11.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png",
     badge: "Resort Luxe",
     rating: 4.91,
     isSoldOut: false,
@@ -265,8 +265,8 @@ export const PRODUCTS_CURATED = [
       { name: "Olive Palm", hex: "#4b5320" }
     ],
     sizes: ["XS", "S", "M", "L"],
-    image: "/images/products/real_product_11.jpg",
-    secondaryImage: "/images/products/real_product_12.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg",
     badge: "Must Have",
     rating: 4.86,
     isSoldOut: false,
@@ -288,8 +288,8 @@ export const PRODUCTS_CURATED = [
       { name: "Royal Emerald", hex: "#1b4332" }
     ],
     sizes: ["S", "M", "L", "XL"],
-    image: "/images/products/real_product_14.jpg",
-    secondaryImage: "/images/products/real_product_15.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png",
     badge: "Exclusive",
     rating: 5.0,
     isSoldOut: false,
@@ -309,8 +309,8 @@ export const PRODUCTS_CURATED = [
       { name: "Crimson Red", hex: "#8b0000" }
     ],
     sizes: ["S", "M", "L", "Custom"],
-    image: "/images/products/real_product_15.jpg",
-    secondaryImage: "/images/products/real_product_16.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
     badge: "Royal Edit",
     rating: 4.96,
     isSoldOut: false,
@@ -330,8 +330,8 @@ export const PRODUCTS_CURATED = [
       { name: "Deep Ruby", hex: "#5c1325" }
     ],
     sizes: ["S", "M", "L", "Custom"],
-    image: "/images/products/real_product_16.jpg",
-    secondaryImage: "/images/products/real_product_17.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png",
     badge: "Bridal Couture",
     rating: 4.98,
     isSoldOut: false,
@@ -354,8 +354,8 @@ export const NEW_ARRIVALS = [
       { name: "Rust Orange", hex: "#d9531e" }
     ],
     sizes: ["S", "M", "L", "XL"],
-    image: "/images/products/real_product_7.jpg",
-    secondaryImage: "/images/products/real_product_8.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236593/surangi-naar/products/real_product_8.jpg",
     isSoldOut: false,
     rating: 4.9,
     description: "Rich straight kurti with intricate metallic zari border highlights.",
@@ -374,8 +374,8 @@ export const NEW_ARRIVALS = [
       { name: "Olive Green", hex: "#556b2f" }
     ],
     sizes: ["XS", "S", "M", "L"],
-    image: "/images/products/real_product_12.jpg",
-    secondaryImage: "/images/products/real_product_13.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236564/surangi-naar/products/real_product_13.jpg",
     isSoldOut: false,
     rating: 4.88,
     description: "Breathable natural linen resort short kurti set with tailored high-rise pants.",
@@ -394,8 +394,8 @@ export const NEW_ARRIVALS = [
       { name: "Royal Purple", hex: "#5a2d82" }
     ],
     sizes: ["S", "M", "L"],
-    image: "/images/products/real_product_17.jpg",
-    secondaryImage: "/images/products/real_product_18.jpg",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png",
+    secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236584/surangi-naar/products/real_product_18.png",
     isSoldOut: false,
     rating: 4.95,
     description: "Pastel organza flared tunic set with sequin motifs and a heavy tissue dupatta.",
@@ -411,21 +411,21 @@ export const EXCLUSIVE_COLLECTION = [
     title: "Handcrafted Kurtis Collection",
     tagline: "Timeless motifs block-printed and embroidered by master craftsmen of Jaipur.",
     categorySlug: "kurtis",
-    image: "/images/products/real_product_1.jpg"
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg"
   },
   {
     id: "ex2",
     title: "Luxury Silk Short Kurtis",
     tagline: "Fluid resort silhouettes woven with pure Mulberry silk and organic linen.",
     categorySlug: "short-kurtis",
-    image: "/images/products/real_product_9.jpg"
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg"
   },
   {
     id: "ex3",
     title: "Royal Festive Wear Edit",
     tagline: "Intricate Zardosi & Gota Patti handcrafted for grand celebrations.",
     categorySlug: "festive-wear",
-    image: "/images/products/real_product_14.jpg"
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png"
   }
 ];
 
@@ -435,7 +435,7 @@ export const FOUNDER_INFO = {
   quote: "“Fashion at Surangi Naar is not merely attire — it is an emotional ode to traditional Indian craftsmanship re-imagined for the global woman.”",
   storyParagraph1: "Surangi Naar emerged from a passion for preserving India’s rich textile heritage while catering to modern aesthetic sensibilities. Each garment tells a story of dedicated master artisans, hand-selected pure fabrics, and meticulous embroidery.",
   storyParagraph2: "From royal Chanderi weaves to contemporary fluid short kurtis, the label blends understated luxury with expressive, feminine grace — creating timeless pieces crafted to be cherished across generations.",
-  image: "/images/products/real_product_18.jpg",
+  image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236584/surangi-naar/products/real_product_18.png",
   badges: [
     { label: "Handcrafted in India", icon: "Sparkles" },
     { label: "Sustainable Fabrics", icon: "Leaf" },
