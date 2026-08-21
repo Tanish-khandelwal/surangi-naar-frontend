@@ -200,11 +200,17 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 p-1 sm:p-1.5 rounded-full bg-[#d4a373]/15 hover:bg-[#d4a373]/30 border border-[#d4a373]/40 transition-all cursor-pointer"
                   title="My Account Profile"
                 >
-                  <img
-                    src={currentUser.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"}
-                    alt={currentUser.name}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-white"
-                  />
+                  {currentUser.avatar ? (
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-white"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#39322f] text-[#f7f3ee] flex items-center justify-center font-serif text-[10px] sm:text-xs font-bold border border-white uppercase shrink-0">
+                      {currentUser.name ? currentUser.name.charAt(0) : <User className="w-3 h-3" />}
+                    </div>
+                  )}
                   <span className="text-xs font-semibold text-[#2d2624] pr-2 hidden md:inline">
                     {currentUser.name.split(' ')[0]}
                   </span>

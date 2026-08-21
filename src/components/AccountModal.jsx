@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useShop } from '../context/ShopContext';
-import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
+import { X, Phone, ShoppingBag, LogOut, ShieldCheck, Sparkles, Trash2, User } from 'lucide-react';
 
 export default function AccountModal() {
   const {
@@ -96,12 +96,18 @@ export default function AccountModal() {
 
         {/* User Profile Header */}
         <div className="flex items-center gap-4 pb-6 border-b border-[#e8e2d9]">
-          <img
-            src={currentUser.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"}
-            alt={currentUser.name}
-            loading="lazy"
-            className="w-16 h-16 rounded-full object-cover border-2 border-[#d4a373] shadow-md shrink-0"
-          />
+          {currentUser.avatar ? (
+            <img
+              src={currentUser.avatar}
+              alt={currentUser.name}
+              loading="lazy"
+              className="w-16 h-16 rounded-full object-cover border-2 border-[#d4a373] shadow-md shrink-0"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#39322f] to-[#b58349] text-[#f7f3ee] flex items-center justify-center font-serif text-2xl font-bold border-2 border-[#d4a373] shadow-md shrink-0 uppercase">
+              {currentUser.name ? currentUser.name.charAt(0) : <User className="w-8 h-8" />}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-cinzel text-xl font-bold text-[#2d2624] truncate">{currentUser.name}</h3>
