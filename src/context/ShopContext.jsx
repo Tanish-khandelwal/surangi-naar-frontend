@@ -148,6 +148,25 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
+  const fetchUserOrders = async () => {
+    if (!currentUser || currentUser.role === 'admin') return;
+    try {
+      const res = await api.get('/orders');
+      if (res.data?.orders) {
+        setOrders(res.data.orders);
+      }
+    } catch (err) {
+      console.error('Error fetching user orders:', err);
+    }
+  };
+
+  // 3. Fetch logged in customer orders (GET /api/orders) on login / user session change
+  useEffect(() => {
+    if (currentUser && currentUser.role !== 'admin') {
+      fetchUserOrders();
+    }
+  }, [currentUser]);
+
   // Merge Guest Cart to Server Cart upon login
   const mergeGuestCart = async () => {
     const guestCartStr = localStorage.getItem('surangi_guest_cart');
@@ -248,6 +267,7 @@ export const ShopProvider = ({ children }) => {
       setCurrentUser(null);
       setCart([]);
       setWishlist([]);
+      setOrders([]);
       closeAccountModal();
       toast.success('Signed out successfully');
     }
@@ -551,6 +571,9 @@ export const ShopProvider = ({ children }) => {
         setOrders(prev => [res.data.order, ...prev]);
         clearCart();
         toast.success('Order placed successfully!');
+        if (currentUser && currentUser.role !== 'admin') {
+          await fetchUserOrders();
+        }
         return res.data.order;
       }
     } catch (err) {

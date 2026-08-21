@@ -74,8 +74,11 @@ export default function AccountModal() {
 
   // Filter orders for current user or default demo history
   const userOrders = (orders || []).filter(o => 
-    o.customer?.email?.toLowerCase() === currentUser.email?.toLowerCase() ||
-    o.customer?.name?.toLowerCase().includes(currentUser.name?.toLowerCase().split(' ')[0])
+    (o.userId && o.userId === currentUser.id) ||
+    (o.customerEmail && o.customerEmail.toLowerCase() === currentUser.email?.toLowerCase()) ||
+    (o.customer?.email && o.customer.email.toLowerCase() === currentUser.email?.toLowerCase()) ||
+    (currentUser.name && o.customerName && o.customerName.toLowerCase().includes(currentUser.name.toLowerCase().split(' ')[0])) ||
+    (currentUser.name && o.customer?.name && o.customer.name.toLowerCase().includes(currentUser.name.toLowerCase().split(' ')[0]))
   );
 
   return (
@@ -191,7 +194,7 @@ export default function AccountModal() {
                     ))}
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-[#e8e2d9] text-[11px]">
-                    <span className="text-gray-400">{new Date(order.date).toLocaleDateString()}</span>
+                    <span className="text-gray-400">{new Date(order.date || order.createdAt || Date.now()).toLocaleDateString()}</span>
                     <span className="font-bold text-[#b58349]">₹{order.total?.toLocaleString()}</span>
                   </div>
                 </div>
