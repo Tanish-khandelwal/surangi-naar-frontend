@@ -12,13 +12,41 @@ export default function ProductCard({ product }) {
     setQuickViewProduct 
   } = useShop();
 
-  const cardColors = product.colors && product.colors.length > 0 ? product.colors : [{ name: 'Royal Purple', hex: '#5a2d82' }];
-  const [selectedColor, setSelectedColor] = useState(cardColors[0]);
+  const cardVariants = (product.colorVariants && product.colorVariants.length > 0)
+    ? product.colorVariants
+    : (product.colors && product.colors.length > 0
+        ? product.colors.map(c => ({
+            name: typeof c === 'object' ? c.name : c,
+            hex: typeof c === 'object' ? c.hex : '#5a2d82',
+            image: product.image,
+            secondaryImage: product.secondaryImage || product.image
+          }))
+        : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+
+  const [selectedColor, setSelectedColor] = useState(cardVariants[0]);
   const [selectedSize, setSelectedSize] = useState(null);
+
+  React.useEffect(() => {
+    const vars = (product.colorVariants && product.colorVariants.length > 0)
+      ? product.colorVariants
+      : (product.colors && product.colors.length > 0
+          ? product.colors.map(c => ({
+              name: typeof c === 'object' ? c.name : c,
+              hex: typeof c === 'object' ? c.hex : '#5a2d82',
+              image: product.image,
+              secondaryImage: product.secondaryImage || product.image
+            }))
+          : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+    setSelectedColor(vars[0]);
+  }, [product.id, product.colorVariants, product.colors, product.image, product.secondaryImage]);
+
+  const displayImage = selectedColor?.image || cardVariants[0]?.image || product.image;
+  const rawHoverImage = selectedColor?.secondaryImage || (selectedColor?.secondaryImage === null ? null : (cardVariants[0]?.secondaryImage || product.secondaryImage));
+  const hasSecondaryImage = Boolean(rawHoverImage && rawHoverImage.trim() !== '' && rawHoverImage !== displayImage);
+  const displayHoverImage = hasSecondaryImage ? rawHoverImage : displayImage;
 
   const isWishlisted = isInWishlist(product.id);
   const availableSizes = product.sizes || ['XS', 'S', 'M', 'L', 'XL'];
-
 
   const handleQuickAddSize = (e, size) => {
     e.stopPropagation();
@@ -43,12 +71,29 @@ export default function ProductCard({ product }) {
         
         {/* Link to Product Details */}
         <Link to={`/product/${product.id}`} className="block w-full h-full relative overflow-hidden">
-          <img
-            src={getImageUrl(product.image)}
-            alt={product.name}
-            loading="lazy"
-            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
-          />
+          {hasSecondaryImage ? (
+            <>
+              <img
+                src={getImageUrl(displayImage)}
+                alt={product.name}
+                loading="lazy"
+                className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 opacity-100 group-hover:opacity-0"
+              />
+              <img
+                src={getImageUrl(displayHoverImage)}
+                alt={`${product.name} hover view`}
+                loading="lazy"
+                className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 opacity-0 group-hover:opacity-100"
+              />
+            </>
+          ) : (
+            <img
+              src={getImageUrl(displayImage)}
+              alt={product.name}
+              loading="lazy"
+              className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+            />
+          )}
         </Link>
 
         {/* Badges Overlay */}
@@ -149,7 +194,7 @@ export default function ProductCard({ product }) {
 
           {/* Color Swatches Row */}
           <div className="flex items-center gap-1.5 mt-2 mb-1.5">
-            {cardColors.map((color, idx) => (
+            {cardVariants.map((color, idx) => (
               <button
                 key={idx}
                 onClick={() => setSelectedColor(color)}
@@ -161,7 +206,7 @@ export default function ProductCard({ product }) {
               />
             ))}
             <span className="text-[9px] sm:text-[10px] text-[#39322f]/60 font-sans ml-0.5 line-clamp-1">
-              {selectedColor?.name || cardColors[0]?.name}
+              {selectedColor?.name || cardVariants[0]?.name}
             </span>
           </div>
         </div>

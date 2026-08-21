@@ -23,91 +23,119 @@ export default function ProductDetailPage() {
 
   const product = (allProducts || []).find(p => p.id === id) || (allProducts && allProducts[0]) || {};
 
-  const productColors = product.colors && product.colors.length > 0
-    ? product.colors
-    : [{ name: 'Royal Purple', hex: '#5a2d82' }];
+  const productColors = (product.colorVariants && product.colorVariants.length > 0)
+    ? product.colorVariants
+    : (product.colors && product.colors.length > 0
+        ? product.colors.map(c => ({
+            name: typeof c === 'object' ? c.name : c,
+            hex: typeof c === 'object' ? c.hex : '#5a2d82',
+            image: product.image,
+            secondaryImage: product.secondaryImage || product.image
+          }))
+        : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
 
   const [selectedColor, setSelectedColor] = useState(productColors[0]);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
-  const activeImage = product.image;
+  const activeImage = selectedColor?.image || productColors[0]?.image || product.image;
   const [activeTab, setActiveTab] = useState('description');
 
   useEffect(() => {
-    const cols = product.colors && product.colors.length > 0
-      ? product.colors
-      : [{ name: 'Royal Purple', hex: '#5a2d82' }];
+    if (!product || !product.id) return;
+    const cols = (product.colorVariants && product.colorVariants.length > 0)
+      ? product.colorVariants
+      : (product.colors && product.colors.length > 0
+          ? product.colors.map(c => ({
+              name: typeof c === 'object' ? c.name : c,
+              hex: typeof c === 'object' ? c.hex : '#5a2d82',
+              image: product.image,
+              secondaryImage: product.secondaryImage || product.image
+            }))
+          : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
     setSelectedColor(cols[0]);
     setSelectedSize(product.sizes ? product.sizes[0] : 'Free Size');
     setQuantity(1);
-  }, [product.id, product.colors, product.sizes]);
+  }, [product.id, product.colorVariants, product.colors, product.sizes, product.image]);
 
-  const isWishlisted = isInWishlist(product.id);
-  const relatedProducts = allProducts.filter(p => p.id !== product.id).slice(0, 4);
+  const isWishlisted = isInWishlist(product?.id);
+  const relatedProducts = (allProducts || []).filter(p => p?.id && p.id !== product?.id).slice(0, 4);
 
   const handleAddToCart = () => {
-    if (product.isSoldOut) return;
+    if (!product.id || product.isSoldOut) return;
     addToCart(product, selectedColor, selectedSize, quantity);
   };
+
+  if (!product || !product.id) {
+    return (
+      <div className="bg-[#f7f3ee] min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-10 h-10 border-2 border-[#d4a373] border-t-transparent rounded-full animate-spin mb-4" />
+        <h2 className="font-serif text-xl font-bold text-[#39322f] mb-2">Loading Product Details...</h2>
+        <p className="text-xs text-[#39322f]/60 mb-6 font-sans">Fetching artisanal details from Surangi Naar studio.</p>
+        <Link to="/shop" className="px-6 py-2.5 rounded-full bg-[#39322f] text-white text-xs font-semibold hover:bg-[#d4a373] hover:text-[#39322f] transition-all duration-300">
+          Back to Shop Catalog
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f7f3ee] min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs font-sans text-[#39322f]/60 mb-8 uppercase tracking-wider">
-          <Link to="/" className="hover:text-[#d4a373] transition-colors">Home</Link>
+        <nav className="flex items-center gap-2 text-xs text-[#39322f]/60 mb-8 font-sans">
+          <Link to="/" className="hover:text-[#39322f] transition-colors">Home</Link>
           <ChevronRight className="w-3.5 h-3.5" />
-          <Link to={`/category/${product.categorySlug || 'kurtis'}`} className="hover:text-[#d4a373] transition-colors">
-            {product.category}
-          </Link>
+          <Link to="/shop" className="hover:text-[#39322f] transition-colors">Shop</Link>
           <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-[#39322f] font-semibold line-clamp-1">{product.name}</span>
+          <span className="text-[#39322f] font-semibold truncate max-w-[200px]">{product.name}</span>
         </nav>
 
-        {/* Product Hero Detail Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 bg-[#fcfbfa] rounded-3xl p-6 sm:p-10 border border-[#e8e2d9] shadow-sm mb-16">
+        {/* Product Showcase Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
           
-          {/* Left Column: Multi-Image Gallery */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#f7f3ee] border border-[#e8e2d9] relative shadow-inner">
+          {/* Main Image Gallery */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="relative aspect-[3/4] w-full luxury-glass rounded-3xl overflow-hidden border border-[#d4a373]/30 shadow-xl group">
               <img
                 src={getImageUrl(activeImage)}
                 alt={product.name}
-                loading="lazy"
-                className="w-full h-full object-cover object-center transition-all duration-500"
+                className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />
-              
-              {/* Badges */}
-              <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-                {product.isSoldOut ? (
-                  <span className="bg-[#231f1e] text-white text-[10px] uppercase font-sans tracking-widest px-3 py-1 rounded-sm font-bold shadow-md">
-                    Sold Out
-                  </span>
-                ) : product.badge ? (
-                  <span className="bg-[#d4a373] text-white text-[10px] uppercase font-sans tracking-widest px-3 py-1 rounded-sm font-bold shadow-md">
+
+              {product.badge && (
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="bg-[#39322f] text-white text-[10px] uppercase font-sans tracking-widest px-3.5 py-1.5 rounded-full font-bold shadow-md flex items-center gap-1.5 border border-[#d4a373]/40">
+                    <Sparkles className="w-3 h-3 text-[#d4a373]" />
                     {product.badge}
                   </span>
-                ) : null}
-              </div>
-            </div>
+                </div>
+              )}
 
+              <button
+                onClick={() => toggleWishlist(product.id)}
+                className="absolute top-4 right-4 p-3 rounded-full bg-white/80 backdrop-blur-md text-[#39322f] hover:bg-white hover:text-rose-500 transition-all duration-300 shadow-lg z-10 cursor-pointer"
+                aria-label="Wishlist"
+              >
+                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-rose-500 text-rose-500' : ''}`} />
+              </button>
+            </div>
           </div>
 
-          {/* Right Column: Product Form & Info */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-            <div className="space-y-5">
+          {/* Product Purchasing Info */}
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+            <div className="space-y-6">
               
-              {/* Category Tag & Rating */}
-              <div className="flex items-center justify-between text-xs">
-                <span className="uppercase tracking-[0.2em] font-semibold text-[#d4a373]">
-                  {product.category}
+              {/* Category & Rating */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase font-sans tracking-widest text-[#d4a373] font-bold">
+                  {product.category || 'Luxury Ensemble'}
                 </span>
                 {product.rating && (
-                  <div className="flex items-center gap-1.5 font-sans font-semibold text-[#39322f]">
-                    <div className="flex text-[#d4a373]">
+                  <div className="flex items-center gap-1 text-xs font-semibold text-[#39322f]">
+                    <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 fill-[#d4a373]" />
                       ))}
@@ -125,11 +153,11 @@ export default function ProductDetailPage() {
               {/* Price Row */}
               <div className="flex items-baseline gap-4 border-b border-[#e8e2d9] pb-4">
                 <span className="font-serif text-3xl font-bold text-[#39322f]">
-                  ₹{product.price.toLocaleString('en-IN')}
+                  ₹{(product.price || 0).toLocaleString('en-IN')}
                 </span>
                 {product.originalPrice && (
                   <span className="text-base text-[#39322f]/40 line-through font-sans">
-                    ₹{product.originalPrice.toLocaleString('en-IN')}
+                    ₹{(product.originalPrice || 0).toLocaleString('en-IN')}
                   </span>
                 )}
                 <span className="text-xs text-emerald-600 font-bold uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded-md">
@@ -316,8 +344,11 @@ export default function ProductDetailPage() {
               <p>{product.description}</p>
             )}
             {activeTab === 'fabric' && (
-              <div className="space-y-2">
-                <p><strong>Fabric:</strong> {product.fabric || '100% Pure Mulberry Silk & Handprinted Organza'}</p>
+              <div className="space-y-3">
+                <p><strong>Fabric Composition:</strong> {product.fabric || '100% Pure Mulberry Silk & Handprinted Organza'}</p>
+                {product.craftsmanship && (
+                  <p><strong>Craftsmanship & Embroidery:</strong> {product.craftsmanship}</p>
+                )}
                 <p><strong>Care Instructions:</strong> {product.care || 'Dry clean only. Store in pure cotton wrapping.'}</p>
               </div>
             )}

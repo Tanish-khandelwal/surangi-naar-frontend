@@ -43,4 +43,7 @@ router.delete('/discounts/:code', requireAdmin, adminController.deleteDiscountCo
 // Store Settings
 router.put('/store-settings', requireAdmin, adminController.updateStoreSettings);
 
+// Registered Customers
+router.get('/customers', requireAdmin, adminController.getAllCustomers);
+
 export default router;

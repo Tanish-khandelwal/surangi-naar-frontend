@@ -19,14 +19,23 @@ function QuickViewModalContent({ product, onClose }) {
     isInWishlist 
   } = useShop();
 
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors ? product.colors[0] : null
-  );
+  const modalVariants = (product.colorVariants && product.colorVariants.length > 0)
+    ? product.colorVariants
+    : (product.colors && product.colors.length > 0
+        ? product.colors.map(c => ({
+            name: typeof c === 'object' ? c.name : c,
+            hex: typeof c === 'object' ? c.hex : '#5a2d82',
+            image: product.image,
+            secondaryImage: product.secondaryImage || product.image
+          }))
+        : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+
+  const [selectedColor, setSelectedColor] = useState(modalVariants[0]);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
-  const selectedImage = product.image;
+  const selectedImage = selectedColor?.image || modalVariants[0]?.image || product.image;
 
   const isWishlisted = isInWishlist(product.id);
 
@@ -109,15 +118,15 @@ function QuickViewModalContent({ product, onClose }) {
             </p>
 
             {/* Colors Selection */}
-            {product.colors && product.colors.length > 0 && (
+            {modalVariants && modalVariants.length > 0 && (
               <div className="space-y-2">
                 <label className="text-xs uppercase font-sans tracking-wider font-semibold text-[#39322f] block">
                   Color Option: <span className="text-[#d4a373] font-normal">{selectedColor?.name}</span>
                 </label>
                 <div className="flex gap-2">
-                  {product.colors.map((c) => (
+                  {modalVariants.map((c, idx) => (
                     <button
-                      key={c.name}
+                      key={idx}
                       onClick={() => setSelectedColor(c)}
                       aria-label={`Select color ${c.name}`}
                       className={`w-7 h-7 rounded-full border-2 transition-all cursor-pointer flex items-center justify-center ${

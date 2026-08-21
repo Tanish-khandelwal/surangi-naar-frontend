@@ -71,6 +71,10 @@ export const adminLogin = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const validatedData = productSchema.parse(req.body);
+    if (validatedData.colorVariants && validatedData.colorVariants.length > 0) {
+      validatedData.image = validatedData.colorVariants[0].image;
+      validatedData.secondaryImage = validatedData.colorVariants[0].secondaryImage ? validatedData.colorVariants[0].secondaryImage : null;
+    }
     const product = await prisma.product.create({ data: validatedData });
     return sendSuccess(res, 201, { product }, 'Product created successfully');
   } catch (error) {
@@ -86,6 +90,10 @@ export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const validatedData = productSchema.partial().parse(req.body);
+    if (validatedData.colorVariants && validatedData.colorVariants.length > 0) {
+      validatedData.image = validatedData.colorVariants[0].image;
+      validatedData.secondaryImage = validatedData.colorVariants[0].secondaryImage ? validatedData.colorVariants[0].secondaryImage : null;
+    }
     const product = await prisma.product.update({
       where: { id },
       data: validatedData,
@@ -390,5 +398,56 @@ export const updateStoreSettings = async (req, res) => {
 
 export const verifyAdmin = async (req, res) => {
   return sendSuccess(res, 200, { valid: true, user: req.user }, 'Admin token verified');
+};
+
+// --- Registered Customers Admin Read ---
+export const getAllCustomers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { role: 'customer' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        provider: true,
+        createdAt: true,
+        addresses: true,
+        orders: {
+          select: {
+            id: true,
+            total: true,
+            status: true,
+            createdAt: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const formattedCustomers = users.map(user => {
+      const totalOrders = user.orders.length;
+      const totalSpent = user.orders.reduce((sum, o) => sum + (o.status !== 'Cancelled' ? o.total : 0), 0);
+      const primaryAddress = user.addresses.find(a => a.isDefault) || user.addresses[0] || null;
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || primaryAddress?.phone || null,
+        avatar: user.avatar,
+        provider: user.provider || 'email',
+        createdAt: user.createdAt,
+        totalOrders,
+        totalSpent,
+        primaryAddress: primaryAddress ? `${primaryAddress.street}, ${primaryAddress.city}, ${primaryAddress.state} - ${primaryAddress.pincode}` : null,
+      };
+    });
+
+    return sendSuccess(res, 200, { customers: formattedCustomers }, 'Customers fetched successfully');
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
 };
 

@@ -14,16 +14,18 @@ model Product {
   categorySlug    String
   price           Int
   originalPrice   Int?
-  colors          Json     // [{ name, hex }]
+  colorVariants   Json     @default("[]") // [{ name, hex, image, secondaryImage }]
   sizes           String[]
   image           String
-  secondaryImage  String?  // stored in DB, but no admin UI field for it yet
+  secondaryImage  String?
   badge           String?
   rating          Float    @default(5.0)
   isSoldOut       Boolean  @default(false)
+  stockQuantity   Int      @default(10)
   description     String?
   fabric          String?
   care            String?
+  craftsmanship   String?
   shipping        String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

@@ -10,6 +10,7 @@ export const ShopProvider = ({ children }) => {
   const [heroSlides, setHeroSlides] = useState([]);
   const [promoMessages, setPromoMessages] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [discountCodes, setDiscountCodes] = useState([]);
   const [storeSettings, setStoreSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -174,6 +175,17 @@ export const ShopProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Error fetching user orders:', err);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const res = await api.get('/admin/customers');
+      if (res.data?.customers) {
+        setCustomers(res.data.customers);
+      }
+    } catch (err) {
+      console.error('Error fetching admin customers:', err);
     }
   };
 
@@ -681,6 +693,9 @@ export const ShopProvider = ({ children }) => {
       promoMessages,
       orders,
       setOrders,
+      customers,
+      setCustomers,
+      fetchCustomers,
       discountCodes,
       setDiscountCodes,
       storeSettings,

@@ -11,17 +11,25 @@ export const productSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   categorySlug: z.string().min(1, 'Category slug is required'),
   price: z.number().positive('Price must be positive'),
-  originalPrice: z.number().nullable().optional(),
-  colors: z.array(z.object({ name: z.string(), hex: z.string() })).or(z.any()),
-  sizes: z.array(z.string()),
-  image: z.string().min(1, 'Image is required'),
+  colorVariants: z.array(
+    z.object({
+      name: z.string().min(1, 'Color name is required'),
+      hex: z.string().min(1, 'Color hex is required'),
+      image: z.string().min(1, 'Main variant image is required'),
+      secondaryImage: z.string().nullable().optional(),
+    })
+  ).min(1, 'At least one color variant is required'),
+  sizes: z.array(z.string()).optional(),
+  image: z.string().optional(),
   secondaryImage: z.string().nullable().optional(),
   badge: z.string().nullable().optional(),
   rating: z.number().optional(),
   isSoldOut: z.boolean().optional(),
+  stockQuantity: z.number().optional(),
   description: z.string().nullable().optional(),
   fabric: z.string().nullable().optional(),
   care: z.string().nullable().optional(),
+  craftsmanship: z.string().nullable().optional(),
   shipping: z.string().nullable().optional(),
 });
 

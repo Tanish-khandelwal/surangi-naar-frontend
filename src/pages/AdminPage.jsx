@@ -26,7 +26,8 @@ import {
   ExternalLink,
   ChevronRight,
   Save,
-  Truck
+  Truck,
+  Users
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -36,6 +37,8 @@ export default function AdminPage() {
     heroSlides,
     promoMessages,
     orders,
+    customers,
+    fetchCustomers,
     discountCodes,
     storeSettings,
     addProduct,
@@ -94,12 +97,29 @@ export default function AdminPage() {
 
     verifyAdminSession();
   }, []);
+
   const [adminEmailInput, setAdminEmailInput] = useState('');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [loginError, setLoginError] = useState(false);
 
   // Active Tab State
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  // Customer Search State
+  const [customerSearch, setCustomerSearch] = useState('');
+
+  // Table Pagination States (10 items per page)
+  const [productsPage, setProductsPage] = useState(1);
+  const [ordersPage, setOrdersPage] = useState(1);
+  const [categoriesPage, setCategoriesPage] = useState(1);
+  const [customersPage, setCustomersPage] = useState(1);
+
+  // Fetch registered customers on auth or tab change
+  React.useEffect(() => {
+    if (isAuthenticated && typeof fetchCustomers === 'function') {
+      fetchCustomers();
+    }
+  }, [isAuthenticated, activeTab]);
 
   // Product Filter & Modal States
   const [productSearch, setProductSearch] = useState('');
@@ -115,13 +135,19 @@ export default function AdminPage() {
     price: '',
     originalPrice: '',
     image: '/images/products/real_product_1.jpg',
+    secondaryImage: '',
     badge: 'New Arrival',
+    sizes: ['M', 'L', 'XL'],
+    stockQuantity: 10,
+    isSoldOut: false,
     description: '',
     fabric: '',
-    care: 'Dry Clean Only.',
-    isSoldOut: false,
-    colorName: 'Royal Purple',
-    colorHex: '#5a2d82'
+    care: 'Dry Clean Only. Store in cotton wrapping.',
+    craftsmanship: '',
+    shipping: 'Complimentary express delivery across India. 7-day hassle-free exchange.',
+    colorVariants: [
+      { name: 'Royal Purple', hex: '#5a2d82', image: '/images/products/real_product_1.jpg', secondaryImage: '' }
+    ]
   });
 
   // Category Modal State
@@ -332,22 +358,38 @@ export default function AdminPage() {
       price: '',
       originalPrice: '',
       image: '/images/products/real_product_1.jpg',
+      secondaryImage: '',
       badge: 'New Arrival',
+      sizes: ['M', 'L', 'XL'],
+      stockQuantity: 10,
+      isSoldOut: false,
       description: '',
       fabric: '',
-      care: 'Dry Clean Only.',
-      isSoldOut: false,
-      colorName: 'Royal Purple',
-      colorHex: '#5a2d82'
+      care: 'Dry Clean Only. Store in pure cotton wrapping.',
+      craftsmanship: '',
+      shipping: 'Complimentary express delivery across India. 7-day hassle-free exchange.',
+      colorVariants: [
+        { name: 'Royal Purple', hex: '#5a2d82', image: '/images/products/real_product_1.jpg', secondaryImage: '' }
+      ]
     });
     setIsProductModalOpen(true);
   };
 
   const handleOpenEditProductModal = (product) => {
     setEditingProduct(product);
-    const firstCol = (product.colors && product.colors.length > 0) ? product.colors[0] : null;
-    const colName = (typeof firstCol === 'object' ? firstCol?.name : firstCol) || 'Royal Purple';
-    const colHex = (typeof firstCol === 'object' ? firstCol?.hex : '') || '#5a2d82';
+    let variants = [];
+    if (product.colorVariants && Array.isArray(product.colorVariants) && product.colorVariants.length > 0) {
+      variants = product.colorVariants;
+    } else if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
+      variants = product.colors.map(c => ({
+        name: typeof c === 'object' ? c.name : c,
+        hex: typeof c === 'object' ? c.hex : '#5a2d82',
+        image: product.image || '/images/products/real_product_1.jpg',
+        secondaryImage: product.secondaryImage || ''
+      }));
+    } else {
+      variants = [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image || '/images/products/real_product_1.jpg', secondaryImage: product.secondaryImage || '' }];
+    }
 
     setProductForm({
       name: product.name,
@@ -356,13 +398,17 @@ export default function AdminPage() {
       price: product.price,
       originalPrice: product.originalPrice || '',
       image: product.image,
+      secondaryImage: product.secondaryImage || '',
       badge: product.badge || 'Featured',
+      sizes: product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL'],
+      stockQuantity: typeof product.stockQuantity === 'number' ? product.stockQuantity : 10,
+      isSoldOut: product.isSoldOut || false,
       description: product.description || '',
       fabric: product.fabric || '',
       care: product.care || 'Dry Clean Only.',
-      isSoldOut: product.isSoldOut || false,
-      colorName: colName,
-      colorHex: colHex
+      craftsmanship: product.craftsmanship || '',
+      shipping: product.shipping || 'Complimentary express delivery across India. 7-day hassle-free exchange.',
+      colorVariants: variants
     });
     setIsProductModalOpen(true);
   };
@@ -374,30 +420,48 @@ export default function AdminPage() {
       return;
     }
 
+    if (!productForm.colorVariants || productForm.colorVariants.length === 0) {
+      toast.error('Please add at least one color variant.');
+      return;
+    }
+
+    const invalidVar = productForm.colorVariants.find(v => !v.name?.trim() || !v.hex || !v.image);
+    if (invalidVar) {
+      toast.error('Each color variant must have a name, hex code, and main image.');
+      return;
+    }
+
     const priceNum = Number(productForm.price);
     const origPriceNum = productForm.originalPrice ? Number(productForm.originalPrice) : Math.round(priceNum * 1.25);
-    const colorsArray = [
-      {
-        name: productForm.colorName.trim() || 'Royal Purple',
-        hex: productForm.colorHex || '#5a2d82'
-      }
-    ];
+
+    const payload = {
+      name: productForm.name,
+      category: productForm.category,
+      categorySlug: productForm.categorySlug,
+      price: priceNum,
+      originalPrice: origPriceNum,
+      badge: productForm.badge,
+      sizes: productForm.sizes,
+      stockQuantity: productForm.stockQuantity,
+      isSoldOut: productForm.isSoldOut,
+      description: productForm.description,
+      fabric: productForm.fabric,
+      care: productForm.care,
+      craftsmanship: productForm.craftsmanship,
+      shipping: productForm.shipping,
+      colorVariants: productForm.colorVariants.map(v => ({
+        ...v,
+        secondaryImage: v.secondaryImage ? v.secondaryImage : null
+      })),
+      image: productForm.colorVariants[0].image,
+      secondaryImage: productForm.colorVariants[0].secondaryImage ? productForm.colorVariants[0].secondaryImage : null
+    };
 
     if (editingProduct) {
-      updateProduct(editingProduct.id, {
-        ...productForm,
-        colors: colorsArray,
-        price: priceNum,
-        originalPrice: origPriceNum
-      });
+      updateProduct(editingProduct.id, payload);
       showToast(`Updated product "${productForm.name}"`);
     } else {
-      addProduct({
-        ...productForm,
-        colors: colorsArray,
-        price: priceNum,
-        originalPrice: origPriceNum
-      });
+      addProduct(payload);
       showToast(`Added new product "${productForm.name}"`);
     }
     setIsProductModalOpen(false);
@@ -555,6 +619,64 @@ export default function AdminPage() {
     );
   }
 
+  const ITEMS_PER_PAGE = 10;
+
+  function PaginationBar({ currentPage, totalItems, onPageChange }) {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+    if (totalPages <= 1) return null;
+
+    const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+    const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+
+    return (
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#e8e2d9] text-xs font-sans">
+        <span className="text-[#39322f]/60">
+          Showing <strong className="text-[#39322f] font-bold">{startItem}</strong> to <strong className="text-[#39322f] font-bold">{endItem}</strong> of <strong className="text-[#39322f] font-bold">{totalItems}</strong> entries
+        </span>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 rounded-xl bg-white border border-[#e8e2d9] text-[#39322f] hover:bg-[#f8f4ee] disabled:opacity-40 disabled:cursor-not-allowed font-semibold cursor-pointer"
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(pg => (
+            <button
+              key={pg}
+              onClick={() => onPageChange(pg)}
+              className={`w-8 h-8 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                currentPage === pg
+                  ? 'bg-[#39322f] text-white shadow-xs'
+                  : 'bg-white text-[#39322f] border border-[#e8e2d9] hover:bg-[#f8f4ee]'
+              }`}
+            >
+              {pg}
+            </button>
+          ))}
+          <button
+            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 rounded-xl bg-white border border-[#e8e2d9] text-[#39322f] hover:bg-[#f8f4ee] disabled:opacity-40 disabled:cursor-not-allowed font-semibold cursor-pointer"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const paginatedProducts = filteredProducts.slice((productsPage - 1) * ITEMS_PER_PAGE, productsPage * ITEMS_PER_PAGE);
+  const paginatedOrders = orders.slice((ordersPage - 1) * ITEMS_PER_PAGE, ordersPage * ITEMS_PER_PAGE);
+  const paginatedCategories = categories.slice((categoriesPage - 1) * ITEMS_PER_PAGE, categoriesPage * ITEMS_PER_PAGE);
+
+  const filteredCustomers = (customers || []).filter(c => 
+    (c.name || '').toLowerCase().includes(customerSearch.toLowerCase()) ||
+    (c.email || '').toLowerCase().includes(customerSearch.toLowerCase()) ||
+    (c.phone || '').toLowerCase().includes(customerSearch.toLowerCase())
+  );
+  const paginatedCustomers = filteredCustomers.slice((customersPage - 1) * ITEMS_PER_PAGE, customersPage * ITEMS_PER_PAGE);
+
   return (
     <div className="min-h-screen bg-[#f8f4ee] text-[#39322f] font-sans">
       {/* Toast Notification */}
@@ -628,6 +750,7 @@ export default function AdminPage() {
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'products', label: `Products (${products.length})`, icon: Package },
             { id: 'orders', label: `Orders (${orders.length})`, icon: ShoppingBag },
+            { id: 'customers', label: `Customers (${(customers || []).length})`, icon: Users },
             { id: 'categories', label: `Categories (${categories.length})`, icon: Grid },
             { id: 'banners', label: 'Hero & Banners', icon: ImageIcon },
             { id: 'discounts', label: 'Discounts', icon: Tag },
@@ -866,7 +989,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#e8e2d9]">
-                    {filteredProducts.map(product => (
+                    {paginatedProducts.map(product => (
                       <tr key={product.id} className="hover:bg-[#f8f4ee]/60 transition-colors">
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-3">
@@ -934,6 +1057,14 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
+
+              <div className="p-4">
+                <PaginationBar
+                  currentPage={productsPage}
+                  totalItems={filteredProducts.length}
+                  onPageChange={setProductsPage}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -955,7 +1086,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#e8e2d9]">
-                    {orders.map(order => (
+                    {paginatedOrders.map(order => (
                       <tr key={order.id} className="hover:bg-[#f8f4ee]/60 transition-colors">
                         <td className="py-4 px-4">
                           <span className="font-mono font-bold text-[#b58349] block">{order.id}</span>
@@ -1026,6 +1157,113 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
+
+              <div className="pt-4">
+                <PaginationBar
+                  currentPage={ordersPage}
+                  totalItems={orders.length}
+                  onPageChange={setOrdersPage}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: REGISTERED CUSTOMERS MANAGER */}
+        {activeTab === 'customers' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-[#e8e2d9] rounded-2xl p-6 shadow-xs">
+              <div>
+                <h2 className="text-lg font-cinzel font-bold text-[#2d2624]">Registered Customers & LTV Insights</h2>
+                <p className="text-xs text-gray-500 font-sans mt-0.5">Full access to customer profiles, phone numbers, shipping addresses, and order spend</p>
+              </div>
+
+              <div className="relative max-w-xs w-full">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or phone..."
+                  value={customerSearch}
+                  onChange={(e) => { setCustomerSearch(e.target.value); setCustomersPage(1); }}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl pl-9 pr-4 py-2 text-xs text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+            </div>
+
+            <div className="bg-white border border-[#e8e2d9] rounded-2xl p-6 shadow-xs space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#f8f4ee] text-[#b58349] uppercase tracking-wider font-bold border-b border-[#e8e2d9]">
+                    <tr>
+                      <th className="py-3.5 px-4">Customer</th>
+                      <th className="py-3.5 px-4">Contact Info</th>
+                      <th className="py-3.5 px-4">Auth & Registration</th>
+                      <th className="py-3.5 px-4">Orders & Lifetime Spend</th>
+                      <th className="py-3.5 px-4">Primary Address</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#e8e2d9]">
+                    {paginatedCustomers.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-gray-500 font-sans">
+                          No registered customer profiles found matching "{customerSearch}".
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedCustomers.map((cust) => (
+                        <tr key={cust.id} className="hover:bg-[#f8f4ee]/60 transition-colors">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-3">
+                              {cust.avatar ? (
+                                <img src={cust.avatar} alt={cust.name} className="w-10 h-10 rounded-full object-cover border border-[#d4a373]" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-[#39322f] text-white flex items-center justify-center font-serif text-sm font-bold uppercase shrink-0">
+                                  {cust.name ? cust.name.charAt(0) : 'U'}
+                                </div>
+                              )}
+                              <div>
+                                <span className="font-bold text-[#2d2624] block">{cust.name || 'Customer'}</span>
+                                <span className="text-[10px] text-gray-500 font-mono">ID: {cust.id}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="text-[#39322f] font-semibold">{cust.email}</div>
+                            <div className="text-gray-500 text-[11px]">{cust.phone || 'No phone recorded'}</div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#d4a373]/15 text-[#b58349] border border-[#d4a373]/30">
+                              {cust.provider}
+                            </span>
+                            <span className="text-gray-500 text-[10px] block mt-1">
+                              Joined {new Date(cust.createdAt || Date.now()).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="font-serif font-bold text-sm text-[#b58349] block">
+                              ₹{cust.totalSpent?.toLocaleString()}
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-semibold block">
+                              {cust.totalOrders} Completed Order(s)
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="text-xs text-[#39322f]/80 max-w-xs block line-clamp-2">
+                              {cust.primaryAddress || 'No saved address'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <PaginationBar
+                currentPage={customersPage}
+                totalItems={filteredCustomers.length}
+                onPageChange={setCustomersPage}
+              />
             </div>
           </div>
         )}
@@ -1397,98 +1635,204 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Garment Color Specification */}
-              <div className="p-4 bg-[#f8f4ee] rounded-2xl border border-[#d4a373]/30 space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="block uppercase tracking-wider text-[#b58349] font-bold">Product Color Specification</label>
-                  <span className="text-[10px] text-gray-500 font-sans">Sets the "Select Color" swatch for this item</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+              {/* Repeatable Color Variants Container */}
+              <div className="p-4 bg-[#f8f4ee] rounded-2xl border border-[#d4a373]/30 space-y-4">
+                <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-2">
                   <div>
-                    <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Color Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Royal Purple, Rust Orange"
-                      value={productForm.colorName}
-                      onChange={(e) => setProductForm({ ...productForm, colorName: e.target.value })}
-                      className="w-full bg-white border border-[#e8e2d9] rounded-xl px-3.5 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
-                    />
+                    <label className="block uppercase tracking-wider text-[#b58349] font-bold text-xs">Product Color Variants</label>
+                    <p className="text-[10px] text-gray-500 font-sans">Each color variant can have its own main image & secondary hover image.</p>
                   </div>
-
-                  <div>
-                    <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Color Hex Code</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={productForm.colorHex || '#5a2d82'}
-                        onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
-                        className="w-9 h-9 rounded-xl cursor-pointer border border-[#e8e2d9] p-0.5 bg-white shrink-0"
-                      />
-                      <input
-                        type="text"
-                        placeholder="#5a2d82"
-                        value={productForm.colorHex}
-                        onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
-                        className="w-full bg-white border border-[#e8e2d9] rounded-xl px-3 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] uppercase font-mono text-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 1-Click Popular Color Presets */}
-                <div>
-                  <span className="text-[10px] uppercase font-semibold text-[#b58349] tracking-wider block mb-1.5">
-                    Quick Color Presets:
+                  <span className="text-[10px] font-semibold text-[#39322f]/60 bg-white px-2.5 py-1 rounded-full border border-[#e8e2d9]">
+                    {(productForm.colorVariants || []).length} Variant(s)
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { name: "Royal Purple", hex: "#5a2d82" },
-                      { name: "Rust Orange", hex: "#d9531e" },
-                      { name: "Lavender Lilac", hex: "#b497d6" },
-                      { name: "Sage Green", hex: "#95a383" },
-                      { name: "Mustard Gold", hex: "#d4a017" },
-                      { name: "Slate Grey", hex: "#87888a" },
-                      { name: "Deep Ruby", hex: "#8b0000" },
-                      { name: "Blush Pink", hex: "#e8b4b8" },
-                      { name: "Champagne Gold", hex: "#e0c9a6" },
-                      { name: "Midnight Navy", hex: "#1d2d44" },
-                      { name: "Charcoal Black", hex: "#231f1e" }
-                    ].map((preset) => (
-                      <button
-                        key={preset.name}
-                        type="button"
-                        onClick={() => setProductForm({ ...productForm, colorName: preset.name, colorHex: preset.hex })}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] border transition-all cursor-pointer font-sans ${
-                          productForm.colorName === preset.name ? 'bg-[#39322f] text-white border-[#39322f] font-bold shadow-xs' : 'bg-white text-gray-700 border-gray-200 hover:border-[#d4a373]'
-                        }`}
-                      >
-                        <span className="w-2.5 h-2.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: preset.hex }} />
-                        <span>{preset.name}</span>
-                      </button>
-                    ))}
-                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Product Image</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(e, 'product')}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold hover:file:bg-[#d4a373] hover:file:text-[#39322f] cursor-pointer"
-                />
-                {uploadingField === 'product' && (
-                  <p className="text-xs text-[#d4a373] mt-1 animate-pulse font-medium">Uploading to Cloudinary...</p>
-                )}
-                {productForm.image && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <img src={productForm.image} alt="Preview" loading="lazy" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
-                    <span className="text-xs text-gray-500 truncate max-w-xs">{productForm.image}</span>
-                  </div>
-                )}
+                <div className="space-y-4">
+                  {(productForm.colorVariants || []).map((variant, index) => (
+                    <div key={index} className="p-3.5 bg-white rounded-xl border border-[#e8e2d9] space-y-3 relative shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#39322f]">
+                          Color Variant #{index + 1}
+                        </span>
+                        {productForm.colorVariants.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = productForm.colorVariants.filter((_, i) => i !== index);
+                              setProductForm({ ...productForm, colorVariants: updated });
+                            }}
+                            className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer"
+                            title="Remove Variant"
+                          >
+                            ✕ Remove
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Color Name *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Royal Purple, Sage Green"
+                            value={variant.name}
+                            onChange={(e) => {
+                              const updated = [...productForm.colorVariants];
+                              updated[index].name = e.target.value;
+                              setProductForm({ ...productForm, colorVariants: updated });
+                            }}
+                            className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-3 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] text-xs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Color Hex Code *</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={variant.hex || '#5a2d82'}
+                              onChange={(e) => {
+                                const updated = [...productForm.colorVariants];
+                                updated[index].hex = e.target.value;
+                                setProductForm({ ...productForm, colorVariants: updated });
+                              }}
+                              className="w-8 h-8 rounded-xl cursor-pointer border border-[#e8e2d9] p-0.5 bg-white shrink-0"
+                            />
+                            <input
+                              type="text"
+                              placeholder="#5a2d82"
+                              value={variant.hex}
+                              onChange={(e) => {
+                                const updated = [...productForm.colorVariants];
+                                updated[index].hex = e.target.value;
+                                setProductForm({ ...productForm, colorVariants: updated });
+                              }}
+                              className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-3 py-2 text-[#39322f] focus:outline-none focus:border-[#d4a373] uppercase font-mono text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-[#e8e2d9]/60">
+                        <div>
+                          <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Main Image *</label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const formData = new FormData();
+                              formData.append('image', file);
+                              formData.append('file', file);
+                              setUploadingField(`variant_main_${index}`);
+                              try {
+                                const res = await api.post('/admin/upload', formData, {
+                                  headers: { 'Content-Type': 'multipart/form-data' },
+                                });
+                                if (res.data?.url) {
+                                  const updated = [...productForm.colorVariants];
+                                  updated[index].image = res.data.url;
+                                  setProductForm({ ...productForm, colorVariants: updated });
+                                }
+                              } catch (err) {
+                                toast.error('Image upload failed');
+                              } finally {
+                                setUploadingField(null);
+                              }
+                            }}
+                            className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-2.5 py-1.5 text-[11px] text-[#39322f] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold cursor-pointer"
+                          />
+                          {uploadingField === `variant_main_${index}` && (
+                            <p className="text-[10px] text-[#d4a373] mt-1 animate-pulse font-medium">Uploading image...</p>
+                          )}
+                          {variant.image && (
+                            <div className="mt-1.5 flex items-center gap-2">
+                              <img src={getImageUrl(variant.image)} alt="Variant Main" className="w-8 h-8 object-cover rounded-lg border border-[#e8e2d9]" />
+                              <span className="text-[9px] text-gray-500 truncate max-w-[120px]">{variant.image}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block uppercase tracking-wider text-[#39322f] font-semibold text-[10px]">Secondary Hover Image</label>
+                            <span className="text-[9px] text-gray-400 font-sans italic">optional — defaults to main image</span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const formData = new FormData();
+                              formData.append('image', file);
+                              formData.append('file', file);
+                              setUploadingField(`variant_sec_${index}`);
+                              try {
+                                const res = await api.post('/admin/upload', formData, {
+                                  headers: { 'Content-Type': 'multipart/form-data' },
+                                });
+                                if (res.data?.url) {
+                                  const updated = [...productForm.colorVariants];
+                                  updated[index].secondaryImage = res.data.url;
+                                  setProductForm({ ...productForm, colorVariants: updated });
+                                }
+                              } catch (err) {
+                                toast.error('Image upload failed');
+                              } finally {
+                                setUploadingField(null);
+                              }
+                            }}
+                            className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-2.5 py-1.5 text-[11px] text-[#39322f] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold cursor-pointer"
+                          />
+                          {uploadingField === `variant_sec_${index}` && (
+                            <p className="text-[10px] text-[#d4a373] mt-1 animate-pulse font-medium">Uploading image...</p>
+                          )}
+                          {variant.secondaryImage && (
+                            <div className="mt-1.5 flex items-center justify-between gap-2 bg-[#f8f4ee] p-1.5 rounded-xl border border-[#e8e2d9]">
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <img src={getImageUrl(variant.secondaryImage)} alt="Variant Hover" className="w-8 h-8 object-cover rounded-lg border border-[#e8e2d9] shrink-0" />
+                                <span className="text-[9px] text-gray-500 truncate max-w-[100px]">{variant.secondaryImage}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...productForm.colorVariants];
+                                  updated[index].secondaryImage = '';
+                                  setProductForm({ ...productForm, colorVariants: updated });
+                                  toast.info('Secondary hover image removed');
+                                }}
+                                className="text-rose-600 hover:text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white border border-rose-200 hover:bg-rose-50 cursor-pointer shrink-0 transition-colors"
+                                title="Remove secondary hover image"
+                              >
+                                Remove ✕
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    const newVar = { name: '', hex: '#5a2d82', image: '', secondaryImage: '' };
+                    setProductForm({
+                      ...productForm,
+                      colorVariants: [...(productForm.colorVariants || []), newVar]
+                    });
+                    setTimeout(() => {
+                      e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 50);
+                  }}
+                  className="w-full bg-white hover:bg-[#39322f] text-[#39322f] hover:text-white border border-[#d4a373]/50 font-bold py-2.5 px-4 rounded-xl transition-all cursor-pointer text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-2xs"
+                >
+                  <Plus className="w-3.5 h-3.5 text-[#d4a373]" /> Add Another Color Variant
+                </button>
               </div>
 
               <div>
@@ -1501,15 +1845,49 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="soldOutCheck"
-                  checked={productForm.isSoldOut}
-                  onChange={(e) => setProductForm({ ...productForm, isSoldOut: e.target.checked })}
-                  className="rounded bg-[#f8f4ee] border-gray-300 accent-[#d4a373]"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Fabric Composition</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 100% Pure Chanderi Silk"
+                    value={productForm.fabric}
+                    onChange={(e) => setProductForm({ ...productForm, fabric: e.target.value })}
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+                <div>
+                  <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Care Instructions</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Dry Clean Only"
+                    value={productForm.care}
+                    onChange={(e) => setProductForm({ ...productForm, care: e.target.value })}
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Craftsmanship & Embroidery Story</label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Handcrafted with Zardosi metallic threads & Gota Patti embellishments by master artisans in Jaipur."
+                  value={productForm.craftsmanship}
+                  onChange={(e) => setProductForm({ ...productForm, craftsmanship: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
-                <label htmlFor="soldOutCheck" className="text-[#39322f] font-bold cursor-pointer">Mark Product as Sold Out</label>
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Shipping & Return Policy Note</label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Dispatched within 3-5 business days. 7-day hassle-free exchange."
+                  value={productForm.shipping}
+                  onChange={(e) => setProductForm({ ...productForm, shipping: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
               </div>
 
               <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">

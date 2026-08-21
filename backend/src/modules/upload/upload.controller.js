@@ -3,7 +3,8 @@ import { sendSuccess, sendError } from '../../utils/response.js';
 
 export const uploadImage = async (req, res) => {
   try {
-    if (!req.file) {
+    const file = req.file || (req.files && req.files[0]);
+    if (!file) {
       return sendError(res, 400, 'No file uploaded');
     }
 
@@ -22,7 +23,7 @@ export const uploadImage = async (req, res) => {
       }
     );
 
-    uploadStream.end(req.file.buffer);
+    uploadStream.end(file.buffer);
   } catch (error) {
     console.error('Upload Error:', error);
     return sendError(res, 500, error.message);

@@ -91,8 +91,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "kurtis",
     price: 899,
     originalPrice: 1999,
-    colors: [
-      { name: "Lavender Lilac", hex: "#b497d6" }
+    colorVariants: [
+      { name: "Lavender Lilac", hex: "#b497d6", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236586/surangi-naar/products/real_product_2.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg",
@@ -112,8 +112,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "kurtis",
     price: 1199,
     originalPrice: 1499,
-    colors: [
-      { name: "Sage Green", hex: "#95a383" }
+    colorVariants: [
+      { name: "Sage Green", hex: "#95a383", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236586/surangi-naar/products/real_product_2.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236586/surangi-naar/products/real_product_2.jpg",
@@ -133,8 +133,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "kurtis",
     price: 999,
     originalPrice: 1299,
-    colors: [
-      { name: "Slate Grey", hex: "#87888a" }
+    colorVariants: [
+      { name: "Slate Grey", hex: "#87888a", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236587/surangi-naar/products/real_product_3.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236588/surangi-naar/products/real_product_4.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236587/surangi-naar/products/real_product_3.jpg",
@@ -154,8 +154,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "kurtis",
     price: 999,
     originalPrice: 1299,
-    colors: [
-      { name: "Mustard Gold", hex: "#d4a017" }
+    colorVariants: [
+      { name: "Mustard Gold", hex: "#d4a017", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236588/surangi-naar/products/real_product_4.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236590/surangi-naar/products/real_product_5.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236588/surangi-naar/products/real_product_4.jpg",
@@ -175,8 +175,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "kurtis",
     price: 999,
     originalPrice: 1299,
-    colors: [
-      { name: "Royal Purple", hex: "#5a2d82" }
+    colorVariants: [
+      { name: "Royal Purple", hex: "#5a2d82", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236590/surangi-naar/products/real_product_5.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236591/surangi-naar/products/real_product_6.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236590/surangi-naar/products/real_product_5.jpg",
@@ -196,8 +196,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "kurtis",
     price: 1199,
     originalPrice: 1499,
-    colors: [
-      { name: "Royal Red", hex: "#c83228" }
+    colorVariants: [
+      { name: "Royal Red", hex: "#c83228", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236591/surangi-naar/products/real_product_6.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236591/surangi-naar/products/real_product_6.jpg",
@@ -219,8 +219,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "short-kurtis",
     price: 1349,
     originalPrice: 1799,
-    colors: [
-      { name: "Champagne Gold", hex: "#e0c9a6" }
+    colorVariants: [
+      { name: "Champagne Gold", hex: "#e0c9a6", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg",
@@ -240,8 +240,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "short-kurtis",
     price: 1349,
     originalPrice: 1799,
-    colors: [
-      { name: "Terracotta Earth", hex: "#c86d51" }
+    colorVariants: [
+      { name: "Terracotta Earth", hex: "#c86d51", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg",
@@ -261,8 +261,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "short-kurtis",
     price: 1299,
     originalPrice: 1699,
-    colors: [
-      { name: "Olive Palm", hex: "#4b5320" }
+    colorVariants: [
+      { name: "Olive Palm", hex: "#4b5320", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png",
@@ -284,8 +284,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "festive-wear",
     price: 1299,
     originalPrice: 1699,
-    colors: [
-      { name: "Royal Emerald", hex: "#1b4332" }
+    colorVariants: [
+      { name: "Royal Emerald", hex: "#1b4332", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png",
@@ -305,8 +305,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "festive-wear",
     price: 999,
     originalPrice: 1299,
-    colors: [
-      { name: "Crimson Red", hex: "#8b0000" }
+    colorVariants: [
+      { name: "Crimson Red", hex: "#8b0000", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png",
@@ -326,8 +326,8 @@ export const PRODUCTS_CURATED = [
     categorySlug: "festive-wear",
     price: 999,
     originalPrice: 1299,
-    colors: [
-      { name: "Deep Ruby", hex: "#5c1325" }
+    colorVariants: [
+      { name: "Deep Ruby", hex: "#5c1325", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
@@ -350,8 +350,8 @@ export const NEW_ARRIVALS = [
     categorySlug: "kurtis",
     price: 1199,
     originalPrice: 1499,
-    colors: [
-      { name: "Rust Orange", hex: "#d9531e" }
+    colorVariants: [
+      { name: "Rust Orange", hex: "#d9531e", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236593/surangi-naar/products/real_product_8.jpg" }
     ],
     sizes:["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg",
@@ -370,8 +370,8 @@ export const NEW_ARRIVALS = [
     categorySlug: "short-kurtis",
     price: 1499,
     originalPrice: 1799,
-    colors: [
-      { name: "Olive Green", hex: "#556b2f" }
+    colorVariants: [
+      { name: "Olive Green", hex: "#556b2f", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236564/surangi-naar/products/real_product_13.jpg" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg",
@@ -390,8 +390,8 @@ export const NEW_ARRIVALS = [
     categorySlug: "festive-wear",
     price: 1199,
     originalPrice: 1499,
-    colors: [
-      { name: "Royal Purple", hex: "#5a2d82" }
+    colorVariants: [
+      { name: "Royal Purple", hex: "#5a2d82", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236584/surangi-naar/products/real_product_18.png" }
     ],
     sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png",
