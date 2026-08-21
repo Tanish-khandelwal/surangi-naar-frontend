@@ -94,7 +94,7 @@ export default function WishlistDrawer() {
                   }}
                   className="w-20 h-24 rounded-md overflow-hidden bg-gray-100 shrink-0 cursor-pointer border border-[#e8e2d9]"
                 >
-                  <img src={getImageUrl(product.image)} alt={product.name} className="w-full h-full object-cover" />
+                  <img src={getImageUrl(product.image)} alt={product.name} loading="lazy" className="w-full h-full object-cover" />
                 </div>
 
                 <div className="flex-1 flex flex-col justify-between">

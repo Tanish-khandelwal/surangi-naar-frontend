@@ -17,6 +17,7 @@ export default function PromoBanner({
       <img
         src={bgImage}
         alt={title}
+        loading="lazy"
         className="absolute inset-0 w-full h-full object-cover object-center opacity-40 scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-[#1a1716] via-[#1a1716]/80 to-transparent" />

@@ -95,8 +95,7 @@ export default function AdminPage() {
   }, []);
   const [adminEmailInput, setAdminEmailInput] = useState('');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
-  const [pinInput, setPinInput] = useState('');
-  const [pinError, setPinError] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   // Active Tab State
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -269,22 +268,20 @@ export default function AdminPage() {
       const res = await api.post('/admin/login', {
         email: adminEmailInput,
         password: adminPasswordInput,
-        pin: pinInput,
       });
 
       if (res.data?.token) {
         sessionStorage.setItem('surangi_admin_token', res.data.token);
         localStorage.removeItem('surangi_admin_token');
         setIsAuthenticated(true);
-        setPinError(false);
+        setLoginError(false);
         setAdminEmailInput('');
         setAdminPasswordInput('');
-        setPinInput('');
         toast.success('Welcome back, Admin!');
       }
     } catch (err) {
       console.error('Admin login error:', err);
-      setPinError(true);
+      setLoginError(true);
       toast.error(err.response?.data?.message || 'Invalid Admin Credentials');
     }
   };
@@ -296,7 +293,6 @@ export default function AdminPage() {
     localStorage.removeItem('surangi_admin_token');
     setAdminEmailInput('');
     setAdminPasswordInput('');
-    setPinInput('');
     toast.success('Logged out of Admin Panel');
   };
 
@@ -491,10 +487,11 @@ export default function AdminPage() {
               </label>
               <input
                 type="email"
+                required
                 value={adminEmailInput}
                 onChange={(e) => setAdminEmailInput(e.target.value)}
                 placeholder="Enter admin email"
-                className="w-full bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors"
+                className={`w-full bg-[#f8f4ee] border ${loginError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors`}
               />
             </div>
 
@@ -504,28 +501,15 @@ export default function AdminPage() {
               </label>
               <input
                 type="password"
+                required
                 value={adminPasswordInput}
                 onChange={(e) => setAdminPasswordInput(e.target.value)}
                 placeholder="Enter password"
-                className="w-full bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors"
+                className={`w-full bg-[#f8f4ee] border ${loginError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors`}
               />
-            </div>
-
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-[#b58349] mb-1 font-bold">
-                Or Quick Access PIN
-              </label>
-              <input
-                type="password"
-                maxLength={8}
-                value={pinInput}
-                onChange={(e) => setPinInput(e.target.value)}
-                placeholder="••••"
-                className={`w-full bg-[#f8f4ee] border ${pinError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-2.5 text-center text-lg text-[#39322f] tracking-widest focus:outline-none focus:border-[#d4a373] transition-colors`}
-              />
-              {pinError && (
+              {loginError && (
                 <p className="text-rose-600 text-xs mt-2 text-center font-medium">
-                  Invalid email, password, or PIN.
+                  Invalid admin email or password.
                 </p>
               )}
             </div>

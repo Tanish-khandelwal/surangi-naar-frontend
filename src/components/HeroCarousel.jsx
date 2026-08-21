@@ -42,6 +42,7 @@ export default function HeroCarousel() {
           <img
             src={slide.image}
             alt={slide.title}
+            loading={index === 0 ? 'eager' : 'lazy'}
             className="w-full h-full object-cover object-center scale-105 transition-transform duration-10000 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#231f1e]/85 via-[#231f1e]/50 to-transparent" />

@@ -99,6 +99,7 @@ export default function AccountModal() {
           <img
             src={currentUser.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"}
             alt={currentUser.name}
+            loading="lazy"
             className="w-16 h-16 rounded-full object-cover border-2 border-[#d4a373] shadow-md shrink-0"
           />
           <div className="flex-1 min-w-0">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ShopProvider } from './context/ShopContext';
@@ -16,18 +16,29 @@ import AccountModal from './components/AccountModal';
 import SmoothScroll from './components/SmoothScroll';
 import CustomCursor from './components/CustomCursor';
 
-// Pages
-import HomePage from './pages/HomePage';
-import CategoryPage from './pages/CategoryPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import CartPage from './pages/CartPage';
-import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import RefundExchangePolicyPage from './pages/RefundExchangePolicyPage';
-import DisclaimerPage from './pages/DisclaimerPage';
-import AboutContactPage from './pages/AboutContactPage';
-import AdminPage from './pages/AdminPage';
+// Lazy-Loaded Page Components (Route-Level Code Splitting)
+const HomePage = lazy(() => import('./pages/HomePage'));
+const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const RefundExchangePolicyPage = lazy(() => import('./pages/RefundExchangePolicyPage'));
+const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
+const AboutContactPage = lazy(() => import('./pages/AboutContactPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+
+function PageLoadingFallback() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center bg-[#f7f3ee]">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-3 border-[#d4a373]/30 border-t-[#d4a373] rounded-full animate-spin" />
+        <span className="font-cinzel text-xs text-[#39322f] tracking-widest uppercase font-semibold">Surangi Naar</span>
+      </div>
+    </div>
+  );
+}
 
 function MainLayout() {
   const location = useLocation();
@@ -40,28 +51,30 @@ function MainLayout() {
       {!isAdmin && <Navbar />}
 
       <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/shop" element={<CategoryPage />} />
-          <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/product/:id" element={<ProductDetailPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          
-          {/* Information Routes */}
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/about-us" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/contact-us" element={<ContactPage />} />
+        <Suspense fallback={<PageLoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/shop" element={<CategoryPage />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            
+            {/* Information Routes */}
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/about-us" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/contact-us" element={<ContactPage />} />
 
-          {/* Legal Routes */}
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/refund-exchange-policy" element={<RefundExchangePolicyPage />} />
-          <Route path="/refund-policy" element={<RefundExchangePolicyPage />} />
-          <Route path="/disclaimer" element={<DisclaimerPage />} />
+            {/* Legal Routes */}
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/refund-exchange-policy" element={<RefundExchangePolicyPage />} />
+            <Route path="/refund-policy" element={<RefundExchangePolicyPage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
 
-          <Route path="/about-contact" element={<AboutContactPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-        </Routes>
+            <Route path="/about-contact" element={<AboutContactPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {!isAdmin && <Footer />}

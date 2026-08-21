@@ -58,6 +58,7 @@ function QuickViewModalContent({ product, onClose }) {
             <img 
               src={getImageUrl(selectedImage)} 
               alt={product.name} 
+              loading="lazy"
               className="w-full h-full object-cover object-center transition-all duration-300"
             />
             {product.badge && (

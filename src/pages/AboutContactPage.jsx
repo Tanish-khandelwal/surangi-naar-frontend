@@ -53,6 +53,7 @@ export default function AboutContactPage() {
           <img
             src="/images/products/real_product_14.jpg"
             alt="Surangi Naar Atelier"
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-40"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#231f1e] via-black/40 to-transparent" />

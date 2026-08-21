@@ -28,6 +28,7 @@ export default function Footer() {
                 <img
                   src="/logo.jpg"
                   alt="Surangi Naar Emblem"
+                  loading="lazy"
                   className="w-12 h-12 rounded-full object-cover border border-white"
                 />
               </div>
