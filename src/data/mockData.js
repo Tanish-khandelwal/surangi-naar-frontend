@@ -103,7 +103,7 @@ export const PRODUCTS_CURATED = [
     description: " Add a festive touch to your wardrobe with this elegant Pink Lehariya Silk Kurta Set. Featuring a beautiful traditional lehariya pattern and rich pink tones, this outfit is perfect for festive celebrations, family gatherings, and special occasions.",
     fabric: "Silk",
     care: "Machine Wash",
-    shipping: "Dispatched within 2-3 business days. Free shipping across India over ₹5,000."
+    shipping: "Dispatched within 5-7 business days. Free shipping across India over ₹5,000."
   },
   {
     id: "p2",
@@ -124,7 +124,7 @@ export const PRODUCTS_CURATED = [
     description: "Brighten your ethnic wardrobe with this elegant Mustard Yellow Cotton Kurta Set, featuring beautiful embroidery and delicate mirror-style detailing around the neckline. The vibrant mustard shade adds a festive touch, while the soft cotton fabric keeps the outfit comfortable and breathable.",
     fabric: "Cotton",
     care: "Machine Wash.",
-    shipping: "Dispatched within 2-3 business days."
+    shipping: "Dispatched within 4-7 business days."
   },
   {
     id: "p3",
@@ -145,7 +145,7 @@ export const PRODUCTS_CURATED = [
     description: " Comfortable and stylish Rose Printed Cotton Kurta Set, designed for effortless everyday wear. The set features a beautiful rose print with matching pants and dupatta, making it perfect for work, casual outings, and daily ethnic styling.",
     fabric: "Pure Cotton ",
     care: "Machine Wash",
-    shipping: "Dispatched within 2 business days."
+    shipping: "Dispatched within 4-7 business days."
   },
   {
     id: "p4",
@@ -166,7 +166,7 @@ export const PRODUCTS_CURATED = [
     description: " Comfortable and stylish Rose Printed Cotton Kurta Set, designed for effortless everyday wear. The set features a beautiful rose print with matching pants and dupatta, making it perfect for work, casual outings, and daily ethnic styling.",
     fabric: "Cotton",
     care: "Machine Wash",
-    shipping: "Dispatched within 3 business days."
+    shipping: "Dispatched within 5-7 business days."
   },
   {
     id: "p5",
@@ -187,7 +187,7 @@ export const PRODUCTS_CURATED = [
     description: "Comfortable and stylish Rose Printed Cotton Kurta Set, designed for effortless everyday wear. The set features a beautiful rose print with matching pants and dupatta, making it perfect for work, casual outings, and daily ethnic styling.",
     fabric: "Cotton",
     care: "Machine Wash.",
-    shipping: "Dispatched within 3-4 business days."
+    shipping: "Dispatched within 4-7 business days."
   },
   {
     id: "p6",
@@ -208,7 +208,7 @@ export const PRODUCTS_CURATED = [
     description: "Elegant 100% Pure Cotton Kurta Set featuring beautiful ethnic embroidery on the neckline, paired with matching pants and a dupatta. Available in Orange & Pink, perfect for comfortable daily wear and festive occasions.",
     fabric: "Cotton",
     care: "Machine Wash",
-    shipping: "Dispatched within 2-3 days."
+    shipping: "Dispatched within 4-7 days."
   },
 
   // Short Kurtis
@@ -231,7 +231,7 @@ export const PRODUCTS_CURATED = [
     description: "Elegant Mul Chanderi Kurta Set featuring delicate floral embroidery, paired with Roman pants and a graceful dupatta. Available in Green & Lavender, perfect for festive occasions and special gatherings.",
     fabric: "Mul Chanderi",
     care: "Dry Clean Only",
-    shipping: "Dispatched within 2-4 business days."
+    shipping: "Dispatched within 4-7 business days."
   },
   {
     id: "p8",
@@ -252,7 +252,7 @@ export const PRODUCTS_CURATED = [
     description: "Elegant Mul Chanderi Kurta Set featuring delicate floral embroidery, paired with Roman pants and a graceful dupatta. Available in Green & Lavender, perfect for festive occasions and special gatherings.",
     fabric: "Mul Chanderi",
     care: "Dry Clean Only",
-    shipping: "Dispatched within 2-3 business days."
+    shipping: "Dispatched within 5-7 business days."
   },
   {
     id: "p9",
@@ -345,63 +345,63 @@ export const PRODUCTS_CURATED = [
 export const NEW_ARRIVALS = [
   {
     id: "na1",
-    name: "Hand-Embroidered Zari Chanderi Kurti",
+    name: "Orange Cotton Embroidered Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 5499,
-    originalPrice: 6999,
+    price: 1199,
+    originalPrice: 1499,
     colors: [
       { name: "Rust Orange", hex: "#d9531e" }
     ],
-    sizes: ["S", "M", "L", "XL"],
+    sizes:["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236592/surangi-naar/products/real_product_7.jpg",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236593/surangi-naar/products/real_product_8.jpg",
     isSoldOut: false,
     rating: 4.9,
-    description: "Rich straight kurti with intricate metallic zari border highlights.",
+    description: "Elegant Orange Cotton Kurta Set featuring delicate floral embroidery on the front, paired with matching pants and a graceful dupatta. A comfortable and stylish choice for daily wear and festive occasions.",
     fabric: "Chanderi Silk with Fine Zari Work",
-    care: "Dry Clean Only.",
-    shipping: "Dispatched within 2-4 business days."
+    care: "Machine Wash",
+    shipping: "Dispatched within 5-7 business days."
   },
   {
     id: "na2",
-    name: "Resort Linen Chic Short Kurti Set",
+    name: "Grey Floral Embroidered Cotton Kurta Set",
     category: "Short Kurtis",
     categorySlug: "short-kurtis",
-    price: 7999,
-    originalPrice: 9499,
+    price: 1499,
+    originalPrice: 1799,
     colors: [
       { name: "Olive Green", hex: "#556b2f" }
     ],
-    sizes: ["XS", "S", "M", "L"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236564/surangi-naar/products/real_product_13.jpg",
     isSoldOut: false,
     rating: 4.88,
-    description: "Breathable natural linen resort short kurti set with tailored high-rise pants.",
-    fabric: "100% Organic Linen",
-    care: "Gentle cold hand wash.",
-    shipping: "Dispatched within 3-5 business days."
+    description: " Elegant Grey Cotton Kurta Set featuring delicate multi-colour floral embroidery on the neckline, kurta and dupatta. Paired with matching pants, this set is perfect for festive occasions and graceful everyday ethnic wear.",
+    fabric: "Cotton",
+    care: "Machine Wash",
+    shipping: "Dispatched within 5-7 business days."
   },
   {
     id: "na3",
-    name: "Tara Royal Organza Festive Suit",
+    name: "Purple Floral Embroidered Cotton Kurta Set",
     category: "Festive Wear",
     categorySlug: "festive-wear",
-    price: 16999,
-    originalPrice: 19999,
+    price: 1199,
+    originalPrice: 1499,
     colors: [
       { name: "Royal Purple", hex: "#5a2d82" }
     ],
-    sizes: ["S", "M", "L"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236584/surangi-naar/products/real_product_18.png",
     isSoldOut: false,
     rating: 4.95,
-    description: "Pastel organza flared tunic set with sequin motifs and a heavy tissue dupatta.",
-    fabric: "Organza Silk & Tissue",
-    care: "Dry Clean Only.",
-    shipping: "Dispatched within 4 business days."
+    description: "Elegant Purple Cotton Kurta Set featuring beautiful floral embroidery with delicate detailing on the neckline and sleeves. Paired with matching pants and a lightweight dupatta, perfect for daily wear and festive occasions.",
+    fabric: "Cotton",
+    care: "Machine Wash",
+    shipping: "Dispatched within 4-7 business days."
   }
 ];
 
@@ -415,7 +415,7 @@ export const EXCLUSIVE_COLLECTION = [
   },
   {
     id: "ex2",
-    title: "Luxury Silk Short Kurtis",
+    title: "Short Kurtis",
     tagline: "Fluid resort silhouettes woven with pure Mulberry silk and organic linen.",
     categorySlug: "short-kurtis",
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg"

@@ -120,7 +120,6 @@ export default function Footer() {
               <li><Link to="/about" className="hover:text-[#d4a373] transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="hover:text-[#d4a373] transition-colors">Contact Us</Link></li>
               <li><Link to="/shop" className="hover:text-[#d4a373] transition-colors">Shop Catalog</Link></li>
-              <li className="pt-2"><Link to="/admin" className="text-[#d4a373] font-semibold flex items-center gap-1 hover:underline"><ShieldCheck className="w-3.5 h-3.5" /> Admin Studio Panel</Link></li>
             </ul>
           </div>
 
