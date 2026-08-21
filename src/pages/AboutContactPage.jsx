@@ -62,6 +62,7 @@ export default function AboutContactPage() {
             <img 
               src="/logo.jpg" 
               alt="Surangi Naar Monogram" 
+              loading="lazy"
               className="w-16 h-16 sm:w-24 sm:h-24 rounded-full object-cover mx-auto border-2 border-[#d4a373] shadow-2xl" 
             />
             <span className="text-[10px] sm:text-xs uppercase font-sans tracking-[0.25em] text-[#d4a373] font-semibold block">

@@ -847,6 +847,7 @@ export default function AdminPage() {
                             <img
                               src={getImageUrl(product.image)}
                               alt={product.name}
+                              loading="lazy"
                               className="w-12 h-14 object-cover rounded-lg border border-[#e8e2d9]"
                             />
                             <div>
@@ -1000,7 +1001,7 @@ export default function AdminPage() {
               {categories.map(cat => (
                 <div key={cat.id} className="bg-white border border-[#e8e2d9] rounded-2xl overflow-hidden shadow-xs group">
                   <div className="relative h-48">
-                    <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={cat.image} alt={cat.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     <div className="absolute bottom-3 left-4 right-4">
                       <span className="text-xs font-bold text-[#e6c594] uppercase tracking-wider">{cat.slug}</span>
@@ -1114,7 +1115,7 @@ export default function AdminPage() {
               <div className="space-y-4">
                 {heroSlides.map((slide) => (
                   <div key={slide.id} className="flex flex-col sm:flex-row items-center gap-4 bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl p-4">
-                    <img src={slide.image} alt={slide.title} className="w-24 h-24 object-cover rounded-lg border border-[#e8e2d9] shrink-0" />
+                    <img src={slide.image} alt={slide.title} loading="lazy" className="w-24 h-24 object-cover rounded-lg border border-[#e8e2d9] shrink-0" />
                     <div className="flex-1">
                       <span className="text-[10px] text-[#b58349] font-bold uppercase tracking-wider">{slide.subtitle}</span>
                       <h4 className="text-base font-serif font-bold text-[#2d2624]">{slide.title}</h4>
@@ -1431,7 +1432,7 @@ export default function AdminPage() {
                 )}
                 {productForm.image && (
                   <div className="mt-2 flex items-center gap-2">
-                    <img src={productForm.image} alt="Preview" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
+                    <img src={productForm.image} alt="Preview" loading="lazy" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
                     <span className="text-xs text-gray-500 truncate max-w-xs">{productForm.image}</span>
                   </div>
                 )}
@@ -1524,7 +1525,7 @@ export default function AdminPage() {
                 )}
                 {catForm.image && (
                   <div className="mt-2 flex items-center gap-2">
-                    <img src={catForm.image} alt="Preview" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
+                    <img src={catForm.image} alt="Preview" loading="lazy" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
                     <span className="text-xs text-gray-500 truncate max-w-xs">{catForm.image}</span>
                   </div>
                 )}
@@ -1583,7 +1584,7 @@ export default function AdminPage() {
                 )}
                 {slideForm.image && (
                   <div className="mt-2 flex items-center gap-2">
-                    <img src={slideForm.image} alt="Preview" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
+                    <img src={slideForm.image} alt="Preview" loading="lazy" className="w-12 h-12 object-cover rounded-lg border border-[#e8e2d9]" />
                     <span className="text-xs text-gray-500 truncate max-w-xs">{slideForm.image}</span>
                   </div>
                 )}

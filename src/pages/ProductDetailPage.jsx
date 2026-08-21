@@ -76,6 +76,7 @@ export default function ProductDetailPage() {
               <img
                 src={getImageUrl(activeImage)}
                 alt={product.name}
+                loading="lazy"
                 className="w-full h-full object-cover object-center transition-all duration-500"
               />
               
