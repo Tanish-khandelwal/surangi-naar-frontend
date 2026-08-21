@@ -225,15 +225,7 @@ export default function Navbar() {
                 </button>
               )}
 
-              {/* Admin Panel Icon (Desktop/Tablet) */}
-              <Link
-                to="/admin"
-                className="hidden md:flex items-center gap-1 p-1.5 text-[#d4a373] bg-[#d4a373]/15 hover:bg-[#d4a373] hover:text-[#1a1716] transition-all rounded-lg cursor-pointer border border-[#d4a373]/30 text-[11px] font-semibold font-sans uppercase tracking-wider"
-                title="Open Admin Panel"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span className="hidden xl:inline">Admin</span>
-              </Link>
+
 
               {/* Wishlist Trigger (Desktop/Tablet) */}
               <button
@@ -394,14 +386,7 @@ export default function Navbar() {
                     <span>About Us & Contact</span>
                   </Link>
 
-                  <Link
-                    to="/admin"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-[#d4a373]/15 border border-[#d4a373]/40 text-xs uppercase tracking-wider text-[#b58349] font-bold"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Studio Admin Panel</span>
-                  </Link>
+
                 </div>
               </div>
             </div>

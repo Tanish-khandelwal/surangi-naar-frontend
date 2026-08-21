@@ -204,15 +204,7 @@ export default function AccountModal() {
         </div>
 
         {/* Footer Logout Action */}
-        <div className="pt-4 border-t border-[#e8e2d9] flex items-center justify-between">
-          <Link
-            to="/admin"
-            onClick={closeAccountModal}
-            className="text-xs text-[#b58349] font-bold hover:underline flex items-center gap-1"
-          >
-            <Sparkles className="w-3.5 h-3.5" /> Studio Admin Panel
-          </Link>
-
+        <div className="pt-4 border-t border-[#e8e2d9] flex items-center justify-end">
           <div className="flex items-center gap-2">
             <button
               type="button"
