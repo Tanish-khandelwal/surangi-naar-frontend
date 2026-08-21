@@ -22,7 +22,7 @@ export const ShopProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [discountCodes, setDiscountCodes] = useState([]);
   const [storeSettings, setStoreSettings] = useState(BRAND_CONTACT);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // User Auth State
   const [currentUser, setCurrentUser] = useState(null);
@@ -47,7 +47,6 @@ export const ShopProvider = ({ children }) => {
   // 1. Initial Data Fetching from API
   useEffect(() => {
     const fetchInitialData = async () => {
-      setLoading(true);
       try {
         // Fetch Public Catalog Data in parallel
         const [prodRes, catRes, heroRes, promoRes, settingsRes] = await Promise.allSettled([

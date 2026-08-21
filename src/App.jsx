@@ -16,8 +16,9 @@ import AccountModal from './components/AccountModal';
 import SmoothScroll from './components/SmoothScroll';
 import CustomCursor from './components/CustomCursor';
 
-// Lazy-Loaded Page Components (Route-Level Code Splitting)
-const HomePage = lazy(() => import('./pages/HomePage'));
+import HomePage from './pages/HomePage';
+
+// Lazy-Loaded Secondary Page Components (Route-Level Code Splitting)
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
