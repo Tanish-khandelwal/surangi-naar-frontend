@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { CATEGORIES_LIST } from '../data/mockData';
 import {
   Search,
   User,
@@ -33,7 +32,7 @@ export default function Navbar() {
     openAccountModal
   } = useShop();
 
-  const navCategories = categories && categories.length > 0 ? categories : CATEGORIES_LIST;
+  const navCategories = categories || [];
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);

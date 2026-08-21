@@ -1,7 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { EXCLUSIVE_COLLECTION } from '../data/mockData';
 import { ArrowRight } from 'lucide-react';
+
+const EXCLUSIVE_COLLECTION = [
+  {
+    id: "ex1",
+    title: "Handcrafted Kurtis Collection",
+    tagline: "Timeless motifs block-printed and embroidered by master craftsmen of Jaipur.",
+    categorySlug: "kurtis",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236556/surangi-naar/products/real_product_1.jpg"
+  },
+  {
+    id: "ex2",
+    title: "Short Kurtis",
+    tagline: "Fluid resort silhouettes woven with pure Mulberry silk and organic linen.",
+    categorySlug: "short-kurtis",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg"
+  },
+  {
+    id: "ex3",
+    title: "Royal Festive Wear Edit",
+    tagline: "Intricate Zardosi & Gota Patti handcrafted for grand celebrations.",
+    categorySlug: "festive-wear",
+    image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png"
+  }
+];
 
 export default function FeatureCards() {
   return (

@@ -1,28 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
-import {
-  PRODUCTS_CURATED,
-  NEW_ARRIVALS,
-  CATEGORIES_GRID,
-  HERO_SLIDES,
-  PROMO_MESSAGES,
-  BRAND_CONTACT
-} from '../data/mockData';
-
 const ShopContext = createContext();
-const INITIAL_PRODUCTS = [...PRODUCTS_CURATED, ...NEW_ARRIVALS];
 
 export const ShopProvider = ({ children }) => {
-  // Global Data States (backed by Express API)
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [categories, setCategories] = useState(CATEGORIES_GRID);
-  const [heroSlides, setHeroSlides] = useState(HERO_SLIDES);
-  const [promoMessages, setPromoMessages] = useState(PROMO_MESSAGES);
+  // Global Data States (backed strictly by Express API & Database)
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [promoMessages, setPromoMessages] = useState([]);
   const [orders, setOrders] = useState([]);
   const [discountCodes, setDiscountCodes] = useState([]);
-  const [storeSettings, setStoreSettings] = useState(BRAND_CONTACT);
-  const [loading, setLoading] = useState(false);
+  const [storeSettings, setStoreSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // User Auth State
   const [currentUser, setCurrentUser] = useState(null);
@@ -45,41 +35,42 @@ export const ShopProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // 1. Initial Data Fetching from API
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        // Fetch Public Catalog Data in parallel
-        const [prodRes, catRes, heroRes, promoRes, settingsRes] = await Promise.allSettled([
-          api.get('/products'),
-          api.get('/categories'),
-          api.get('/hero-slides'),
-          api.get('/promo-messages'),
-          api.get('/store-settings'),
-        ]);
+  const fetchInitialData = async () => {
+    setLoading(true);
+    try {
+      // Fetch Public Catalog Data in parallel
+      const [prodRes, catRes, heroRes, promoRes, settingsRes] = await Promise.allSettled([
+        api.get('/products'),
+        api.get('/categories'),
+        api.get('/hero-slides'),
+        api.get('/promo-messages'),
+        api.get('/store-settings'),
+      ]);
 
-        if (prodRes.status === 'fulfilled' && prodRes.value.data?.products) {
-          setProducts(prodRes.value.data.products);
-        }
-        if (catRes.status === 'fulfilled' && catRes.value.data?.categories) {
-          setCategories(catRes.value.data.categories);
-        }
-        if (heroRes.status === 'fulfilled' && heroRes.value.data?.heroSlides) {
-          setHeroSlides(heroRes.value.data.heroSlides);
-        }
-        if (promoRes.status === 'fulfilled' && promoRes.value.data?.promoMessages) {
-          const msgs = promoRes.value.data.promoMessages.map(m => typeof m === 'string' ? m : m.message);
-          setPromoMessages(msgs);
-        }
-        if (settingsRes.status === 'fulfilled' && settingsRes.value.data?.settings) {
-          setStoreSettings(settingsRes.value.data.settings);
-        }
-      } catch (err) {
-        console.error('Error fetching initial public catalog data:', err);
-      } finally {
-        setLoading(false);
+      if (prodRes.status === 'fulfilled' && prodRes.value.data?.products) {
+        setProducts(prodRes.value.data.products);
       }
-    };
+      if (catRes.status === 'fulfilled' && catRes.value.data?.categories) {
+        setCategories(catRes.value.data.categories);
+      }
+      if (heroRes.status === 'fulfilled' && heroRes.value.data?.heroSlides) {
+        setHeroSlides(heroRes.value.data.heroSlides);
+      }
+      if (promoRes.status === 'fulfilled' && promoRes.value.data?.promoMessages) {
+        const msgs = promoRes.value.data.promoMessages.map(m => typeof m === 'string' ? m : m.message);
+        setPromoMessages(msgs);
+      }
+      if (settingsRes.status === 'fulfilled' && settingsRes.value.data?.settings) {
+        setStoreSettings(settingsRes.value.data.settings);
+      }
+    } catch (err) {
+      console.error('Error fetching initial public catalog data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchInitialData();
   }, []);
 
@@ -657,11 +648,7 @@ export const ShopProvider = ({ children }) => {
   };
 
   const resetToDefaultData = async () => {
-    setProducts(INITIAL_PRODUCTS);
-    setCategories(CATEGORIES_GRID);
-    setHeroSlides(HERO_SLIDES);
-    setPromoMessages(PROMO_MESSAGES);
-    setStoreSettings(BRAND_CONTACT);
+    await fetchInitialData();
   };
 
   const openAuthModal = (tab = 'login') => {
