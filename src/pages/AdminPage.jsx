@@ -25,7 +25,8 @@ import {
   Sparkles,
   ExternalLink,
   ChevronRight,
-  Save
+  Save,
+  Truck
 } from 'lucide-react';
 
 export default function AdminPage() {
