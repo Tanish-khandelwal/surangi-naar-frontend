@@ -126,100 +126,58 @@ export default function AccountModal() {
         </div>
 
         {/* User Info Details Grid */}
-        <div className="py-6 space-y-5 border-b border-[#e8e2d9]">
-          <h4 className="text-xs font-cinzel font-bold uppercase tracking-wider text-[#b58349]">
-            Account Details
-          </h4>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
-            <div className="bg-[#f8f4ee] p-3.5 rounded-2xl border border-[#e8e2d9] space-y-1">
-              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold block">Contact Phone</span>
-              <p className="font-bold text-[#39322f] flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-[#d4a373]" />
-                {currentUser.phone || "+91 98765 43210"}
+        <div className="py-6 space-y-4 border-b border-[#e8e2d9]">
+          <div className="grid grid-cols-2 gap-3 text-xs font-sans">
+            <div className="bg-[#f8f4ee] p-3.5 rounded-2xl border border-[#e8e2d9]">
+              <span className="text-[10px] uppercase tracking-wider text-[#39322f]/60 font-bold block">Contact Phone</span>
+              <p className="font-bold text-[#39322f] truncate mt-0.5">
+                {currentUser.phone || "+91 91166 55814"}
               </p>
             </div>
 
-            <div className="bg-[#f8f4ee] p-3.5 rounded-2xl border border-[#e8e2d9] space-y-1">
-              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold block">Auth Provider</span>
-              <p className="font-bold text-[#39322f] flex items-center gap-1.5 capitalize">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#d4a373]" />
-                {currentUser.provider || "Email Login"}
+            <div className="bg-[#f8f4ee] p-3.5 rounded-2xl border border-[#e8e2d9]">
+              <span className="text-[10px] uppercase tracking-wider text-[#39322f]/60 font-bold block">Total Orders</span>
+              <p className="font-bold text-[#b58349] mt-0.5">
+                {userOrders.length} Order(s)
               </p>
             </div>
           </div>
+
+          <Link
+            to="/account?tab=orders"
+            onClick={closeAccountModal}
+            className="w-full py-3 bg-[#39322f] text-white rounded-2xl font-sans text-xs uppercase font-bold tracking-widest hover:bg-[#d4a373] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+          >
+            <ShoppingBag className="w-4 h-4 text-[#d4a373]" />
+            <span>View Full Account & Track Orders</span>
+          </Link>
         </div>
 
-        {/* Order History */}
-        <div className="py-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-cinzel font-bold uppercase tracking-wider text-[#b58349] flex items-center gap-1.5">
-              <ShoppingBag className="w-4 h-4 text-[#d4a373]" />
-              My Orders ({userOrders.length})
-            </h4>
-            <Link
-              to="/shop"
-              onClick={closeAccountModal}
-              className="text-[11px] text-[#b58349] hover:underline font-bold"
-            >
-              Browse Catalog
-            </Link>
-          </div>
+        {/* Footer Actions */}
+        <div className="pt-4 flex items-center justify-between">
+          <Link
+            to="/account?tab=addresses"
+            onClick={closeAccountModal}
+            className="text-xs text-[#b58349] font-bold hover:underline"
+          >
+            Saved Addresses
+          </Link>
 
-          {userOrders.length === 0 ? (
-            <div className="bg-[#f8f4ee] rounded-2xl p-6 text-center space-y-2 border border-[#e8e2d9]">
-              <p className="text-xs text-gray-600 font-medium">No order history yet.</p>
-              <p className="text-[10px] text-gray-400">Your placed studio orders will appear here automatically!</p>
-
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {userOrders.map(order => (
-                <div key={order.id} className="bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl p-4 text-xs font-sans space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-[#39322f]">{order.id}</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase ${
-                      order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' :
-                      order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
-                      'bg-amber-100 text-amber-800'
-                    }`}>
-                      {order.status}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-gray-600">
-                    {order.items.map((item, i) => (
-                      <div key={i} className="truncate">
-                        • {item.quantity}x {item.name} ({item.size})
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center pt-2 border-t border-[#e8e2d9] text-[11px]">
-                    <span className="text-gray-400">{new Date(order.date || order.createdAt || Date.now()).toLocaleDateString()}</span>
-                    <span className="font-bold text-[#b58349]">₹{order.total?.toLocaleString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Footer Logout Action */}
-        <div className="pt-4 border-t border-[#e8e2d9] flex items-center justify-end">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleConfirmDeleteAccount}
-              className="px-3 py-2 rounded-2xl bg-gray-100 text-gray-600 hover:bg-rose-600 hover:text-white border border-gray-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-rose-600 hover:text-white border border-gray-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
               title="Permanently Delete Account"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Delete Account</span>
+              <span className="hidden sm:inline">Delete</span>
             </button>
 
             <button
               type="button"
               onClick={logoutUser}
-              className="px-4 py-2 rounded-2xl bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>

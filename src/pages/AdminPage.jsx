@@ -156,6 +156,31 @@ export default function AdminPage() {
     description: ''
   });
 
+  // Shipment & Tracking Modal State
+  const [isShipmentModalOpen, setIsShipmentModalOpen] = useState(false);
+  const [selectedOrderForShipment, setSelectedOrderForShipment] = useState(null);
+  const [shipmentForm, setShipmentForm] = useState({
+    status: 'Shipped',
+    trackingNumber: '',
+    carrier: 'Delhivery'
+  });
+
+  const handleSaveShipment = async (e) => {
+    e.preventDefault();
+    if (!selectedOrderForShipment) return;
+    try {
+      await updateOrderStatus(selectedOrderForShipment.id, {
+        status: shipmentForm.status,
+        trackingNumber: shipmentForm.trackingNumber.trim(),
+        carrier: shipmentForm.carrier.trim()
+      });
+      showToast(`Updated shipment & status for ${selectedOrderForShipment.id}`);
+      setIsShipmentModalOpen(false);
+    } catch (err) {
+      showToast('Failed to update shipment status');
+    }
+  };
+
   // Notifications / Toast
   const [toastMessage, setToastMessage] = useState('');
   const [uploadingField, setUploadingField] = useState(null);
@@ -952,12 +977,23 @@ export default function AdminPage() {
                           <span className="text-[#b58349] block text-sm">₹{order.total.toLocaleString()}</span>
                           <span className="text-[10px] text-gray-500 font-normal block">{order.paymentMethod}</span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-4 px-4 space-y-2">
                           <select
                             value={order.status}
                             onChange={(e) => {
-                              updateOrderStatus(order.id, e.target.value);
-                              showToast(`Order ${order.id} status updated to ${e.target.value}`);
+                              const newStatus = e.target.value;
+                              if (newStatus === 'Shipped') {
+                                setSelectedOrderForShipment(order);
+                                setShipmentForm({
+                                  status: 'Shipped',
+                                  trackingNumber: order.trackingNumber || '',
+                                  carrier: order.carrier || 'Delhivery'
+                                });
+                                setIsShipmentModalOpen(true);
+                              } else {
+                                updateOrderStatus(order.id, newStatus);
+                                showToast(`Order ${order.id} status updated to ${newStatus}`);
+                              }
                             }}
                             className="bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-3 py-1.5 text-xs text-[#2d2624] font-bold focus:outline-none focus:border-[#d4a373]"
                           >
@@ -967,6 +1003,22 @@ export default function AdminPage() {
                             <option value="Delivered">Delivered</option>
                             <option value="Cancelled">Cancelled</option>
                           </select>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedOrderForShipment(order);
+                              setShipmentForm({
+                                status: order.status,
+                                trackingNumber: order.trackingNumber || '',
+                                carrier: order.carrier || 'Delhivery'
+                              });
+                              setIsShipmentModalOpen(true);
+                            }}
+                            className="text-[10px] text-[#b58349] font-bold hover:underline flex items-center gap-1 block cursor-pointer"
+                          >
+                            <Truck className="w-3 h-3" /> {order.trackingNumber ? `AWB: ${order.trackingNumber}` : '+ Add Tracking AWB'}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -1658,6 +1710,63 @@ export default function AdminPage() {
               <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
                 <button type="button" onClick={() => setIsDiscountModalOpen(false)} className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 cursor-pointer font-semibold">Cancel</button>
                 <button type="submit" className="px-6 py-2 rounded-xl bg-[#39322f] text-[#f7f3ee] hover:bg-[#d4a373] hover:text-[#39322f] font-bold cursor-pointer">Create Coupon</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* SHIPMENT & TRACKING MODAL */}
+      {isShipmentModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-[#39322f]">
+            <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
+              <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">
+                Fulfill / Track Order #{selectedOrderForShipment?.id}
+              </h3>
+              <button onClick={() => setIsShipmentModalOpen(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleSaveShipment} className="space-y-4 text-xs font-sans">
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Order Status</label>
+                <select
+                  value={shipmentForm.status}
+                  onChange={(e) => setShipmentForm({ ...shipmentForm, status: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] font-bold focus:outline-none focus:border-[#d4a373]"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Courier / Logistics Partner</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Delhivery, Blue Dart, India Post"
+                  value={shipmentForm.carrier}
+                  onChange={(e) => setShipmentForm({ ...shipmentForm, carrier: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Tracking AWB Number</label>
+                <input
+                  type="text"
+                  placeholder="e.g. DELH129482910"
+                  value={shipmentForm.trackingNumber}
+                  onChange={(e) => setShipmentForm({ ...shipmentForm, trackingNumber: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] font-mono font-bold focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
+                <button type="button" onClick={() => setIsShipmentModalOpen(false)} className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 cursor-pointer font-semibold">Cancel</button>
+                <button type="submit" className="px-6 py-2 rounded-xl bg-[#39322f] text-[#f7f3ee] hover:bg-[#d4a373] hover:text-[#39322f] font-bold cursor-pointer">Save Status & Tracking</button>
               </div>
             </form>
           </div>

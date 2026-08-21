@@ -29,6 +29,7 @@ const RefundExchangePolicyPage = lazy(() => import('./pages/RefundExchangePolicy
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const AboutContactPage = lazy(() => import('./pages/AboutContactPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const AccountPage = lazy(() => import('./pages/AccountPage'));
 
 function PageLoadingFallback() {
   return (
@@ -73,6 +74,7 @@ function MainLayout() {
             <Route path="/disclaimer" element={<DisclaimerPage />} />
 
             <Route path="/about-contact" element={<AboutContactPage />} />
+            <Route path="/account" element={<AccountPage />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </Suspense>

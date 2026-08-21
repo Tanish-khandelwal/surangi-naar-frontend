@@ -569,9 +569,10 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  const updateOrderStatus = async (orderId, newStatus) => {
+  const updateOrderStatus = async (orderId, newStatus, extraData = {}) => {
     try {
-      const res = await api.put(`/admin/orders/${orderId}/status`, { status: newStatus });
+      const payload = typeof newStatus === 'object' ? newStatus : { status: newStatus, ...extraData };
+      const res = await api.put(`/admin/orders/${orderId}/status`, payload);
       if (res.data?.order) {
         setOrders(prev => prev.map(o => o.id === orderId ? res.data.order : o));
       }

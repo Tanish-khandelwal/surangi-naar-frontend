@@ -13,6 +13,8 @@ export const createOrder = async (req, res) => {
     // Format: "ORD-XXXX" matching existing pattern
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const id = `ORD-${randomSuffix}`;
+    const initialStatus = 'Pending';
+    const now = new Date().toISOString();
 
     const order = await prisma.order.create({
       data: {
@@ -24,7 +26,8 @@ export const createOrder = async (req, res) => {
         customerAddress,
         items,
         total: Number(total),
-        status: 'Pending',
+        status: initialStatus,
+        statusHistory: [{ status: initialStatus, timestamp: now }],
         paymentMethod: paymentMethod || 'Prepaid (UPI / Card)',
       },
     });

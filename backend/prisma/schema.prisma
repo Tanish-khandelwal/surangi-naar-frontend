@@ -138,5 +138,8 @@ model Order {
   paymentMethod     String
   razorpayOrderId   String?
   razorpayPaymentId String?
+  trackingNumber    String?
+  carrier           String?
+  statusHistory     Json?    // [{ status, timestamp }]
   createdAt         DateTime @default(now())
 }

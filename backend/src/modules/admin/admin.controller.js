@@ -294,17 +294,34 @@ export const getAllOrders = async (req, res) => {
 export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = z.object({ status: z.string().min(1, 'Status is required') }).parse(req.body);
+    const { status, trackingNumber, carrier } = req.body;
+
+    const existingOrder = await prisma.order.findUnique({ where: { id } });
+    if (!existingOrder) {
+      return sendError(res, 404, 'Order not found');
+    }
+
+    const currentHistory = Array.isArray(existingOrder.statusHistory) ? existingOrder.statusHistory : [];
+    const newStatus = status || existingOrder.status;
+
+    const updatedHistory = [
+      ...currentHistory,
+      { status: newStatus, timestamp: new Date().toISOString() }
+    ];
+
+    const updateData = {
+      status: newStatus,
+      statusHistory: updatedHistory,
+    };
+    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
+    if (carrier !== undefined) updateData.carrier = carrier;
+
     const order = await prisma.order.update({
       where: { id },
-      data: { status },
+      data: updateData,
     });
     return sendSuccess(res, 200, { order }, 'Order status updated');
   } catch (error) {
-    if (error.name === 'ZodError') {
-      const firstMsg = error.errors?.[0]?.message || 'Validation Error';
-      return sendError(res, 400, firstMsg, error.errors);
-    }
     return sendError(res, 400, error.message);
   }
 };

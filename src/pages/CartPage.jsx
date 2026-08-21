@@ -39,15 +39,31 @@ export default function CartPage() {
     pincode: ''
   });
 
-  // Keep address updated when user logs in
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+
+  // Fetch & populate saved addresses for logged-in user
   React.useEffect(() => {
     if (currentUser) {
-      setAddress(prev => ({
-        ...prev,
-        fullName: prev.fullName || currentUser.name || '',
-        phone: prev.phone || currentUser.phone || '',
-        email: prev.email || currentUser.email || ''
-      }));
+      api.get('/addresses').then(res => {
+        if (res.data?.addresses && res.data.addresses.length > 0) {
+          setSavedAddresses(res.data.addresses);
+          const defaultAddr = res.data.addresses.find(a => a.isDefault) || res.data.addresses[0];
+          if (defaultAddr) {
+            setSelectedAddressId(defaultAddr.id);
+            setAddress(prev => ({
+              ...prev,
+              fullName: defaultAddr.fullName,
+              phone: defaultAddr.phone,
+              email: currentUser.email || prev.email,
+              street: defaultAddr.street,
+              city: defaultAddr.city,
+              state: defaultAddr.state,
+              pincode: defaultAddr.pincode
+            }));
+          }
+        }
+      }).catch(err => console.error('Error fetching saved addresses:', err));
     }
   }, [currentUser]);
 
@@ -311,6 +327,53 @@ export default function CartPage() {
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
+                  {savedAddresses.length > 0 && (
+                    <div className="sm:col-span-2 p-4 bg-[#f8f4ee] border border-[#d4a373]/40 rounded-2xl space-y-2 mb-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#b58349]">
+                        Select Saved Address
+                      </label>
+                      <select
+                        value={selectedAddressId}
+                        onChange={(e) => {
+                          const id = e.target.value;
+                          setSelectedAddressId(id);
+                          if (id === 'new') {
+                            setAddress({
+                              fullName: currentUser?.name || '',
+                              phone: currentUser?.phone || '',
+                              email: currentUser?.email || '',
+                              street: '',
+                              city: '',
+                              state: '',
+                              pincode: ''
+                            });
+                          } else {
+                            const chosen = savedAddresses.find(a => a.id === id);
+                            if (chosen) {
+                              setAddress({
+                                fullName: chosen.fullName,
+                                phone: chosen.phone,
+                                email: currentUser?.email || '',
+                                street: chosen.street,
+                                city: chosen.city,
+                                state: chosen.state,
+                                pincode: chosen.pincode
+                              });
+                            }
+                          }
+                        }}
+                        className="w-full bg-white border border-[#e8e2d9] rounded-xl p-2.5 text-xs text-[#39322f] font-semibold focus:outline-none focus:border-[#d4a373]"
+                      >
+                        {savedAddresses.map(addr => (
+                          <option key={addr.id} value={addr.id}>
+                            {addr.isDefault ? '[DEFAULT] ' : ''}{addr.fullName} — {addr.street}, {addr.city} ({addr.pincode})
+                          </option>
+                        ))}
+                        <option value="new">+ Enter New Custom Address</option>
+                      </select>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-[#39322f] font-semibold mb-1">Full Name *</label>
                     <input

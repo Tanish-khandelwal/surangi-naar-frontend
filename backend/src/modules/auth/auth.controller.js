@@ -78,3 +78,33 @@ export const deleteAccount = async (req, res, next) => {
     return sendError(res, 400, error.message);
   }
 };
+
+export const updateUserProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { name, phone } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        avatar: true,
+        provider: true,
+        createdAt: true,
+      },
+    });
+
+    return sendSuccess(res, 200, { user }, 'Profile updated successfully');
+  } catch (error) {
+    return sendError(res, 400, error.message);
+  }
+};
