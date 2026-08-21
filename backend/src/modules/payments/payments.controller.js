@@ -43,7 +43,10 @@ export const verifyPaymentSignature = async (req, res) => {
       return sendError(res, 400, 'Missing Razorpay signature verification parameters');
     }
 
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'your_razorpay_secret';
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) {
+      throw new Error('RAZORPAY_KEY_SECRET environment variable is missing');
+    }
     const generatedSignature = crypto
       .createHmac('sha256', secret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)

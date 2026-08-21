@@ -41,7 +41,7 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive CORS for smooth e-commerce operation
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,

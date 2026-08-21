@@ -46,12 +46,31 @@ export default function AuthModal() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    if (!email || !password) return;
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setErrorMessage('Email address is required.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    if (!password) {
+      setErrorMessage('Password is required.');
+      return;
+    }
+    if (password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await loginWithEmail(email, password);
+      await loginWithEmail(trimmedEmail, password);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Login failed. Please check your credentials.';
       setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
@@ -69,15 +88,24 @@ export default function AuthModal() {
       setErrorMessage('Full name must be at least 2 characters.');
       return;
     }
+    if (!trimmedEmail) {
+      setErrorMessage('Email address is required.');
+      return;
+    }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+    if (!emailRegex.test(trimmedEmail)) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
-    if (!password || password.length < 6) {
+    if (!password) {
+      setErrorMessage('Password is required.');
+      return;
+    }
+    if (password.length < 6) {
       setErrorMessage('Password must be at least 6 characters long.');
       return;
     }
+
     setIsSubmitting(true);
     try {
       await registerWithEmail(trimmedName, trimmedEmail, trimmedPhone, password);

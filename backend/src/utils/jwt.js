@@ -1,7 +1,14 @@
 import jwt from 'jsonwebtoken';
 
-const getAccessSecret = () => process.env.JWT_ACCESS_SECRET || 'surangi_naar_jwt_access_secret_key_2026_super_secure';
-const getRefreshSecret = () => process.env.JWT_REFRESH_SECRET || 'surangi_naar_jwt_refresh_secret_key_2026_super_secure';
+if (!process.env.JWT_ACCESS_SECRET) {
+  throw new Error('JWT_ACCESS_SECRET environment variable is missing');
+}
+if (!process.env.JWT_REFRESH_SECRET) {
+  throw new Error('JWT_REFRESH_SECRET environment variable is missing');
+}
+
+const getAccessSecret = () => process.env.JWT_ACCESS_SECRET;
+const getRefreshSecret = () => process.env.JWT_REFRESH_SECRET;
 
 export const generateAccessToken = (user) => {
   return jwt.sign(
@@ -33,3 +40,4 @@ export const verifyAccessToken = (token) => {
 export const verifyRefreshToken = (token) => {
   return jwt.verify(token, getRefreshSecret());
 };
+
