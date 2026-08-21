@@ -688,6 +688,8 @@ export const ShopProvider = ({ children }) => {
 
       // User Authentication
       currentUser,
+      setCurrentUser,
+      fetchUserOrders,
       isAuthModalOpen,
       authModalTab,
       setAuthModalTab,

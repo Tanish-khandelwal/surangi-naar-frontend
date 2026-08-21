@@ -67,7 +67,9 @@ export default function AccountPage() {
     if (currentUser) {
       setNameInput(currentUser.name || '');
       setPhoneInput(currentUser.phone || '');
-      fetchUserOrders();
+      if (typeof fetchUserOrders === 'function') {
+        fetchUserOrders();
+      }
       fetchAddresses();
     }
   }, [currentUser]);
