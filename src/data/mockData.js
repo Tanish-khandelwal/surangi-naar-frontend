@@ -86,11 +86,11 @@ export const HERO_SLIDES = [
 export const PRODUCTS_CURATED = [
   {
     id: "p1",
-    name: "Lavender Mul Chanderi Kurti Set (D.No 061)",
+    name: "Pink Lehariya Silk Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 3999,
-    originalPrice: 4999,
+    price: 899,
+    originalPrice: 1999,
     colors: [
       { name: "Lavender Lilac", hex: "#b497d6" }
     ],
@@ -100,18 +100,18 @@ export const PRODUCTS_CURATED = [
     badge: "Bestseller",
     rating: 4.9,
     isSoldOut: false,
-    description: "Premium Mul Chanderi kurti with Roman pant and matching organza embroidered dupatta set. Features intricate multi floral thread embroidery.",
-    fabric: "Mul Chanderi & Roman Pant",
-    care: "Dry Clean Only.",
+    description: " Add a festive touch to your wardrobe with this elegant Pink Lehariya Silk Kurta Set. Featuring a beautiful traditional lehariya pattern and rich pink tones, this outfit is perfect for festive celebrations, family gatherings, and special occasions.",
+    fabric: "Silk",
+    care: "Machine Wash",
     shipping: "Dispatched within 2-3 business days. Free shipping across India over ₹5,000."
   },
   {
     id: "p2",
-    name: "Sage Green Mul Chanderi Kurti Set (D.No 061)",
+    name: "Mustard Yellow Cotton Mirror Embroidered Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 3999,
-    originalPrice: 4999,
+    price: 1199,
+    originalPrice: 1499,
     colors: [
       { name: "Sage Green", hex: "#95a383" }
     ],
@@ -121,18 +121,18 @@ export const PRODUCTS_CURATED = [
     badge: "New Arrival",
     rating: 4.92,
     isSoldOut: false,
-    description: "Serene sage green Mul Chanderi tunic paired with Roman pants and scalloped dupatta. Features white daisy motif neck embroidery.",
-    fabric: "Mul Chanderi with Cotton Inner",
-    care: "Dry Clean Only.",
+    description: "Brighten your ethnic wardrobe with this elegant Mustard Yellow Cotton Kurta Set, featuring beautiful embroidery and delicate mirror-style detailing around the neckline. The vibrant mustard shade adds a festive touch, while the soft cotton fabric keeps the outfit comfortable and breathable.",
+    fabric: "Cotton",
+    care: "Machine Wash.",
     shipping: "Dispatched within 2-3 business days."
   },
   {
     id: "p3",
-    name: "Grey Embroidered Cotton Suit Set (D.No 2709)",
+    name: "Chocolate Brown Rose Printed Cotton Daily Wear Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 4299,
-    originalPrice: 5499,
+    price: 999,
+    originalPrice: 1299,
     colors: [
       { name: "Slate Grey", hex: "#87888a" }
     ],
@@ -142,18 +142,18 @@ export const PRODUCTS_CURATED = [
     badge: "Trending",
     rating: 4.88,
     isSoldOut: false,
-    description: "Sophisticated slate grey cotton kurti combo with cotton inner lining, embroidered neckline, and scalloped drapes.",
-    fabric: "Pure Cotton 60-60 with Inner",
-    care: "Gentle Hand Wash / Dry Clean.",
+    description: " Comfortable and stylish Rose Printed Cotton Kurta Set, designed for effortless everyday wear. The set features a beautiful rose print with matching pants and dupatta, making it perfect for work, casual outings, and daily ethnic styling.",
+    fabric: "Pure Cotton ",
+    care: "Machine Wash",
     shipping: "Dispatched within 2 business days."
   },
   {
     id: "p4",
-    name: "Mustard Yellow Cotton Kurti Set (D.No 065)",
+    name: "Orange Rose Printed Cotton Daily Wear Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 4599,
-    originalPrice: 5999,
+    price: 999,
+    originalPrice: 1299,
     colors: [
       { name: "Mustard Gold", hex: "#d4a017" }
     ],
@@ -163,18 +163,18 @@ export const PRODUCTS_CURATED = [
     badge: "Featured",
     rating: 4.85,
     isSoldOut: false,
-    description: "Vibrant mustard yellow Cotton 60-60 kurti pant set with Malmal dupatta featuring multi-embroidery rose motifs.",
-    fabric: "Cotton 60-60 with Malmal Dupatta",
-    care: "Dry Clean Only.",
+    description: " Comfortable and stylish Rose Printed Cotton Kurta Set, designed for effortless everyday wear. The set features a beautiful rose print with matching pants and dupatta, making it perfect for work, casual outings, and daily ethnic styling.",
+    fabric: "Cotton",
+    care: "Machine Wash",
     shipping: "Dispatched within 3 business days."
   },
   {
     id: "p5",
-    name: "Royal Purple Roman Silk Handwork Set (D.No 3301)",
+    name: "Wine Rose Printed Cotton Daily Wear Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 4999,
-    originalPrice: 6499,
+    price: 999,
+    originalPrice: 1299,
     colors: [
       { name: "Royal Purple", hex: "#5a2d82" }
     ],
@@ -184,18 +184,18 @@ export const PRODUCTS_CURATED = [
     badge: "Glamour Edit",
     rating: 4.95,
     isSoldOut: false,
-    description: "Graceful royal purple Roman silk kurti featuring neck & sleeve handwork tie details and woven zari dupatta.",
-    fabric: "Pure Roman Silk with Handwork",
-    care: "Dry Clean Only.",
+    description: "Comfortable and stylish Rose Printed Cotton Kurta Set, designed for effortless everyday wear. The set features a beautiful rose print with matching pants and dupatta, making it perfect for work, casual outings, and daily ethnic styling.",
+    fabric: "Cotton",
+    care: "Machine Wash.",
     shipping: "Dispatched within 3-4 business days."
   },
   {
     id: "p6",
-    name: "Jaipur Floral Chanderi Straight Tunic",
+    name: "Embroidered Kurta Set",
     category: "Kurtis",
     categorySlug: "kurtis",
-    price: 3799,
-    originalPrice: 4799,
+    price: 1199,
+    originalPrice: 1499,
     colors: [
       { name: "Royal Red", hex: "#c83228" }
     ],
@@ -205,140 +205,140 @@ export const PRODUCTS_CURATED = [
     badge: "Popular",
     rating: 4.8,
     isSoldOut: false,
-    description: "Straight cut Jaipur Chanderi tunic with delicate floral thread embroidery on the neckline.",
-    fabric: "Chanderi Silk with Malmal Lining",
-    care: "Dry Clean Only.",
-    shipping: "Dispatched within 2 days."
+    description: "Elegant 100% Pure Cotton Kurta Set featuring beautiful ethnic embroidery on the neckline, paired with matching pants and a dupatta. Available in Orange & Pink, perfect for comfortable daily wear and festive occasions.",
+    fabric: "Cotton",
+    care: "Machine Wash",
+    shipping: "Dispatched within 2-3 days."
   },
 
   // Short Kurtis
   {
     id: "p7",
-    name: "Luxe Silk Satin Resort Short Kurti Set",
+    name: "Floral Embroidered Mul Chanderi Kurta Set",
     category: "Short Kurtis",
     categorySlug: "short-kurtis",
-    price: 7499,
-    originalPrice: 8999,
+    price: 1349,
+    originalPrice: 1799,
     colors: [
       { name: "Champagne Gold", hex: "#e0c9a6" }
     ],
-    sizes: ["XS", "S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg",
     badge: "Trending",
     rating: 4.89,
     isSoldOut: false,
-    description: "Flowing silk satin short kurti and trouser set designed for summer retreats and evening gatherings.",
-    fabric: "100% Mulberry Silk Satin",
-    care: "Dry Clean Only.",
+    description: "Elegant Mul Chanderi Kurta Set featuring delicate floral embroidery, paired with Roman pants and a graceful dupatta. Available in Green & Lavender, perfect for festive occasions and special gatherings.",
+    fabric: "Mul Chanderi",
+    care: "Dry Clean Only",
     shipping: "Dispatched within 2-4 business days."
   },
   {
     id: "p8",
-    name: "Organic European Linen Short Kurti Set",
+    name: "Floral Embroidered Mul Chanderi Kurta Set",
     category: "Short Kurtis",
     categorySlug: "short-kurtis",
-    price: 6999,
-    originalPrice: 8499,
+    price: 1349,
+    originalPrice: 1799,
     colors: [
       { name: "Terracotta Earth", hex: "#c86d51" }
     ],
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236557/surangi-naar/products/real_product_10.jpg",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png",
     badge: "Resort Luxe",
     rating: 4.91,
     isSoldOut: false,
-    description: "Tailored organic linen short kurti and wide-leg pant set with mother-of-pearl buttons.",
-    fabric: "100% Organic European Linen",
-    care: "Gentle cold hand wash.",
-    shipping: "Dispatched within 3 business days."
+    description: "Elegant Mul Chanderi Kurta Set featuring delicate floral embroidery, paired with Roman pants and a graceful dupatta. Available in Green & Lavender, perfect for festive occasions and special gatherings.",
+    fabric: "Mul Chanderi",
+    care: "Dry Clean Only",
+    shipping: "Dispatched within 2-3 business days."
   },
   {
     id: "p9",
-    name: "Botanical Printed Silk Lounge Short Kurti",
+    name: "Mustard Yellow Cotton Embroidered Kurti Set",
     category: "Short Kurtis",
     categorySlug: "short-kurtis",
-    price: 8499,
-    originalPrice: 9999,
+    price: 1299,
+    originalPrice: 1699,
     colors: [
       { name: "Olive Palm", hex: "#4b5320" }
     ],
-    sizes: ["XS", "S", "M", "L"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236561/surangi-naar/products/real_product_11.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236562/surangi-naar/products/real_product_12.jpg",
     badge: "Must Have",
     rating: 4.86,
     isSoldOut: false,
-    description: "Contemporary fluid botanical print short kurti and high-waisted trousers ensemble.",
-    fabric: "Pure Silk Chiffon & Satin Base",
-    care: "Dry Clean Only.",
-    shipping: "Dispatched within 3 days."
+    description: "Elegant Mustard Yellow Cotton Kurti Set featuring beautiful multi-colour floral embroidery on the neckline and hem. Paired with matching pants and a lightweight Malmal dupatta, perfect for a graceful festive look.",
+    fabric: "Cotton 60-60",
+    care: "Dry Clean Only",
+    shipping: "Dispatched within 2-3 days."
   },
 
   // Festive Wear
   {
     id: "p10",
-    name: "Royal Zardosi Heavy Festive Anarkali Set",
+    name: "Teal Blue Floral Printed Kurta Set",
     category: "Festive Wear",
     categorySlug: "festive-wear",
-    price: 18500,
-    originalPrice: 22000,
+    price: 1299,
+    originalPrice: 1699,
     colors: [
       { name: "Royal Emerald", hex: "#1b4332" }
     ],
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png",
     badge: "Exclusive",
     rating: 5.0,
     isSoldOut: false,
-    description: "Royal flared festive Anarkali suit set heavily hand-embroidered with authentic Zardosi work and organza dupatta.",
-    fabric: "Chanderi Silk & Organza Dupatta",
-    care: "Dry Clean Only.",
+    description: " Elegant Teal Blue Kurta Set featuring beautiful floral print detailing on the neckline, sleeves, and hem. Paired with matching pants and dupatta, it is perfect for comfortable daily wear and festive ethnic styling.",
+    fabric: "Cotton 60-60",
+    care: "Machine Wash",
     shipping: "Dispatched within 4-7 business days."
   },
   {
     id: "p11",
-    name: "Gota Patti Heavily Embroidered Festive Set",
+    name: "Mustard Floral Printed Cotton Kurta Set",
     category: "Festive Wear",
     categorySlug: "festive-wear",
-    price: 21000,
-    originalPrice: 25000,
+    price: 999,
+    originalPrice: 1299,
     colors: [
       { name: "Crimson Red", hex: "#8b0000" }
     ],
-    sizes: ["S", "M", "L", "Custom"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
     badge: "Royal Edit",
     rating: 4.96,
     isSoldOut: false,
-    description: "Grand wedding festive ensemble featuring Gota Patti and antique tilla hand-embroidery over weighted raw silk.",
-    fabric: "Raw Silk & Net Dupatta",
-    care: "Dry Clean Only.",
+    description: " Comfortable Mustard Cotton Kurta Set featuring bold cream floral prints with elegant border detailing. Paired with matching pants and dupatta, making it perfect for daily wear and casual outings.",
+    fabric: "Cotton",
+    care: "Machine Wash",
     shipping: "Dispatched within 5-7 business days."
   },
   {
     id: "p12",
-    name: "Haute Couture Bridal Wedding Suit Set",
+    name: "Green Floral Printed Cotton Kurta Set",
     category: "Festive Wear",
     categorySlug: "festive-wear",
-    price: 24500,
-    originalPrice: 29000,
+    price: 999,
+    originalPrice: 1299,
     colors: [
       { name: "Deep Ruby", hex: "#5c1325" }
     ],
-    sizes: ["S", "M", "L", "Custom"],
+    sizes: ["M", "L", "XL", "XXL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png",
     badge: "Bridal Couture",
     rating: 4.98,
     isSoldOut: false,
-    description: "Intricately detailed bridal festive set with antique metallic threadwork and heavy zari tissue drapes.",
-    fabric: "Pure Raw Silk & Tissue Dupatta",
-    care: "Dry Clean Only.",
-    shipping: "Dispatched within 7 business days."
+    description: "Comfortable Green Cotton Kurta Set featuring a beautiful floral print with contrasting cream motifs and elegant border detailing. Paired with matching pants and dupatta, making it perfect for daily wear and casual outings.",
+    fabric: "Cotton",
+    care: "Machine Wash",
+    shipping: "Dispatched within 4-7 business days."
   }
 ];
 
