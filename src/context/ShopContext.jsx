@@ -84,24 +84,51 @@ export const ShopProvider = ({ children }) => {
     fetchInitialData();
   }, []);
 
-  // 2. User Session Initialization (GET /api/users/me)
+  // 2. User Session & Cart/Wishlist Initialization (Fired in parallel on mount)
   useEffect(() => {
     const initUserSession = async () => {
       const token = localStorage.getItem('surangi_access_token');
-      if (token) {
-        try {
-          const res = await api.get('/users/me');
-          if (res.data?.user) {
-            setCurrentUser(res.data.user);
-            await fetchUserCartAndWishlist();
+      if (!token) {
+        loadGuestCartAndWishlist();
+        return;
+      }
+
+      try {
+        // Fire session check, cart, and wishlist requests in parallel immediately
+        const [userRes, cartRes, wishRes] = await Promise.allSettled([
+          api.get('/users/me'),
+          api.get('/cart'),
+          api.get('/wishlist'),
+        ]);
+
+        if (userRes.status === 'fulfilled' && userRes.value.data?.user) {
+          setCurrentUser(userRes.value.data.user);
+
+          if (cartRes.status === 'fulfilled' && cartRes.value.data?.cart) {
+            const formattedCart = cartRes.value.data.cart.map(item => ({
+              id: item.id,
+              product: item.product || products.find(p => p.id === item.productId) || { id: item.productId, name: 'Product', price: 0, image: '' },
+              color: { name: item.colorName, hex: '#5a2d82' },
+              size: item.size,
+              quantity: item.quantity,
+            }));
+            setCart(formattedCart);
           }
-        } catch (err) {
-          console.error('Failed to restore user session:', err);
+
+          if (wishRes.status === 'fulfilled' && wishRes.value.data?.wishlist) {
+            const wishIds = wishRes.value.data.wishlist.map(p => typeof p === 'string' ? p : p.id);
+            setWishlist(wishIds);
+          }
+        } else {
+          console.error('Failed to restore user session:', userRes.reason || 'Invalid user token');
           localStorage.removeItem('surangi_access_token');
           localStorage.removeItem('surangi_refresh_token');
           loadGuestCartAndWishlist();
         }
-      } else {
+      } catch (err) {
+        console.error('Error initializing user session:', err);
+        localStorage.removeItem('surangi_access_token');
+        localStorage.removeItem('surangi_refresh_token');
         loadGuestCartAndWishlist();
       }
     };
