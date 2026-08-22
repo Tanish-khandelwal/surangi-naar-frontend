@@ -53,7 +53,7 @@ export const createOrder = async (req, res) => {
         soldOutItems.push(product.name);
       }
 
-      // Determine actual current price: use salePrice/price if product has active discount, otherwise regular price
+      // Determine actual current price
       let itemPrice;
       if (product.salePrice !== undefined && product.salePrice !== null) {
         itemPrice = Number(product.salePrice);
@@ -83,7 +83,7 @@ export const createOrder = async (req, res) => {
       );
     }
 
-    // 2. Server-side discount re-validation (reuse validateCoupon logic)
+    // 2. Server-side discount re-validation
     let discountAmount = 0;
     const codeToValidate = (discountCode || couponCode || '').toString().trim().toUpperCase();
 
@@ -156,7 +156,6 @@ export const createOrder = async (req, res) => {
     }
 
     // Clear cart ONLY for Cash on Delivery orders upon creation.
-    // Prepaid orders clear cart upon successful payment verification.
     if (userId && isCOD) {
       await prisma.cartItem.deleteMany({ where: { userId } });
     }
@@ -204,6 +203,47 @@ export const getOrderById = async (req, res) => {
     }
 
     return sendSuccess(res, 200, { order }, 'Order details fetched');
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
+export const cancelUserOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Secure ownership check using findFirst with id + userId
+    const order = await prisma.order.findFirst({
+      where: { id, userId },
+    });
+
+    if (!order) {
+      return sendError(res, 404, 'Order not found');
+    }
+
+    const cancellableStatuses = ['Pending', 'Processing'];
+    if (!cancellableStatuses.includes(order.status)) {
+      return sendError(res, 400, 'This order can no longer be cancelled');
+    }
+
+    const now = new Date().toISOString();
+    const currentHistory = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+    const refundRequired = Boolean(order.razorpayPaymentId);
+
+    const updatedOrder = await prisma.order.update({
+      where: { id },
+      data: {
+        status: 'Cancelled',
+        refundRequired,
+        statusHistory: [
+          ...currentHistory,
+          { status: 'Cancelled', timestamp: now, reason: 'Cancelled by customer' },
+        ],
+      },
+    });
+
+    return sendSuccess(res, 200, { order: updatedOrder }, 'Order cancelled successfully');
   } catch (error) {
     return sendError(res, 500, error.message);
   }

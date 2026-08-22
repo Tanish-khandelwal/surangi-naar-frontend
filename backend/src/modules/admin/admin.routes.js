@@ -34,6 +34,7 @@ router.delete('/promo-messages/:id', requireAdmin, adminController.deletePromoMe
 // Orders
 router.get('/orders', requireAdmin, adminController.getAllOrders);
 router.put('/orders/:id/status', requireAdmin, adminController.updateOrderStatus);
+router.put('/orders/:id/cancel', requireAdmin, adminController.cancelAdminOrder);
 
 // Discount Codes
 router.post('/discounts', requireAdmin, adminController.addDiscountCode);

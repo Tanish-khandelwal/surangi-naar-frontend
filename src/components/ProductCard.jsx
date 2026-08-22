@@ -204,10 +204,10 @@ export default function ProductCard({ product }) {
             <Link to={`/category/${product.categorySlug || 'kurtis'}`} className="uppercase tracking-wider text-[9px] sm:text-[10px] font-semibold text-[#d4a373] hover:underline">
               {product.category}
             </Link>
-            {product.rating && (
+            {product.reviewCount > 0 && (
               <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-[#39322f]">
                 <Star className="w-3 h-3 fill-[#d4a373] text-[#d4a373]" />
-                <span>{product.rating}</span>
+                <span>{product.averageRating} ({product.reviewCount})</span>
               </div>
             )}
           </div>

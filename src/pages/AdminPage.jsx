@@ -27,7 +27,8 @@ import {
   ChevronRight,
   Save,
   Truck,
-  Users
+  Users,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -49,9 +50,12 @@ export default function AdminPage() {
     deleteCategory,
     addHeroSlide,
     deleteHeroSlide,
+    updateHeroSlides,
     addPromoMessage,
     deletePromoMessage,
+    updatePromoMessages,
     updateOrderStatus,
+    cancelAdminOrder,
     addDiscountCode,
     toggleDiscountCode,
     deleteDiscountCode,
@@ -1116,6 +1120,12 @@ export default function AdminPage() {
                         <td className="py-4 px-4 font-bold">
                           <span className="text-[#b58349] block text-sm">₹{order.total.toLocaleString()}</span>
                           <span className="text-[10px] text-gray-500 font-normal block">{order.paymentMethod}</span>
+                          {order.refundRequired && (
+                            <span className="inline-flex items-center gap-1 bg-amber-100 border border-amber-300 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1 shadow-xs">
+                              <AlertTriangle className="w-3 h-3 text-amber-600 shrink-0" />
+                              Refund Needed
+                            </span>
+                          )}
                         </td>
                         <td className="py-4 px-4 space-y-2">
                           <select
@@ -1143,6 +1153,25 @@ export default function AdminPage() {
                             <option value="Delivered">Delivered</option>
                             <option value="Cancelled">Cancelled</option>
                           </select>
+
+                          {(order.status === 'Pending' || order.status === 'Processing') && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                confirmAction(
+                                  `Cancel order ${order.id}?`,
+                                  async () => {
+                                    await cancelAdminOrder(order.id);
+                                    showToast(`Order ${order.id} cancelled by admin`);
+                                  },
+                                  'Cancel Order'
+                                );
+                              }}
+                              className="text-[10px] text-rose-600 font-bold hover:underline flex items-center gap-1 block cursor-pointer"
+                            >
+                              <XCircle className="w-3 h-3 text-rose-600" /> Cancel Order
+                            </button>
+                          )}
 
                           <button
                             type="button"

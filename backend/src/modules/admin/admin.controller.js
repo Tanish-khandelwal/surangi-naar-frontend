@@ -336,6 +336,42 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
+export const cancelAdminOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await prisma.order.findUnique({ where: { id } });
+    if (!order) {
+      return sendError(res, 404, 'Order not found');
+    }
+
+    const cancellableStatuses = ['Pending', 'Processing'];
+    if (!cancellableStatuses.includes(order.status)) {
+      return sendError(res, 400, 'This order can no longer be cancelled');
+    }
+
+    const now = new Date().toISOString();
+    const currentHistory = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+    const refundRequired = Boolean(order.razorpayPaymentId);
+
+    const updatedOrder = await prisma.order.update({
+      where: { id },
+      data: {
+        status: 'Cancelled',
+        refundRequired,
+        statusHistory: [
+          ...currentHistory,
+          { status: 'Cancelled', timestamp: now, reason: 'Cancelled by admin' },
+        ],
+      },
+    });
+
+    return sendSuccess(res, 200, { order: updatedOrder }, 'Order cancelled successfully by admin');
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
 // --- Discount Codes Admin CRUD ---
 export const addDiscountCode = async (req, res) => {
   try {

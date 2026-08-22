@@ -19,7 +19,8 @@ import {
   Sparkles,
   Lock,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  XCircle
 } from 'lucide-react';
 
 export default function AccountPage() {
@@ -32,7 +33,8 @@ export default function AccountPage() {
     deleteUserAccount,
     openAuthModal,
     orders,
-    fetchUserOrders
+    fetchUserOrders,
+    cancelUserOrder
   } = useShop();
 
   // Active Tab state: 'profile' | 'orders' | 'addresses'
@@ -41,6 +43,8 @@ export default function AccountPage() {
 
   // Selected Order for detail & tracking view
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderToCancel, setOrderToCancel] = useState(null);
+  const [isCancellingOrder, setIsCancellingOrder] = useState(false);
 
   // Profile Form state
   const [nameInput, setNameInput] = useState('');
@@ -185,6 +189,22 @@ export default function AccountPage() {
       fetchAddresses();
     } catch (err) {
       toast.error('Failed to delete address');
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!orderToCancel) return;
+    setIsCancellingOrder(true);
+    try {
+      const updated = await cancelUserOrder(orderToCancel.id);
+      if (selectedOrder && selectedOrder.id === orderToCancel.id) {
+        setSelectedOrder(updated);
+      }
+      setOrderToCancel(null);
+    } catch (err) {
+      // Toast error handled in ShopContext
+    } finally {
+      setIsCancellingOrder(false);
     }
   };
 
@@ -365,11 +385,23 @@ export default function AccountPage() {
                       Placed on {new Date(selectedOrder.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
                   </div>
-                  <div className="text-left sm:text-right">
-                    <span className="text-xs uppercase text-[#39322f]/60 font-semibold block">Total Amount</span>
-                    <span className="font-serif text-2xl font-bold text-[#b58349]">
-                      ₹{selectedOrder.total?.toLocaleString()}
-                    </span>
+                  <div className="text-left sm:text-right flex flex-col items-start sm:items-end gap-2">
+                    <div>
+                      <span className="text-xs uppercase text-[#39322f]/60 font-semibold block">Total Amount</span>
+                      <span className="font-serif text-2xl font-bold text-[#b58349]">
+                        ₹{selectedOrder.total?.toLocaleString()}
+                      </span>
+                    </div>
+
+                    {(selectedOrder.status === 'Pending' || selectedOrder.status === 'Processing') && (
+                      <button
+                        onClick={() => setOrderToCancel(selectedOrder)}
+                        className="px-4 py-2 rounded-full border border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-600 hover:text-white transition-all text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <XCircle className="w-3.5 h-3.5" />
+                        Cancel Order
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -554,7 +586,18 @@ export default function AccountPage() {
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#e8e2d9]">
+                        <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#e8e2d9]">
+                          {(order.status === 'Pending' || order.status === 'Processing') && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOrderToCancel(order);
+                              }}
+                              className="px-3 py-1.5 rounded-full border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-600 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          )}
                           <div className="text-left sm:text-right">
                             <span className="text-[10px] text-[#39322f]/60 uppercase font-semibold block">Total</span>
                             <span className="font-serif text-base font-bold text-[#b58349]">₹{order.total?.toLocaleString()}</span>
@@ -852,6 +895,38 @@ export default function AccountPage() {
         </div>
       )}
 
+      {/* Order Cancellation Confirmation Modal */}
+      {orderToCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-[#fcfbfa] rounded-3xl p-6 sm:p-8 max-w-md w-full border border-[#e8e2d9] shadow-2xl space-y-6 text-center">
+            <div className="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
+              <XCircle className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="font-serif text-xl font-bold text-[#39322f]">Cancel Order #{orderToCancel.id}?</h3>
+              <p className="text-xs text-[#39322f]/70 font-sans mt-2 leading-relaxed">
+                Are you sure you want to cancel this order? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => setOrderToCancel(null)}
+                disabled={isCancellingOrder}
+                className="flex-1 py-2.5 px-4 rounded-full border border-[#e8e2d9] text-xs font-semibold text-[#39322f] hover:bg-[#f7f3ee] uppercase tracking-wider cursor-pointer"
+              >
+                Keep Order
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                disabled={isCancellingOrder}
+                className="flex-1 py-2.5 px-4 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-[#f7f3ee] text-xs font-semibold uppercase tracking-wider cursor-pointer shadow-md disabled:opacity-50"
+              >
+                {isCancellingOrder ? 'Cancelling...' : 'Yes, Cancel Order'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

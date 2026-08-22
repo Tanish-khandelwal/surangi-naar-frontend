@@ -15,14 +15,26 @@ import {
   ChevronLeft,
   Phone,
   MessageCircle,
-  Sparkles
+  Sparkles,
+  User,
+  MessageSquare
 } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const { allProducts, storeSettings, addToCart, toggleWishlist, isInWishlist, loading } = useShop();
-  const BRAND_CONTACT = storeSettings || {};
+  const { 
+    allProducts, 
+    storeSettings, 
+    addToCart, 
+    toggleWishlist, 
+    isInWishlist, 
+    loading,
+    currentUser,
+    fetchProductReviews,
+    submitProductReview
+  } = useShop();
 
+  const BRAND_CONTACT = storeSettings || {};
   const product = (allProducts || []).find(p => p.id === id);
 
   const productColors = (product?.colorVariants && product.colorVariants.length > 0)
@@ -41,6 +53,17 @@ export default function ProductDetailPage() {
   );
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+
+  // Reviews state
+  const [reviewsList, setReviewsList] = useState([]);
+  const [userReview, setUserReview] = useState(null);
+  const [canReview, setCanReview] = useState(false);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [ratingInput, setRatingInput] = useState(5);
+  const [commentInput, setCommentInput] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [isEditingReview, setIsEditingReview] = useState(false);
 
   // Gallery Images Array for the currently selected color
   const galleryImages = (selectedColor?.images && selectedColor.images.length > 0)
@@ -69,6 +92,48 @@ export default function ProductDetailPage() {
     setQuantity(1);
     setActiveImageIndex(0);
   }, [product?.id, product?.colorVariants, product?.colors, product?.sizes, product?.image]);
+
+  // Load Product Reviews
+  const loadReviews = async (page = 1) => {
+    if (!product?.id) return;
+    const res = await fetchProductReviews(product.id, page);
+    if (res) {
+      setReviewsList(res.reviews || []);
+      setUserReview(res.userReview || null);
+      setCanReview(Boolean(res.canReview));
+      if (res.pagination) {
+        setTotalPages(res.pagination.totalPages || 1);
+      }
+      if (res.userReview) {
+        setRatingInput(res.userReview.rating);
+        setCommentInput(res.userReview.comment || '');
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (product?.id) {
+      loadReviews(reviewPage);
+    }
+  }, [product?.id, reviewPage]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!product?.id || isSubmittingReview) return;
+    setIsSubmittingReview(true);
+    try {
+      await submitProductReview(product.id, {
+        rating: ratingInput,
+        comment: commentInput,
+      });
+      setIsEditingReview(false);
+      await loadReviews(reviewPage);
+    } catch (err) {
+      // error toast handled in ShopContext
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   // Reset active image index when color changes
   const handleColorChange = (col) => {
@@ -144,7 +209,7 @@ export default function ProductDetailPage() {
           {/* Main Image Gallery */}
           <div className="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-4">
             
-            {/* Thumbnail Strip: Left column on desktop (sm:flex-col), bottom row on mobile */}
+            {/* Thumbnail Strip */}
             {galleryImages.length > 1 && (
               <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto no-scrollbar max-h-[540px] shrink-0 justify-center sm:justify-start">
                 {galleryImages.map((imgUrl, idx) => (
@@ -241,16 +306,24 @@ export default function ProductDetailPage() {
                 <span className="text-xs uppercase font-sans tracking-widest text-[#d4a373] font-bold">
                   {product.category || 'Luxury Ensemble'}
                 </span>
-                {product.rating && (
-                  <div className="flex items-center gap-1 text-xs font-semibold text-[#39322f]">
+                {product.reviewCount > 0 ? (
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#39322f]">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-[#d4a373]" />
+                        <Star 
+                          key={i} 
+                          className={`w-4 h-4 ${
+                            i < Math.floor(product.averageRating)
+                              ? 'fill-[#d4a373] text-[#d4a373]'
+                              : 'text-gray-300'
+                          }`} 
+                        />
                       ))}
                     </div>
-                    <span>({product.rating})</span>
+                    <span>{product.averageRating}</span>
+                    <span className="text-[#39322f]/50 font-normal">({product.reviewCount})</span>
                   </div>
-                )}
+                ) : null}
               </div>
 
               {/* Title */}
@@ -302,7 +375,7 @@ export default function ProductDetailPage() {
                           style={{ backgroundColor: hexColor }}
                         >
                           {isSelected && (
-                            <Check className={`w-4 h-4 ${isLightColor ? 'text-gray-900' : 'text-white'} drop-shadow-xs`} />
+                            <Check className={`w-4 h-4 ${isLightColor ? 'text-[#39322f]' : 'text-white'}`} />
                           )}
                         </button>
                       );
@@ -312,106 +385,93 @@ export default function ProductDetailPage() {
               )}
 
               {/* Size Selector */}
-              {product.sizes && product.sizes.length > 0 && (
-                <div className="space-y-2.5">
-                  <label className="block text-xs uppercase font-semibold text-[#39322f] tracking-wider">
+              <div className="space-y-2.5">
+                <div className="flex justify-between items-center text-xs">
+                  <label className="uppercase font-semibold text-[#39322f] tracking-wider">
                     Select Size: <span className="text-[#d4a373]">{selectedSize}</span>
                   </label>
-                  <div className="flex flex-wrap gap-2.5">
-                    {product.sizes.map((sz) => (
-                      <button
-                        key={sz}
-                        onClick={() => setSelectedSize(sz)}
-                        className={`px-4 py-2 rounded-lg text-xs font-sans font-semibold transition-all cursor-pointer ${
-                          selectedSize === sz
-                            ? 'bg-[#39322f] text-white shadow-md'
-                            : 'bg-[#f7f3ee] text-[#39322f] hover:bg-[#e8e2d9]'
-                        }`}
-                      >
-                        {sz}
-                      </button>
-                    ))}
-                  </div>
+                  <span className="text-[#39322f]/60 hover:text-[#d4a373] cursor-pointer transition-colors font-sans">
+                    Size Guide
+                  </span>
                 </div>
-              )}
+                <div className="flex flex-wrap gap-2.5">
+                  {(product.sizes || ['Free Size']).map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase font-sans border transition-all cursor-pointer ${
+                        selectedSize === size
+                          ? 'bg-[#39322f] text-white border-[#39322f] shadow-md'
+                          : 'bg-white text-[#39322f] border-[#e8e2d9] hover:border-[#d4a373]'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-              {/* Quantity Selector */}
-              <div className="space-y-2.5">
-                <label className="block text-xs uppercase font-semibold text-[#39322f] tracking-wider">
-                  Quantity
-                </label>
-                <div className="inline-flex items-center border border-[#e8e2d9] rounded-lg bg-white">
+              {/* Quantity Selector & Add to Cart Action */}
+              <div className="flex items-center gap-4 pt-4 border-t border-[#e8e2d9]">
+                <div className="flex items-center border border-[#e8e2d9] bg-white rounded-full p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2.5 hover:bg-gray-100 text-[#39322f] cursor-pointer"
+                    className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer"
                   >
-                    <Minus className="w-4 h-4" />
+                    <Minus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="px-5 text-sm font-semibold font-sans text-[#39322f]">
+                  <span className="w-8 text-center text-sm font-semibold font-sans text-[#39322f]">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2.5 hover:bg-gray-100 text-[#39322f] cursor-pointer"
+                    className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
+
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.isSoldOut}
+                  className={`flex-1 py-3.5 px-6 rounded-full text-xs font-semibold uppercase tracking-widest font-sans transition-all duration-300 flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+                    product.isSoldOut
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f]'
+                  }`}
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>{product.isSoldOut ? 'Sold Out' : 'Add to Shopping Bag'}</span>
+                </button>
               </div>
 
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-4 pt-6 border-t border-[#e8e2d9]">
-              <div className="flex gap-4">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={product.isSoldOut}
-                  className={`flex-1 py-4 rounded-full text-xs font-sans uppercase tracking-widest font-semibold transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer ${
-                    product.isSoldOut
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#39322f] hover:bg-[#d4a373] text-white'
-                  }`}
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>{product.isSoldOut ? 'Sold Out' : 'Add to Cart'}</span>
-                </button>
-
-                <button
-                  onClick={() => toggleWishlist(product.id)}
-                  className="p-4 rounded-full border border-[#e8e2d9] bg-[#f7f3ee] hover:bg-white text-[#39322f] transition-colors cursor-pointer shadow-sm"
-                  title="Wishlist"
-                >
-                  <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#c59b27] text-[#c59b27]' : ''}`} />
-                </button>
-              </div>
-
-              {/* Direct Concierge Contact Box */}
-              <div className="bg-[#f7f3ee] p-4 rounded-2xl border border-[#e8e2d9] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            {/* Assistance Section */}
+            <div className="bg-[#fcfbfa] border border-[#e8e2d9] rounded-2xl p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs text-[#39322f]/80 font-sans">
+                <span className="font-semibold">Need Bespoke Sizing or Styling Help?</span>
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#d4a373]" />
-                  <span className="font-semibold text-[#39322f]">Need custom fitting or advice?</span>
-                </div>
-                <div className="flex items-center gap-3">
                   <a 
-                    href={`tel:${BRAND_CONTACT.phone}`}
-                    className="flex items-center gap-1 text-[#39322f] hover:text-[#d4a373] font-semibold"
+                    href={`tel:${BRAND_CONTACT.phone || '+91 98765 43210'}`}
+                    className="flex items-center gap-1 bg-[#f7f3ee] border border-[#e8e2d9] px-3 py-1 rounded-full text-[#39322f] hover:border-[#d4a373] transition-colors"
                   >
                     <Phone className="w-3.5 h-3.5 text-[#d4a373]" />
-                    <span>{BRAND_CONTACT.phone}</span>
+                    <span>Call Us</span>
                   </a>
-                  <a 
-                    href={BRAND_CONTACT.whatsapp}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1 bg-emerald-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-emerald-700 transition-colors"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
+                  {BRAND_CONTACT.whatsapp && (
+                    <a 
+                      href={BRAND_CONTACT.whatsapp}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1 bg-emerald-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-emerald-700 transition-colors"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>WhatsApp</span>
+                    </a>
+                  )}
                 </div>
               </div>
-
             </div>
 
           </div>
@@ -467,6 +527,221 @@ export default function ProductDetailPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Customer Ratings & Reviews Section */}
+        <div className="bg-[#fcfbfa] rounded-3xl p-6 sm:p-12 border border-[#e8e2d9] shadow-sm mb-16">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#e8e2d9] pb-6 mb-8">
+            <div>
+              <h3 className="font-serif text-2xl font-bold text-[#39322f]">
+                Customer Reviews
+              </h3>
+              <p className="text-xs text-[#39322f]/60 font-sans mt-1">
+                Authentic feedback from verified patrons of Surangi Naar
+              </p>
+            </div>
+
+            {/* Average Rating Breakdown Header */}
+            <div className="flex items-center gap-3 bg-[#f7f3ee] border border-[#e8e2d9] px-4 py-2.5 rounded-2xl">
+              <div className="font-serif text-2xl font-bold text-[#39322f]">
+                {product.averageRating || '5.0'}
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center text-[#d4a373]">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-3.5 h-3.5 ${
+                        i < Math.floor(product.averageRating || 5)
+                          ? 'fill-[#d4a373] text-[#d4a373]'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="text-[10px] text-[#39322f]/60 font-sans">
+                  {product.reviewCount || 0} verified reviews
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit / Edit Review Box (for buyers with delivered orders) */}
+          {currentUser && (canReview || userReview) && (
+            <div className="mb-10 bg-[#f7f3ee] border border-[#d4a373]/40 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-serif text-base font-bold text-[#39322f]">
+                  {userReview && !isEditingReview ? 'Your Verified Review' : (userReview ? 'Edit Your Review' : 'Write a Review')}
+                </h4>
+                {userReview && !isEditingReview && (
+                  <button
+                    onClick={() => setIsEditingReview(true)}
+                    className="text-xs text-[#d4a373] hover:underline font-semibold cursor-pointer"
+                  >
+                    Edit Review
+                  </button>
+                )}
+              </div>
+
+              {userReview && !isEditingReview ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex text-[#d4a373]">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < userReview.rating ? 'fill-[#d4a373]' : 'text-gray-300'}`} />
+                      ))}
+                    </div>
+                    <span className="text-xs text-[#39322f]/50 font-sans">
+                      {new Date(userReview.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+                  {userReview.comment && (
+                    <p className="text-xs text-[#39322f]/80 font-sans italic">"{userReview.comment}"</p>
+                  )}
+                </div>
+              ) : (
+                <form onSubmit={handleReviewSubmit} className="space-y-4">
+                  {/* Star Rating Picker */}
+                  <div>
+                    <label className="block text-xs uppercase font-semibold text-[#39322f] mb-1.5 tracking-wider">
+                      Rating:
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRatingInput(star)}
+                          className="p-1 cursor-pointer hover:scale-110 transition-transform"
+                        >
+                          <Star
+                            className={`w-6 h-6 ${
+                              star <= ratingInput
+                                ? 'fill-[#d4a373] text-[#d4a373]'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Comment Area */}
+                  <div>
+                    <label className="block text-xs uppercase font-semibold text-[#39322f] mb-1.5 tracking-wider">
+                      Your Experience / Comment (Optional):
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={commentInput}
+                      onChange={(e) => setCommentInput(e.target.value)}
+                      placeholder="Share your thoughts on fitting, fabric texture, or craftsmanship..."
+                      className="w-full bg-white border border-[#e8e2d9] rounded-xl p-3 text-xs text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingReview}
+                      className="px-6 py-2.5 bg-[#39322f] hover:bg-[#d4a373] text-white hover:text-[#39322f] font-semibold text-xs uppercase tracking-wider rounded-full transition-all cursor-pointer shadow-md disabled:opacity-50"
+                    >
+                      {isSubmittingReview ? 'Submitting...' : (userReview ? 'Update Review' : 'Submit Review')}
+                    </button>
+                    {isEditingReview && (
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingReview(false)}
+                        className="px-4 py-2.5 text-xs text-[#39322f]/60 hover:text-[#39322f] cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+
+          {/* List of Reviews */}
+          {reviewsList.length === 0 ? (
+            <div className="text-center py-10 text-[#39322f]/60 font-sans text-xs">
+              <MessageSquare className="w-8 h-8 text-[#d4a373]/60 mx-auto mb-2" />
+              <p>No reviews yet for this product.</p>
+              {!canReview && (
+                <p className="text-[11px] text-[#39322f]/40 mt-1">
+                  Reviews can be submitted by patrons with delivered orders.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {reviewsList.map((rev) => (
+                <div key={rev.id} className="border-b border-[#e8e2d9] pb-6 last:border-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-[#39322f] text-white flex items-center justify-center font-bold text-xs font-serif uppercase">
+                        {rev.user?.name ? rev.user.name.charAt(0) : 'C'}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-xs text-[#39322f] block">
+                          {rev.user?.name || 'Verified Patron'}
+                        </span>
+                        <span className="text-[10px] text-emerald-600 font-semibold">
+                          Verified Buyer
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex text-[#d4a373]">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-3.5 h-3.5 ${
+                              i < rev.rating ? 'fill-[#d4a373]' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-[#39322f]/40 font-sans">
+                        {new Date(rev.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {rev.comment && (
+                    <p className="text-xs text-[#39322f]/80 font-sans leading-relaxed pl-10">
+                      "{rev.comment}"
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 pt-4">
+                  <button
+                    disabled={reviewPage <= 1}
+                    onClick={() => setReviewPage(prev => prev - 1)}
+                    className="px-3 py-1.5 rounded-lg border border-[#e8e2d9] text-xs font-semibold disabled:opacity-40 cursor-pointer"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs text-[#39322f]/60 font-sans">
+                    Page {reviewPage} of {totalPages}
+                  </span>
+                  <button
+                    disabled={reviewPage >= totalPages}
+                    onClick={() => setReviewPage(prev => prev + 1)}
+                    className="px-3 py-1.5 rounded-lg border border-[#e8e2d9] text-xs font-semibold disabled:opacity-40 cursor-pointer"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Related Products Section */}

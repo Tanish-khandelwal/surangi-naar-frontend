@@ -594,6 +594,64 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
+  const cancelUserOrder = async (orderId) => {
+    try {
+      const res = await api.put(`/orders/${orderId}/cancel`);
+      if (res.data?.order) {
+        setOrders(prev => prev.map(o => o.id === orderId ? res.data.order : o));
+        toast.success('Order cancelled successfully');
+        return res.data.order;
+      }
+    } catch (err) {
+      console.error('Error cancelling order:', err);
+      toast.error(err.response?.data?.message || 'Failed to cancel order');
+      throw err;
+    }
+  };
+
+  const cancelAdminOrder = async (orderId) => {
+    try {
+      const res = await api.put(`/admin/orders/${orderId}/cancel`);
+      if (res.data?.order) {
+        setOrders(prev => prev.map(o => o.id === orderId ? res.data.order : o));
+        toast.success('Order cancelled by admin');
+        return res.data.order;
+      }
+    } catch (err) {
+      console.error('Error cancelling order by admin:', err);
+      toast.error(err.response?.data?.message || 'Failed to cancel order');
+      throw err;
+    }
+  };
+
+  const submitProductReview = async (productId, reviewData) => {
+    try {
+      const res = await api.post(`/products/${productId}/reviews`, reviewData);
+      if (res.data?.review) {
+        const prodRes = await api.get(`/products/${productId}`);
+        if (prodRes.data?.product) {
+          setProducts(prev => prev.map(p => p.id === productId ? prodRes.data.product : p));
+        }
+        toast.success('Review submitted successfully!');
+        return res.data.review;
+      }
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      toast.error(err.response?.data?.message || 'Failed to submit review');
+      throw err;
+    }
+  };
+
+  const fetchProductReviews = async (productId, page = 1) => {
+    try {
+      const res = await api.get(`/products/${productId}/reviews?page=${page}`);
+      return res.data;
+    } catch (err) {
+      console.error('Error fetching product reviews:', err);
+      return { reviews: [], pagination: { total: 0, totalPages: 1 } };
+    }
+  };
+
   const addOrder = async (orderData) => {
     try {
       const res = await api.post('/orders', orderData);
@@ -763,6 +821,10 @@ export const ShopProvider = ({ children }) => {
       addPromoMessage,
       deletePromoMessage,
       updateOrderStatus,
+      cancelUserOrder,
+      cancelAdminOrder,
+      submitProductReview,
+      fetchProductReviews,
       addOrder,
       addDiscountCode,
       toggleDiscountCode,

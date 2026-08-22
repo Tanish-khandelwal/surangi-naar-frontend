@@ -23,5 +23,6 @@ const optionalAuth = (req, res, next) => {
 router.post('/', writeRateLimiter, optionalAuth, ordersController.createOrder);
 router.get('/', requireAuth, ordersController.getUserOrders);
 router.get('/:id', requireAuth, ordersController.getOrderById);
+router.put('/:id/cancel', requireAuth, ordersController.cancelUserOrder);
 
 export default router;
