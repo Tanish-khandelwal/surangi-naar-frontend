@@ -146,6 +146,7 @@ model Order {
   trackingNumber    String?
   carrier           String?
   refundRequired    Boolean  @default(false)
+  cancellationReason String?
   statusHistory     Json?    // [{ status, timestamp }]
   createdAt         DateTime @default(now())
 }

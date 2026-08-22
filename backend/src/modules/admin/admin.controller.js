@@ -339,6 +339,9 @@ export const updateOrderStatus = async (req, res) => {
 export const cancelAdminOrder = async (req, res) => {
   try {
     const { id } = req.params;
+    const { reason, cancellationReason } = req.body;
+
+    const finalReason = (reason || cancellationReason || 'Cancelled by admin').toString().trim();
 
     const order = await prisma.order.findUnique({ where: { id } });
     if (!order) {
@@ -359,9 +362,10 @@ export const cancelAdminOrder = async (req, res) => {
       data: {
         status: 'Cancelled',
         refundRequired,
+        cancellationReason: finalReason,
         statusHistory: [
           ...currentHistory,
-          { status: 'Cancelled', timestamp: now, reason: 'Cancelled by admin' },
+          { status: 'Cancelled', timestamp: now, reason: finalReason },
         ],
       },
     });

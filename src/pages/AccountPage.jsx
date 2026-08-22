@@ -44,6 +44,8 @@ export default function AccountPage() {
   // Selected Order for detail & tracking view
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderToCancel, setOrderToCancel] = useState(null);
+  const [cancelReasonOption, setCancelReasonOption] = useState('Ordered by mistake');
+  const [cancelReasonCustom, setCancelReasonCustom] = useState('');
   const [isCancellingOrder, setIsCancellingOrder] = useState(false);
 
   // Profile Form state
@@ -194,13 +196,19 @@ export default function AccountPage() {
 
   const handleConfirmCancel = async () => {
     if (!orderToCancel) return;
+    const finalReason = cancelReasonOption === 'Other' 
+      ? (cancelReasonCustom.trim() || 'Other reason') 
+      : cancelReasonOption;
+
     setIsCancellingOrder(true);
     try {
-      const updated = await cancelUserOrder(orderToCancel.id);
+      const updated = await cancelUserOrder(orderToCancel.id, finalReason);
       if (selectedOrder && selectedOrder.id === orderToCancel.id) {
         setSelectedOrder(updated);
       }
       setOrderToCancel(null);
+      setCancelReasonOption('Ordered by mistake');
+      setCancelReasonCustom('');
     } catch (err) {
       // Toast error handled in ShopContext
     } finally {
@@ -895,33 +903,81 @@ export default function AccountPage() {
         </div>
       )}
 
-      {/* Order Cancellation Confirmation Modal */}
+      {/* Order Cancellation Confirmation Modal with Reason Selection */}
       {orderToCancel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-[#fcfbfa] rounded-3xl p-6 sm:p-8 max-w-md w-full border border-[#e8e2d9] shadow-2xl space-y-6 text-center">
-            <div className="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
-              <XCircle className="w-8 h-8" />
+          <div className="bg-[#fcfbfa] rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-[#e8e2d9] shadow-2xl space-y-5 text-left">
+            <div className="flex items-center gap-3 border-b border-[#e8e2d9] pb-4">
+              <div className="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
+                <XCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg font-bold text-[#39322f]">Cancel Order #{orderToCancel.id}</h3>
+                <p className="text-xs text-[#39322f]/60 font-sans">Please let us know the reason for cancellation</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-serif text-xl font-bold text-[#39322f]">Cancel Order #{orderToCancel.id}?</h3>
-              <p className="text-xs text-[#39322f]/70 font-sans mt-2 leading-relaxed">
-                Are you sure you want to cancel this order? This action cannot be undone.
-              </p>
+
+            <div className="space-y-3">
+              <label className="block text-xs uppercase font-bold text-[#39322f] tracking-wider">
+                Select Cancellation Reason:
+              </label>
+              
+              <div className="space-y-2 text-xs font-sans">
+                {[
+                  "Ordered by mistake",
+                  "Found a better price elsewhere",
+                  "Delivery time is too long",
+                  "Want to change size / color / variant",
+                  "Incorrect delivery address",
+                  "Other"
+                ].map((reasonOpt) => (
+                  <label key={reasonOpt} className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#e8e2d9] bg-white hover:border-[#d4a373] cursor-pointer transition-colors">
+                    <input
+                      type="radio"
+                      name="cancelReason"
+                      value={reasonOpt}
+                      checked={cancelReasonOption === reasonOpt}
+                      onChange={(e) => setCancelReasonOption(e.target.value)}
+                      className="accent-[#d4a373]"
+                    />
+                    <span className="font-medium text-[#39322f]">{reasonOpt}</span>
+                  </label>
+                ))}
+              </div>
+
+              {cancelReasonOption === 'Other' && (
+                <div className="pt-2">
+                  <textarea
+                    rows={2}
+                    placeholder="Please specify your cancellation reason..."
+                    value={cancelReasonCustom}
+                    onChange={(e) => setCancelReasonCustom(e.target.value)}
+                    className="w-full bg-white border border-[#e8e2d9] rounded-xl p-3 text-xs text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+              )}
             </div>
-            <div className="flex items-center justify-center gap-3 pt-2">
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#e8e2d9]">
               <button
-                onClick={() => setOrderToCancel(null)}
+                type="button"
+                onClick={() => {
+                  setOrderToCancel(null);
+                  setCancelReasonOption('Ordered by mistake');
+                  setCancelReasonCustom('');
+                }}
                 disabled={isCancellingOrder}
-                className="flex-1 py-2.5 px-4 rounded-full border border-[#e8e2d9] text-xs font-semibold text-[#39322f] hover:bg-[#f7f3ee] uppercase tracking-wider cursor-pointer"
+                className="px-5 py-2.5 rounded-full border border-[#e8e2d9] text-xs font-semibold text-[#39322f] hover:bg-[#f7f3ee] uppercase tracking-wider cursor-pointer"
               >
                 Keep Order
               </button>
               <button
+                type="button"
                 onClick={handleConfirmCancel}
                 disabled={isCancellingOrder}
-                className="flex-1 py-2.5 px-4 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-[#f7f3ee] text-xs font-semibold uppercase tracking-wider cursor-pointer shadow-md disabled:opacity-50"
+                className="px-6 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold uppercase tracking-wider cursor-pointer shadow-md disabled:opacity-50"
               >
-                {isCancellingOrder ? 'Cancelling...' : 'Yes, Cancel Order'}
+                {isCancellingOrder ? 'Cancelling...' : 'Confirm Cancellation'}
               </button>
             </div>
           </div>

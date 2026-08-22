@@ -61,9 +61,18 @@ export default function ProductDetailPage() {
   const [reviewPage, setReviewPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [ratingInput, setRatingInput] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
   const [commentInput, setCommentInput] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isEditingReview, setIsEditingReview] = useState(false);
+
+  const RATING_DESCRIPTIONS = {
+    1: '1 / 5 - Poor',
+    2: '2 / 5 - Fair',
+    3: '3 / 5 - Good',
+    4: '4 / 5 - Very Good',
+    5: '5 / 5 - Excellent'
+  };
 
   // Gallery Images Array for the currently selected color
   const galleryImages = (selectedColor?.images && selectedColor.images.length > 0)
@@ -606,23 +615,37 @@ export default function ProductDetailPage() {
                     <label className="block text-xs uppercase font-semibold text-[#39322f] mb-1.5 tracking-wider">
                       Rating:
                     </label>
-                    <div className="flex items-center gap-1.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setRatingInput(star)}
-                          className="p-1 cursor-pointer hover:scale-110 transition-transform"
-                        >
-                          <Star
-                            className={`w-6 h-6 ${
-                              star <= ratingInput
-                                ? 'fill-[#d4a373] text-[#d4a373]'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        </button>
-                      ))}
+                    <div 
+                      className="flex items-center gap-2"
+                      onMouseLeave={() => setHoverRating(0)}
+                    >
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const activeRating = hoverRating || ratingInput;
+                          const isFilled = star <= activeRating;
+                          return (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setRatingInput(star)}
+                              onMouseEnter={() => setHoverRating(star)}
+                              className="p-1 cursor-pointer hover:scale-125 transition-transform"
+                              title={`${star} Star${star > 1 ? 's' : ''}`}
+                            >
+                              <Star
+                                className={`w-6 h-6 transition-all duration-150 ${
+                                  isFilled
+                                    ? 'fill-[#d4a373] text-[#d4a373] drop-shadow-xs'
+                                    : 'text-gray-300 fill-transparent'
+                                }`}
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <span className="text-xs font-bold text-[#b58349] font-sans ml-2">
+                        {RATING_DESCRIPTIONS[hoverRating || ratingInput]}
+                      </span>
                     </div>
                   </div>
 

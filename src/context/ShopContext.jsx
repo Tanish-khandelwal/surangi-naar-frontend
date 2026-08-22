@@ -189,6 +189,17 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
+  const fetchAdminOrders = async () => {
+    try {
+      const res = await api.get('/admin/orders');
+      if (res.data?.orders) {
+        setOrders(res.data.orders);
+      }
+    } catch (err) {
+      console.error('Error fetching admin orders:', err);
+    }
+  };
+
   // 3. Fetch logged in customer orders (GET /api/orders) on login / user session change
   useEffect(() => {
     if (currentUser && currentUser.role !== 'admin') {
@@ -594,9 +605,9 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  const cancelUserOrder = async (orderId) => {
+  const cancelUserOrder = async (orderId, reason) => {
     try {
-      const res = await api.put(`/orders/${orderId}/cancel`);
+      const res = await api.put(`/orders/${orderId}/cancel`, { reason });
       if (res.data?.order) {
         setOrders(prev => prev.map(o => o.id === orderId ? res.data.order : o));
         toast.success('Order cancelled successfully');
@@ -609,9 +620,9 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  const cancelAdminOrder = async (orderId) => {
+  const cancelAdminOrder = async (orderId, reason) => {
     try {
-      const res = await api.put(`/admin/orders/${orderId}/cancel`);
+      const res = await api.put(`/admin/orders/${orderId}/cancel`, { reason });
       if (res.data?.order) {
         setOrders(prev => prev.map(o => o.id === orderId ? res.data.order : o));
         toast.success('Order cancelled by admin');
@@ -724,7 +735,7 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  const resetToDefaultData = async () => {
+  const refreshData = async () => {
     await fetchInitialData();
   };
 
@@ -760,6 +771,7 @@ export const ShopProvider = ({ children }) => {
       customers,
       setCustomers,
       fetchCustomers,
+      fetchAdminOrders,
       discountCodes,
       setDiscountCodes,
       storeSettings,
@@ -830,7 +842,7 @@ export const ShopProvider = ({ children }) => {
       toggleDiscountCode,
       deleteDiscountCode,
       updateStoreSettings,
-      resetToDefaultData
+      refreshData
     }}>
       {children}
     </ShopContext.Provider>

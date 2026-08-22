@@ -40,6 +40,7 @@ export default function AdminPage() {
     orders,
     customers,
     fetchCustomers,
+    fetchAdminOrders,
     discountCodes,
     storeSettings,
     addProduct,
@@ -60,7 +61,7 @@ export default function AdminPage() {
     toggleDiscountCode,
     deleteDiscountCode,
     updateStoreSettings,
-    resetToDefaultData
+    refreshData
   } = useShop();
 
   // Authentication & Verification State
@@ -118,10 +119,11 @@ export default function AdminPage() {
   const [categoriesPage, setCategoriesPage] = useState(1);
   const [customersPage, setCustomersPage] = useState(1);
 
-  // Fetch registered customers on auth or tab change
+  // Fetch registered customers and admin orders on auth or tab change
   React.useEffect(() => {
-    if (isAuthenticated && typeof fetchCustomers === 'function') {
-      fetchCustomers();
+    if (isAuthenticated) {
+      if (typeof fetchCustomers === 'function') fetchCustomers();
+      if (typeof fetchAdminOrders === 'function') fetchAdminOrders();
     }
   }, [isAuthenticated, activeTab]);
 
@@ -725,21 +727,17 @@ export default function AdminPage() {
             </Link>
 
             <button
-              onClick={() => {
-                confirmAction(
-                  'Reset all catalog, orders, and banners back to original defaults?',
-                  () => {
-                    resetToDefaultData();
-                    showToast('Restored original store data');
-                  },
-                  'Reset Defaults'
-                );
+              onClick={async () => {
+                if (typeof refreshData === 'function') await refreshData();
+                if (typeof fetchAdminOrders === 'function') await fetchAdminOrders();
+                if (typeof fetchCustomers === 'function') await fetchCustomers();
+                showToast('Refreshed store data');
               }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 text-xs font-semibold transition-colors cursor-pointer"
-              title="Reset state to default mock data"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#f8f4ee] text-xs font-semibold text-[#2d2624] border border-[#e8e2d9] hover:border-[#d4a373] hover:text-[#b58349] transition-colors cursor-pointer"
+              title="Refresh current data from backend"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Reset Defaults</span>
+              <span className="hidden md:inline">Refresh Data</span>
             </button>
 
             <button
@@ -1161,7 +1159,7 @@ export default function AdminPage() {
                                 confirmAction(
                                   `Cancel order ${order.id}?`,
                                   async () => {
-                                    await cancelAdminOrder(order.id);
+                                    await cancelAdminOrder(order.id, 'Cancelled by admin');
                                     showToast(`Order ${order.id} cancelled by admin`);
                                   },
                                   'Cancel Order'
@@ -1171,6 +1169,13 @@ export default function AdminPage() {
                             >
                               <XCircle className="w-3 h-3 text-rose-600" /> Cancel Order
                             </button>
+                          )}
+
+                          {(order.cancellationReason || (Array.isArray(order.statusHistory) && order.statusHistory.find(h => h.status === 'Cancelled')?.reason)) && (
+                            <div className="text-[10px] text-rose-800 bg-rose-50 border border-rose-200 p-2 rounded-lg mt-1 font-sans leading-tight">
+                              <strong className="font-bold uppercase tracking-wider block text-[9px] text-rose-900 mb-0.5">Cancellation Reason:</strong>
+                              <span>"{order.cancellationReason || order.statusHistory.find(h => h.status === 'Cancelled')?.reason}"</span>
+                            </div>
                           )}
 
                           <button

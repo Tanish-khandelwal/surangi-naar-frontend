@@ -11,7 +11,8 @@ import {
   ChevronDown,
   Sparkles,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Package
 } from 'lucide-react';
 
 
@@ -146,6 +147,16 @@ export default function Navbar() {
               >
                 Our Story
               </Link>
+
+              {currentUser && (
+                <Link
+                  to="/account"
+                  className="uppercase text-xs tracking-widest font-bold text-[#b58349] hover:text-[#39322f] transition-all py-1.5 px-3 rounded-full bg-[#d4a373]/15 border border-[#d4a373]/30 flex items-center gap-1.5 hover:bg-[#d4a373]/30"
+                >
+                  <Package className="w-3.5 h-3.5 text-[#d4a373]" />
+                  <span>Track Orders</span>
+                </Link>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -385,7 +396,19 @@ export default function Navbar() {
                     <span>About Us & Contact</span>
                   </Link>
 
-
+                  {currentUser && (
+                    <Link
+                      to="/account"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-[#d4a373]/15 border border-[#d4a373]/40 text-xs uppercase tracking-wider text-[#39322f] font-bold"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Package className="w-4 h-4 text-[#d4a373]" />
+                        Track Orders & Account
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-[#d4a373]" />
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

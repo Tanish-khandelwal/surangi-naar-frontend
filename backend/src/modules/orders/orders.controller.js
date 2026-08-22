@@ -212,6 +212,9 @@ export const cancelUserOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+    const { reason, cancellationReason } = req.body;
+
+    const finalReason = (reason || cancellationReason || 'Cancelled by customer').toString().trim();
 
     // Secure ownership check using findFirst with id + userId
     const order = await prisma.order.findFirst({
@@ -236,9 +239,10 @@ export const cancelUserOrder = async (req, res) => {
       data: {
         status: 'Cancelled',
         refundRequired,
+        cancellationReason: finalReason,
         statusHistory: [
           ...currentHistory,
-          { status: 'Cancelled', timestamp: now, reason: 'Cancelled by customer' },
+          { status: 'Cancelled', timestamp: now, reason: finalReason },
         ],
       },
     });
