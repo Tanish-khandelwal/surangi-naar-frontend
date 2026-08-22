@@ -377,6 +377,17 @@ export const cancelAdminOrder = async (req, res) => {
 };
 
 // --- Discount Codes Admin CRUD ---
+export const getAllDiscountCodes = async (req, res) => {
+  try {
+    const discounts = await prisma.discountCode.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return sendSuccess(res, 200, { discounts }, 'Discount codes fetched');
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
 export const addDiscountCode = async (req, res) => {
   try {
     const validatedData = discountCodeSchema.parse(req.body);
@@ -386,6 +397,9 @@ export const addDiscountCode = async (req, res) => {
     if (error.name === 'ZodError') {
       const firstMsg = error.errors?.[0]?.message || 'Validation Error';
       return sendError(res, 400, firstMsg, error.errors);
+    }
+    if (error.code === 'P2002') {
+      return sendError(res, 400, `Discount code '${req.body?.code}' already exists.`);
     }
     return sendError(res, 400, error.message);
   }

@@ -41,6 +41,7 @@ export default function AdminPage() {
     customers,
     fetchCustomers,
     fetchAdminOrders,
+    fetchDiscountCodes,
     discountCodes,
     storeSettings,
     addProduct,
@@ -119,11 +120,12 @@ export default function AdminPage() {
   const [categoriesPage, setCategoriesPage] = useState(1);
   const [customersPage, setCustomersPage] = useState(1);
 
-  // Fetch registered customers and admin orders on auth or tab change
+  // Fetch registered customers, admin orders, and discount codes on auth or tab change
   React.useEffect(() => {
     if (isAuthenticated) {
       if (typeof fetchCustomers === 'function') fetchCustomers();
       if (typeof fetchAdminOrders === 'function') fetchAdminOrders();
+      if (typeof fetchDiscountCodes === 'function') fetchDiscountCodes();
     }
   }, [isAuthenticated, activeTab]);
 
@@ -527,17 +529,22 @@ export default function AdminPage() {
   };
 
   // Discount Handlers
-  const handleSaveDiscount = (e) => {
+  const handleSaveDiscount = async (e) => {
     e.preventDefault();
     if (!discountForm.code) return;
-    addDiscountCode({
-      code: discountForm.code.toUpperCase(),
-      discountPercent: Number(discountForm.discountPercent),
-      minSpend: Number(discountForm.minSpend),
-      description: discountForm.description || `${discountForm.discountPercent}% OFF coupon`
-    });
-    setIsDiscountModalOpen(false);
-    showToast(`Created discount code ${discountForm.code.toUpperCase()}`);
+    try {
+      await addDiscountCode({
+        code: discountForm.code.toUpperCase().trim(),
+        discountPercent: Number(discountForm.discountPercent),
+        minSpend: Number(discountForm.minSpend || 0),
+        description: discountForm.description || `${discountForm.discountPercent}% OFF coupon`
+      });
+      setIsDiscountModalOpen(false);
+      setDiscountForm({ code: '', discountPercent: 10, minSpend: 0, description: '' });
+      showToast(`Created discount code ${discountForm.code.toUpperCase().trim()}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create discount code');
+    }
   };
 
   // Filtered Products List
@@ -763,7 +770,7 @@ export default function AdminPage() {
             { id: 'customers', label: `Customers (${(customers || []).length})`, icon: Users },
             { id: 'categories', label: `Categories (${categories.length})`, icon: Grid },
             { id: 'banners', label: 'Hero & Banners', icon: ImageIcon },
-            { id: 'discounts', label: 'Discounts', icon: Tag },
+            { id: 'discounts', label: `Discounts (${(discountCodes || []).length})`, icon: Tag },
             { id: 'settings', label: 'Store Contact & Info', icon: Settings },
           ].map(tab => {
             const Icon = tab.icon;
@@ -1486,46 +1493,62 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {discountCodes.map((dc) => (
-                <div key={dc.code} className="bg-white border border-[#e8e2d9] rounded-2xl p-5 flex flex-col justify-between shadow-xs">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-mono text-lg font-bold text-[#b58349] px-3 py-1 bg-[#f7f3ee] border border-[#d4a373]/30 rounded-lg">
-                        {dc.code}
-                      </span>
+            {(!discountCodes || discountCodes.length === 0) ? (
+              <div className="bg-white border border-[#e8e2d9] rounded-2xl p-12 text-center space-y-3 shadow-xs">
+                <Tag className="w-10 h-10 text-[#d4a373] mx-auto" />
+                <h3 className="font-serif text-lg font-bold text-[#2d2624]">No Discount Coupons Found</h3>
+                <p className="text-xs text-gray-500 font-sans max-w-sm mx-auto">
+                  Create promo codes for your patrons to use during checkout.
+                </p>
+                <button
+                  onClick={() => setIsDiscountModalOpen(true)}
+                  className="px-5 py-2.5 bg-[#39322f] hover:bg-[#d4a373] text-white hover:text-[#39322f] text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm"
+                >
+                  + Create First Coupon
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {discountCodes.map((dc) => (
+                  <div key={dc.code} className="bg-white border border-[#e8e2d9] rounded-2xl p-5 flex flex-col justify-between shadow-xs">
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-mono text-lg font-bold text-[#b58349] px-3 py-1 bg-[#f7f3ee] border border-[#d4a373]/30 rounded-lg">
+                          {dc.code}
+                        </span>
+                        <button
+                          onClick={() => {
+                            toggleDiscountCode(dc.code);
+                            showToast(`Toggled coupon ${dc.code}`);
+                          }}
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase transition-colors cursor-pointer ${
+                            dc.isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-700 border border-rose-200'
+                          }`}
+                        >
+                          {dc.isActive ? 'Active' : 'Disabled'}
+                        </button>
+                      </div>
+                      <p className="text-xs text-[#2d2624] font-semibold mb-1">{dc.description}</p>
+                      <p className="text-[11px] text-gray-500">
+                        Discount: <span className="text-[#39322f] font-bold">{dc.discountPercent}% OFF</span> | Min spend: ₹{dc.minSpend}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-[#e8e2d9] flex justify-end">
                       <button
                         onClick={() => {
-                          toggleDiscountCode(dc.code);
-                          showToast(`Toggled coupon ${dc.code}`);
+                          deleteDiscountCode(dc.code);
+                          showToast(`Deleted coupon ${dc.code}`);
                         }}
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-                          dc.isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-700 border border-rose-200'
-                        }`}
+                        className="text-xs text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1 cursor-pointer"
                       >
-                        {dc.isActive ? 'Active' : 'Disabled'}
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
                       </button>
                     </div>
-                    <p className="text-xs text-[#2d2624] font-semibold mb-1">{dc.description}</p>
-                    <p className="text-[11px] text-gray-500">
-                      Discount: <span className="text-[#39322f] font-bold">{dc.discountPercent}% OFF</span> | Min spend: ₹{dc.minSpend}
-                    </p>
                   </div>
-
-                  <div className="mt-4 pt-4 border-t border-[#e8e2d9] flex justify-end">
-                    <button
-                      onClick={() => {
-                        deleteDiscountCode(dc.code);
-                        showToast(`Deleted coupon ${dc.code}`);
-                      }}
-                      className="text-xs text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

@@ -15,6 +15,7 @@ import {
   Gift
 } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
+import api from '../services/api';
 
 export default function CartDrawer() {
   const { 
@@ -47,21 +48,23 @@ export default function CartDrawer() {
 
   if (!isCartOpen) return null;
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     e.preventDefault();
-    const code = couponCode.trim().toUpperCase();
-    if (code === 'HAPPY5') {
-      const disc = cartSubtotal * 0.05;
-      setDiscountAmount(disc);
-      setAppliedCoupon('HAPPY5 (5% OFF)');
-      setCouponError('');
-    } else if (code === 'LAH10') {
-      const disc = cartSubtotal * 0.10;
-      setDiscountAmount(disc);
-      setAppliedCoupon('LAH10 (10% OFF)');
-      setCouponError('');
-    } else {
-      setCouponError('Invalid coupon code. Try HAPPY5 or LAH10.');
+    if (!couponCode.trim()) return;
+    try {
+      const res = await api.post('/coupons/validate', {
+        code: couponCode,
+        cartSubtotal,
+      });
+      if (res.data?.valid) {
+        setDiscountAmount(res.data.discountAmount);
+        setAppliedCoupon(`${res.data.code} (${res.data.discountPercent}% OFF)`);
+        setCouponError('');
+      }
+    } catch (err) {
+      setCouponError(err.response?.data?.message || 'Invalid coupon code');
+      setDiscountAmount(0);
+      setAppliedCoupon('');
     }
   };
 

@@ -45,3 +45,15 @@ export const validateCoupon = async (req, res) => {
     return sendError(res, 500, error.message);
   }
 };
+
+export const getActiveCoupons = async (req, res) => {
+  try {
+    const discounts = await prisma.discountCode.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    return sendSuccess(res, 200, { discounts }, 'Active coupons fetched');
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};

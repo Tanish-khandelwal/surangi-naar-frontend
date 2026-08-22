@@ -37,6 +37,7 @@ router.put('/orders/:id/status', requireAdmin, adminController.updateOrderStatus
 router.put('/orders/:id/cancel', requireAdmin, adminController.cancelAdminOrder);
 
 // Discount Codes
+router.get('/discounts', requireAdmin, adminController.getAllDiscountCodes);
 router.post('/discounts', requireAdmin, adminController.addDiscountCode);
 router.put('/discounts/:code', requireAdmin, adminController.updateDiscountCode);
 router.delete('/discounts/:code', requireAdmin, adminController.deleteDiscountCode);

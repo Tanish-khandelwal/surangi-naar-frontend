@@ -40,12 +40,13 @@ export const ShopProvider = ({ children }) => {
     setLoading(true);
     try {
       // Fetch Public Catalog Data in parallel
-      const [prodRes, catRes, heroRes, promoRes, settingsRes] = await Promise.allSettled([
+      const [prodRes, catRes, heroRes, promoRes, settingsRes, couponRes] = await Promise.allSettled([
         api.get('/products'),
         api.get('/categories'),
         api.get('/hero-slides'),
         api.get('/promo-messages'),
         api.get('/store-settings'),
+        api.get('/coupons'),
       ]);
 
       if (prodRes.status === 'fulfilled' && prodRes.value.data?.products) {
@@ -63,6 +64,9 @@ export const ShopProvider = ({ children }) => {
       }
       if (settingsRes.status === 'fulfilled' && settingsRes.value.data?.settings) {
         setStoreSettings(settingsRes.value.data.settings);
+      }
+      if (couponRes.status === 'fulfilled' && couponRes.value.data?.discounts) {
+        setDiscountCodes(couponRes.value.data.discounts);
       }
     } catch (err) {
       console.error('Error fetching initial public catalog data:', err);
@@ -197,6 +201,20 @@ export const ShopProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Error fetching admin orders:', err);
+    }
+  };
+
+  const fetchDiscountCodes = async () => {
+    try {
+      const adminToken = sessionStorage.getItem('surangi_admin_token');
+      const endpoint = adminToken ? '/admin/discounts' : '/coupons';
+      const res = await api.get(endpoint);
+      if (res.data?.discounts) {
+        setDiscountCodes(res.data.discounts);
+        return res.data.discounts;
+      }
+    } catch (err) {
+      console.error('Error fetching discount codes:', err);
     }
   };
 
@@ -692,7 +710,9 @@ export const ShopProvider = ({ children }) => {
     try {
       const res = await api.post('/admin/discounts', codeData);
       if (res.data?.discount) {
-        setDiscountCodes(prev => [...prev, res.data.discount]);
+        setDiscountCodes(prev => [res.data.discount, ...prev.filter(d => d.code !== res.data.discount.code)]);
+        await fetchDiscountCodes();
+        return res.data.discount;
       }
     } catch (err) {
       console.error('Error adding discount code:', err);
@@ -702,10 +722,12 @@ export const ShopProvider = ({ children }) => {
 
   const toggleDiscountCode = async (codeStr) => {
     try {
-      const current = discountCodes.find(d => d.code === codeStr);
+      const current = (discountCodes || []).find(d => d.code === codeStr);
       const res = await api.put(`/admin/discounts/${codeStr}`, { isActive: !current?.isActive });
       if (res.data?.discount) {
         setDiscountCodes(prev => prev.map(d => d.code === codeStr ? res.data.discount : d));
+        await fetchDiscountCodes();
+        return res.data.discount;
       }
     } catch (err) {
       console.error('Error toggling discount code:', err);
@@ -717,6 +739,7 @@ export const ShopProvider = ({ children }) => {
     try {
       await api.delete(`/admin/discounts/${codeStr}`);
       setDiscountCodes(prev => prev.filter(d => d.code !== codeStr));
+      await fetchDiscountCodes();
     } catch (err) {
       console.error('Error deleting discount code:', err);
       throw err;
@@ -772,6 +795,7 @@ export const ShopProvider = ({ children }) => {
       setCustomers,
       fetchCustomers,
       fetchAdminOrders,
+      fetchDiscountCodes,
       discountCodes,
       setDiscountCodes,
       storeSettings,

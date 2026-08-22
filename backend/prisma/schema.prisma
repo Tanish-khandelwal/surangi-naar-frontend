@@ -59,12 +59,13 @@ model PromoMessage {
 }
 
 model DiscountCode {
-  id              String  @id @default(cuid())
-  code            String  @unique
+  id              String   @id @default(cuid())
+  code            String   @unique
   discountPercent Int
-  minSpend        Int     @default(0)
+  minSpend        Int      @default(0)
   description     String
-  isActive        Boolean @default(true)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
 }
 
 model StoreSettings {
