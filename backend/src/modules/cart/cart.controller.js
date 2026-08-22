@@ -36,6 +36,8 @@ export const addToCart = async (req, res) => {
       return sendError(res, 400, 'productId, colorName, and size are required');
     }
 
+    const qty = Math.max(1, Number(quantity) || 1);
+
     const existingItem = await prisma.cartItem.findFirst({
       where: {
         userId,
@@ -49,7 +51,7 @@ export const addToCart = async (req, res) => {
     if (existingItem) {
       cartItem = await prisma.cartItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + quantity },
+        data: { quantity: existingItem.quantity + qty },
       });
     } else {
       cartItem = await prisma.cartItem.create({
@@ -58,7 +60,7 @@ export const addToCart = async (req, res) => {
           productId,
           colorName,
           size,
-          quantity,
+          quantity: qty,
         },
       });
     }
