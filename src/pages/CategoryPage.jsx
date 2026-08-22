@@ -32,7 +32,7 @@ export default function CategoryPage() {
 
   if (slug && slug !== 'all') {
     products = products.filter(
-      p => p.categorySlug === slug || p.category.toLowerCase().replace(/\s+/g, '-') === slug
+      p => p.categorySlug === slug || (p.category && p.category.toLowerCase().replace(/\s+/g, '-') === slug)
     );
   }
 
@@ -60,6 +60,16 @@ export default function CategoryPage() {
   } else if (sortBy === 'rating') {
     products.sort((a, b) => (b.rating || 0) - (a.rating || 0));
   }
+
+  // Helper to dynamically calculate style count for each category based on real products
+  const getCategoryStyleCount = (cat) => {
+    const matchingCount = (allProducts || []).filter(p => 
+      p.categorySlug === cat.slug || 
+      (p.category && p.category.toLowerCase().replace(/\s+/g, '-') === cat.slug) ||
+      (p.category && cat.name && p.category.toLowerCase() === cat.name.toLowerCase())
+    ).length;
+    return `${matchingCount} Styles`;
+  };
 
   return (
     <div className="bg-[#f7f3ee] min-h-screen py-10">
@@ -148,19 +158,23 @@ export default function CategoryPage() {
                     All Collections ({allProducts.length})
                   </Link>
                 </li>
-                {catList.map((cat) => (
-                  <li key={cat.id || cat.slug}>
-                    <Link
-                      to={`/category/${cat.slug}`}
-                      className={`flex items-center justify-between py-1 hover:text-[#d4a373] transition-colors ${slug === cat.slug ? 'font-bold text-[#d4a373]' : 'text-[#39322f]/80'}`}
-                    >
-                      <span>{cat.name}</span>
-                      <span className="text-[10px] text-[#39322f]/50 font-sans">{cat.count || 'Collection'}</span>
-                    </Link>
-                  </li>
-                ))}
+                {catList.map((cat) => {
+                  const styleCount = getCategoryStyleCount(cat);
+                  return (
+                    <li key={cat.id || cat.slug}>
+                      <Link
+                        to={`/category/${cat.slug}`}
+                        className={`flex items-center justify-between py-1 hover:text-[#d4a373] transition-colors ${slug === cat.slug ? 'font-bold text-[#d4a373]' : 'text-[#39322f]/80'}`}
+                      >
+                        <span>{cat.name}</span>
+                        <span className="text-[10px] text-[#39322f]/50 font-sans">{styleCount}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
+
             <div className="space-y-3 pt-4 border-t border-[#e8e2d9]">
               <div className="flex justify-between items-center text-xs font-sans">
                 <span className="font-semibold uppercase tracking-wider text-[#39322f]">Max Price</span>
@@ -228,16 +242,20 @@ export default function CategoryPage() {
             <div className="space-y-3">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-[#39322f]">Category</h4>
               <div className="flex flex-col gap-2 text-xs">
-                {catList.map(cat => (
-                  <Link
-                    key={cat.id || cat.slug}
-                    to={`/category/${cat.slug}`}
-                    onClick={() => setIsMobileFilterOpen(false)}
-                    className="py-1 text-[#39322f]/80 hover:text-[#d4a373]"
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
+                {catList.map(cat => {
+                  const styleCount = getCategoryStyleCount(cat);
+                  return (
+                    <Link
+                      key={cat.id || cat.slug}
+                      to={`/category/${cat.slug}`}
+                      onClick={() => setIsMobileFilterOpen(false)}
+                      className="flex items-center justify-between py-1 text-[#39322f]/80 hover:text-[#d4a373]"
+                    >
+                      <span>{cat.name}</span>
+                      <span className="text-[10px] text-[#39322f]/50 font-sans">{styleCount}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
