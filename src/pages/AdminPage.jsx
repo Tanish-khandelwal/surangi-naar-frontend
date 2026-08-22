@@ -357,19 +357,19 @@ export default function AdminPage() {
       categorySlug: 'kurtis',
       price: '',
       originalPrice: '',
-      image: '/images/products/real_product_1.jpg',
+      image: '',
       secondaryImage: '',
-      badge: 'New Arrival',
-      sizes: ['M', 'L', 'XL'],
+      badge: 'Bestseller',
+      sizes: ['M', 'L', 'XL', 'XXL'],
       stockQuantity: 10,
       isSoldOut: false,
       description: '',
       fabric: '',
-      care: 'Dry Clean Only. Store in pure cotton wrapping.',
+      care: 'Dry Clean Only.',
       craftsmanship: '',
       shipping: 'Complimentary express delivery across India. 7-day hassle-free exchange.',
       colorVariants: [
-        { name: 'Royal Purple', hex: '#5a2d82', image: '/images/products/real_product_1.jpg', secondaryImage: '' }
+        { name: 'Royal Purple', hex: '#5a2d82', images: ['/images/products/real_product_1.jpg'] }
       ]
     });
     setIsProductModalOpen(true);
@@ -379,16 +379,21 @@ export default function AdminPage() {
     setEditingProduct(product);
     let variants = [];
     if (product.colorVariants && Array.isArray(product.colorVariants) && product.colorVariants.length > 0) {
-      variants = product.colorVariants;
+      variants = product.colorVariants.map(v => ({
+        name: v.name,
+        hex: v.hex,
+        images: Array.isArray(v.images) && v.images.length > 0
+          ? v.images
+          : [v.image || product.image || '/images/products/real_product_1.jpg', ...(v.secondaryImage ? [v.secondaryImage] : [])]
+      }));
     } else if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
       variants = product.colors.map(c => ({
         name: typeof c === 'object' ? c.name : c,
         hex: typeof c === 'object' ? c.hex : '#5a2d82',
-        image: product.image || '/images/products/real_product_1.jpg',
-        secondaryImage: product.secondaryImage || ''
+        images: [product.image || '/images/products/real_product_1.jpg', ...(product.secondaryImage ? [product.secondaryImage] : [])]
       }));
     } else {
-      variants = [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image || '/images/products/real_product_1.jpg', secondaryImage: product.secondaryImage || '' }];
+      variants = [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image || '/images/products/real_product_1.jpg', ...(product.secondaryImage ? [product.secondaryImage] : [])] }];
     }
 
     setProductForm({
@@ -425,14 +430,16 @@ export default function AdminPage() {
       return;
     }
 
-    const invalidVar = productForm.colorVariants.find(v => !v.name?.trim() || !v.hex || !v.image);
+    const invalidVar = productForm.colorVariants.find(v => !v.name?.trim() || !v.hex || !v.images || v.images.length === 0);
     if (invalidVar) {
-      toast.error('Each color variant must have a name, hex code, and main image.');
+      toast.error('Each color variant must have a name, hex code, and at least 1 image.');
       return;
     }
 
     const priceNum = Number(productForm.price);
     const origPriceNum = productForm.originalPrice ? Number(productForm.originalPrice) : Math.round(priceNum * 1.25);
+
+    const firstVarImages = productForm.colorVariants[0].images || [];
 
     const payload = {
       name: productForm.name,
@@ -450,11 +457,12 @@ export default function AdminPage() {
       craftsmanship: productForm.craftsmanship,
       shipping: productForm.shipping,
       colorVariants: productForm.colorVariants.map(v => ({
-        ...v,
-        secondaryImage: v.secondaryImage ? v.secondaryImage : null
+        name: v.name,
+        hex: v.hex,
+        images: v.images,
       })),
-      image: productForm.colorVariants[0].image,
-      secondaryImage: productForm.colorVariants[0].secondaryImage ? productForm.colorVariants[0].secondaryImage : null
+      image: firstVarImages[0] || productForm.image,
+      secondaryImage: firstVarImages[1] || firstVarImages[0] || null
     };
 
     if (editingProduct) {
@@ -1714,104 +1722,79 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-[#e8e2d9]/60">
-                        <div>
-                          <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-semibold text-[10px]">Main Image *</label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              const formData = new FormData();
-                              formData.append('image', file);
-                              formData.append('file', file);
-                              setUploadingField(`variant_main_${index}`);
-                              try {
-                                const res = await api.post('/admin/upload', formData, {
-                                  headers: { 'Content-Type': 'multipart/form-data' },
-                                });
-                                if (res.data?.url) {
-                                  const updated = [...productForm.colorVariants];
-                                  updated[index].image = res.data.url;
-                                  setProductForm({ ...productForm, colorVariants: updated });
-                                }
-                              } catch (err) {
-                                toast.error('Image upload failed');
-                              } finally {
-                                setUploadingField(null);
-                              }
-                            }}
-                            className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-2.5 py-1.5 text-[11px] text-[#39322f] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold cursor-pointer"
-                          />
-                          {uploadingField === `variant_main_${index}` && (
-                            <p className="text-[10px] text-[#d4a373] mt-1 animate-pulse font-medium">Uploading image...</p>
-                          )}
-                          {variant.image && (
-                            <div className="mt-1.5 flex items-center gap-2">
-                              <img src={getImageUrl(variant.image)} alt="Variant Main" className="w-8 h-8 object-cover rounded-lg border border-[#e8e2d9]" />
-                              <span className="text-[9px] text-gray-500 truncate max-w-[120px]">{variant.image}</span>
-                            </div>
-                          )}
+                      <div className="pt-2 border-t border-[#e8e2d9]/60 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block uppercase tracking-wider text-[#39322f] font-semibold text-[10px]">
+                            Variant Gallery Images * <span className="text-gray-400 font-sans font-normal lowercase">(up to 6 images)</span>
+                          </label>
+                          <span className="text-[9px] text-gray-500 font-sans">
+                            {(variant.images || []).length} / 6
+                          </span>
                         </div>
 
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <label className="block uppercase tracking-wider text-[#39322f] font-semibold text-[10px]">Secondary Hover Image</label>
-                            <span className="text-[9px] text-gray-400 font-sans italic">optional — defaults to main image</span>
-                          </div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              const formData = new FormData();
-                              formData.append('image', file);
-                              formData.append('file', file);
-                              setUploadingField(`variant_sec_${index}`);
-                              try {
-                                const res = await api.post('/admin/upload', formData, {
-                                  headers: { 'Content-Type': 'multipart/form-data' },
-                                });
-                                if (res.data?.url) {
-                                  const updated = [...productForm.colorVariants];
-                                  updated[index].secondaryImage = res.data.url;
-                                  setProductForm({ ...productForm, colorVariants: updated });
-                                }
-                              } catch (err) {
-                                toast.error('Image upload failed');
-                              } finally {
-                                setUploadingField(null);
-                              }
-                            }}
-                            className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-2.5 py-1.5 text-[11px] text-[#39322f] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-[#39322f] file:text-white file:font-semibold cursor-pointer"
-                          />
-                          {uploadingField === `variant_sec_${index}` && (
-                            <p className="text-[10px] text-[#d4a373] mt-1 animate-pulse font-medium">Uploading image...</p>
-                          )}
-                          {variant.secondaryImage && (
-                            <div className="mt-1.5 flex items-center justify-between gap-2 bg-[#f8f4ee] p-1.5 rounded-xl border border-[#e8e2d9]">
-                              <div className="flex items-center gap-2 overflow-hidden">
-                                <img src={getImageUrl(variant.secondaryImage)} alt="Variant Hover" className="w-8 h-8 object-cover rounded-lg border border-[#e8e2d9] shrink-0" />
-                                <span className="text-[9px] text-gray-500 truncate max-w-[100px]">{variant.secondaryImage}</span>
-                              </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {(variant.images || []).map((imgUrl, imgIdx) => (
+                            <div key={imgIdx} className="relative group w-16 h-16 rounded-xl border border-[#e8e2d9] overflow-hidden bg-[#f8f4ee] shrink-0">
+                              <img src={getImageUrl(imgUrl)} alt={`Variant ${index + 1} image ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                              {imgIdx === 0 && (
+                                <span className="absolute bottom-0.5 left-0.5 right-0.5 bg-[#39322f]/90 text-white text-[8px] font-bold text-center py-0.5 rounded-xs uppercase tracking-tighter">
+                                  Main
+                                </span>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => {
                                   const updated = [...productForm.colorVariants];
-                                  updated[index].secondaryImage = '';
+                                  updated[index].images = updated[index].images.filter((_, i) => i !== imgIdx);
                                   setProductForm({ ...productForm, colorVariants: updated });
-                                  toast.info('Secondary hover image removed');
                                 }}
-                                className="text-rose-600 hover:text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white border border-rose-200 hover:bg-rose-50 cursor-pointer shrink-0 transition-colors"
-                                title="Remove secondary hover image"
+                                className="absolute top-0.5 right-0.5 bg-rose-600 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold opacity-90 hover:opacity-100 cursor-pointer shadow-xs"
+                                title="Remove Image"
                               >
-                                Remove ✕
+                                ✕
                               </button>
                             </div>
+                          ))}
+
+                          {(variant.images || []).length < 6 && (
+                            <label className="w-16 h-16 rounded-xl border-2 border-dashed border-[#d4a373]/60 bg-[#f8f4ee] hover:bg-white flex flex-col items-center justify-center cursor-pointer transition-all shrink-0">
+                              <span className="text-xs font-bold text-[#b58349]">+ Add</span>
+                              <span className="text-[8px] text-gray-400 font-sans">Image</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const formData = new FormData();
+                                  formData.append('image', file);
+                                  formData.append('file', file);
+                                  setUploadingField(`variant_img_${index}`);
+                                  try {
+                                    const res = await api.post('/admin/upload', formData, {
+                                      headers: { 'Content-Type': 'multipart/form-data' },
+                                    });
+                                    if (res.data?.url) {
+                                      const updated = [...productForm.colorVariants];
+                                      const currentImgs = updated[index].images || [];
+                                      updated[index].images = [...currentImgs, res.data.url];
+                                      setProductForm({ ...productForm, colorVariants: updated });
+                                    }
+                                  } catch (err) {
+                                    toast.error('Image upload failed');
+                                  } finally {
+                                    setUploadingField(null);
+                                  }
+                                }}
+                              />
+                            </label>
                           )}
                         </div>
+
+                        {uploadingField === `variant_img_${index}` && (
+                          <p className="text-[10px] text-[#d4a373] mt-1 animate-pulse font-medium">Uploading image...</p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1820,7 +1803,7 @@ export default function AdminPage() {
                 <button
                   type="button"
                   onClick={(e) => {
-                    const newVar = { name: '', hex: '#5a2d82', image: '', secondaryImage: '' };
+                    const newVar = { name: '', hex: '#5a2d82', images: [] };
                     setProductForm({
                       ...productForm,
                       colorVariants: [...(productForm.colorVariants || []), newVar]

@@ -152,7 +152,16 @@ export default function CartPage() {
       // 1. Create Order in Database
       const createdOrder = await addOrder(orderPayload);
 
-      // 2. Create Razorpay Order (no amount sent; backend fetches real total from created order)
+      // If Cash on Delivery, order is immediately confirmed
+      const isCOD = (orderPayload.paymentMethod || '').toLowerCase().includes('cash on delivery') || (orderPayload.paymentMethod || '').toLowerCase().includes('cod');
+      if (isCOD) {
+        setPlacedOrder(createdOrder);
+        clearCart();
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // 2. Create Razorpay Order for Prepaid payment (no amount sent; backend fetches real total from created order)
       const rzpRes = await api.post('/payments/create-order', {
         orderId: createdOrder.id,
         idempotencyKey,
@@ -187,26 +196,21 @@ export default function CartPage() {
             });
 
             if (verifyRes.data?.success) {
-              setPlacedOrder(verifyRes.data.order || createdOrder);
+              const verifiedOrder = verifyRes.data.order || createdOrder;
+              setPlacedOrder(verifiedOrder);
               clearCart();
+              toast.success('Payment verified! Order placed successfully.');
               if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                 setIdempotencyKey(crypto.randomUUID());
               } else {
                 setIdempotencyKey(`ik_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
               }
             } else {
-              toast.error('Payment verification failed.');
+              toast.error('Payment verification failed. Please contact support if money was debited.');
             }
           } catch (err) {
             console.error('Payment Verification Error:', err);
-            // Fallback for dev mode / test mode
-            setPlacedOrder(createdOrder);
-            clearCart();
-            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-              setIdempotencyKey(crypto.randomUUID());
-            } else {
-              setIdempotencyKey(`ik_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
-            }
+            toast.error(err.response?.data?.message || 'Payment verification failed. Please try again.');
           } finally {
             setIsProcessingPayment(false);
           }
@@ -218,6 +222,12 @@ export default function CartPage() {
         },
         theme: {
           color: '#39322f',
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessingPayment(false);
+            toast.info('Payment window closed. Order was not placed.');
+          },
         },
       };
 

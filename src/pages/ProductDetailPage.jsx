@@ -11,6 +11,7 @@ import {
   Minus, 
   Check, 
   ChevronRight,
+  ChevronLeft,
   Phone,
   MessageCircle,
   Sparkles
@@ -29,18 +30,27 @@ export default function ProductDetailPage() {
         ? product.colors.map(c => ({
             name: typeof c === 'object' ? c.name : c,
             hex: typeof c === 'object' ? c.hex : '#5a2d82',
-            image: product.image,
-            secondaryImage: product.secondaryImage || product.image
+            images: [product.image, product.secondaryImage || product.image].filter(Boolean)
           }))
-        : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+        : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
 
   const [selectedColor, setSelectedColor] = useState(productColors[0]);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
-  const activeImage = selectedColor?.image || productColors[0]?.image || product.image;
   const [activeTab, setActiveTab] = useState('description');
+
+  // Gallery Images Array for the currently selected color
+  const galleryImages = (selectedColor?.images && selectedColor.images.length > 0)
+    ? selectedColor.images
+    : (selectedColor?.image ? [selectedColor.image, ...(selectedColor.secondaryImage ? [selectedColor.secondaryImage] : [])] : [product.image]);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  // Touch swipe state for mobile
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     if (!product || !product.id) return;
@@ -50,14 +60,47 @@ export default function ProductDetailPage() {
           ? product.colors.map(c => ({
               name: typeof c === 'object' ? c.name : c,
               hex: typeof c === 'object' ? c.hex : '#5a2d82',
-              image: product.image,
-              secondaryImage: product.secondaryImage || product.image
+              images: [product.image, product.secondaryImage || product.image].filter(Boolean)
             }))
-          : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+          : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
     setSelectedColor(cols[0]);
     setSelectedSize(product.sizes ? product.sizes[0] : 'Free Size');
     setQuantity(1);
+    setActiveImageIndex(0);
   }, [product.id, product.colorVariants, product.colors, product.sizes, product.image]);
+
+  // Reset active image index when color changes
+  const handleColorChange = (col) => {
+    setSelectedColor(col);
+    setActiveImageIndex(0);
+  };
+
+  const handlePrevImage = () => {
+    setActiveImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  };
+
+  const handleNextImage = () => {
+    setActiveImageIndex((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 40) {
+      handleNextImage();
+    } else if (distance < -40) {
+      handlePrevImage();
+    }
+  };
 
   const isWishlisted = isInWishlist(product?.id);
   const relatedProducts = (allProducts || []).filter(p => p?.id && p.id !== product?.id).slice(0, 4);
@@ -94,19 +137,47 @@ export default function ProductDetailPage() {
         </nav>
 
         {/* Product Showcase Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-16">
           
           {/* Main Image Gallery */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-[3/4] w-full luxury-glass rounded-3xl overflow-hidden border border-[#d4a373]/30 shadow-xl group">
-              <img
-                src={getImageUrl(activeImage)}
-                alt={product.name}
-                className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              />
+          <div className="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-4">
+            
+            {/* Thumbnail Strip: Left column on desktop (sm:flex-col), bottom row on mobile */}
+            {galleryImages.length > 1 && (
+              <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto no-scrollbar max-h-[540px] shrink-0 justify-center sm:justify-start">
+                {galleryImages.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative aspect-[3/4] w-14 sm:w-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-[#f8f4ee] shrink-0 ${
+                      activeImageIndex === idx
+                        ? 'border-[#d4a373] ring-2 ring-[#d4a373]/30 scale-105 shadow-md'
+                        : 'border-[#e8e2d9] opacity-70 hover:opacity-100 hover:border-[#d4a373]/60'
+                    }`}
+                  >
+                    <img src={getImageUrl(imgUrl)} alt={`${product.name} thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Main Display Image */}
+            <div className="relative aspect-[3/4] w-full luxury-glass rounded-3xl overflow-hidden border border-[#d4a373]/30 shadow-xl group flex-1">
+              <div 
+                className="w-full h-full relative overflow-hidden cursor-grab active:cursor-grabbing"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+              >
+                <img
+                  src={getImageUrl(galleryImages[activeImageIndex] || galleryImages[0])}
+                  alt={product.name}
+                  className="w-full h-full object-cover object-center transition-all duration-500"
+                />
+              </div>
 
               {product.badge && (
-                <div className="absolute top-4 left-4 z-10">
+                <div className="absolute top-4 left-4 z-10 pointer-events-none">
                   <span className="bg-[#39322f] text-white text-[10px] uppercase font-sans tracking-widest px-3.5 py-1.5 rounded-full font-bold shadow-md flex items-center gap-1.5 border border-[#d4a373]/40">
                     <Sparkles className="w-3 h-3 text-[#d4a373]" />
                     {product.badge}
@@ -121,6 +192,41 @@ export default function ProductDetailPage() {
               >
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-rose-500 text-rose-500' : ''}`} />
               </button>
+
+              {/* Left / Right Navigation Arrows */}
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrevImage}
+                    aria-label="Previous Image"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/80 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-xs transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={handleNextImage}
+                    aria-label="Next Image"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/80 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-xs transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Mobile Dot Indicators */}
+              {galleryImages.length > 1 && (
+                <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-1.5 z-10 sm:hidden">
+                  {galleryImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                        activeImageIndex === idx ? 'w-5 bg-[#d4a373]' : 'w-1.5 bg-white/70 hover:bg-white'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -186,7 +292,7 @@ export default function ProductDetailPage() {
                       return (
                         <button
                           key={idx}
-                          onClick={() => setSelectedColor(col)}
+                          onClick={() => handleColorChange(col)}
                           title={colorName}
                           className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
                             isSelected ? 'ring-2 ring-[#d4a373] border-white scale-110 shadow-sm' : 'border-gray-300 hover:scale-105'

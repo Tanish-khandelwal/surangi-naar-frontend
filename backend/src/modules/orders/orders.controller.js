@@ -113,7 +113,9 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    const initialStatus = 'Pending';
+    const methodStr = (paymentMethod || '').toLowerCase();
+    const isCOD = methodStr.includes('cash on delivery') || methodStr.includes('cod');
+    const initialStatus = isCOD ? 'Processing' : 'Pending';
     const now = new Date().toISOString();
 
     let order;
@@ -153,8 +155,9 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Optionally clear cart if logged in
-    if (userId) {
+    // Clear cart ONLY for Cash on Delivery orders upon creation.
+    // Prepaid orders clear cart upon successful payment verification.
+    if (userId && isCOD) {
       await prisma.cartItem.deleteMany({ where: { userId } });
     }
 
@@ -168,7 +171,15 @@ export const getUserOrders = async (req, res) => {
   try {
     const userId = req.user.id;
     const orders = await prisma.order.findMany({
-      where: { userId },
+      where: {
+        userId,
+        NOT: {
+          AND: [
+            { status: 'Pending' },
+            { paymentMethod: { contains: 'Prepaid' } },
+          ],
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
     return sendSuccess(res, 200, { orders }, 'Orders fetched');

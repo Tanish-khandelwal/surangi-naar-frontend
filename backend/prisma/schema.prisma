@@ -14,7 +14,7 @@ model Product {
   categorySlug    String
   price           Int
   originalPrice   Int?
-  colorVariants   Json     @default("[]") // [{ name, hex, image, secondaryImage }]
+  colorVariants   Json     @default("[]") // [{ name, hex, images: string[] }]
   sizes           String[]
   image           String
   secondaryImage  String?

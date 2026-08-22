@@ -72,8 +72,9 @@ export const createProduct = async (req, res) => {
   try {
     const validatedData = productSchema.parse(req.body);
     if (validatedData.colorVariants && validatedData.colorVariants.length > 0) {
-      validatedData.image = validatedData.colorVariants[0].image;
-      validatedData.secondaryImage = validatedData.colorVariants[0].secondaryImage ? validatedData.colorVariants[0].secondaryImage : null;
+      const firstVariantImages = validatedData.colorVariants[0].images || [];
+      validatedData.image = firstVariantImages[0] || validatedData.image;
+      validatedData.secondaryImage = firstVariantImages[1] || firstVariantImages[0] || null;
     }
     const product = await prisma.product.create({ data: validatedData });
     return sendSuccess(res, 201, { product }, 'Product created successfully');
@@ -91,8 +92,9 @@ export const updateProduct = async (req, res) => {
     const { id } = req.params;
     const validatedData = productSchema.partial().parse(req.body);
     if (validatedData.colorVariants && validatedData.colorVariants.length > 0) {
-      validatedData.image = validatedData.colorVariants[0].image;
-      validatedData.secondaryImage = validatedData.colorVariants[0].secondaryImage ? validatedData.colorVariants[0].secondaryImage : null;
+      const firstVariantImages = validatedData.colorVariants[0].images || [];
+      validatedData.image = firstVariantImages[0] || validatedData.image;
+      validatedData.secondaryImage = firstVariantImages[1] || firstVariantImages[0] || null;
     }
     const product = await prisma.product.update({
       where: { id },

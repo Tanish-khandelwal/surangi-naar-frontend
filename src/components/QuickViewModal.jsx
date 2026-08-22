@@ -7,7 +7,9 @@ import {
   Star, 
   Plus, 
   Minus,
-  Check
+  Check,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 
@@ -25,17 +27,34 @@ function QuickViewModalContent({ product, onClose }) {
         ? product.colors.map(c => ({
             name: typeof c === 'object' ? c.name : c,
             hex: typeof c === 'object' ? c.hex : '#5a2d82',
-            image: product.image,
-            secondaryImage: product.secondaryImage || product.image
+            images: [product.image, product.secondaryImage || product.image].filter(Boolean)
           }))
-        : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+        : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
 
   const [selectedColor, setSelectedColor] = useState(modalVariants[0]);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
-  const selectedImage = selectedColor?.image || modalVariants[0]?.image || product.image;
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const modalImages = (selectedColor?.images && selectedColor.images.length > 0)
+    ? selectedColor.images
+    : (selectedColor?.image ? [selectedColor.image, ...(selectedColor.secondaryImage ? [selectedColor.secondaryImage] : [])] : [product.image]);
+
+  React.useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedColor]);
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    setActiveImageIndex((prev) => (prev - 1 + modalImages.length) % modalImages.length);
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    setActiveImageIndex((prev) => (prev + 1) % modalImages.length);
+  };
 
   const isWishlisted = isInWishlist(product.id);
 
@@ -63,9 +82,9 @@ function QuickViewModalContent({ product, onClose }) {
 
         {/* Product Images Column */}
         <div className="p-6 bg-[#f7f3ee] flex flex-col justify-between">
-          <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-inner border border-[#e8e2d9] bg-white mb-4">
+          <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-inner border border-[#e8e2d9] bg-white mb-4 group">
             <img 
-              src={getImageUrl(selectedImage)} 
+              src={getImageUrl(modalImages[activeImageIndex] || modalImages[0])} 
               alt={product.name} 
               loading="lazy"
               className="w-full h-full object-cover object-center transition-all duration-300"
@@ -74,6 +93,25 @@ function QuickViewModalContent({ product, onClose }) {
               <span className="absolute top-3 left-3 bg-[#39322f] text-[#f7f3ee] text-[10px] uppercase font-sans tracking-widest font-semibold px-3 py-1 rounded-full shadow-md">
                 {product.badge}
               </span>
+            )}
+
+            {modalImages.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevImage}
+                  aria-label="Previous image"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-[#39322f] hover:bg-white shadow-md transition-all cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleNextImage}
+                  aria-label="Next image"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-[#39322f] hover:bg-white shadow-md transition-all cursor-pointer"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </>
             )}
           </div>
 

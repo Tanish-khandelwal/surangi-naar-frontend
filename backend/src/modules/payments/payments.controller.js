@@ -156,6 +156,11 @@ export const verifyPaymentSignature = async (req, res) => {
       },
     });
 
+    // Clear cart upon successful payment verification
+    if (order.userId) {
+      await prisma.cartItem.deleteMany({ where: { userId: order.userId } });
+    }
+
     return sendSuccess(res, 200, { order: updatedOrder }, 'Payment verified successfully');
   } catch (error) {
     console.error('Payment Verification Error:', error);

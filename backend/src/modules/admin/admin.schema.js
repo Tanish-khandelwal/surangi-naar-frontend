@@ -15,8 +15,7 @@ export const productSchema = z.object({
     z.object({
       name: z.string().min(1, 'Color name is required'),
       hex: z.string().min(1, 'Color hex is required'),
-      image: z.string().min(1, 'Main variant image is required'),
-      secondaryImage: z.string().nullable().optional(),
+      images: z.array(z.string().min(1, 'Image URL cannot be empty')).min(1, 'At least 1 image is required per variant').max(6, 'Maximum 6 images allowed per variant'),
     })
   ).min(1, 'At least one color variant is required'),
   sizes: z.array(z.string()).optional(),

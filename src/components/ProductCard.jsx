@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { getImageUrl } from '../utils/image';
@@ -18,32 +18,61 @@ export default function ProductCard({ product }) {
         ? product.colors.map(c => ({
             name: typeof c === 'object' ? c.name : c,
             hex: typeof c === 'object' ? c.hex : '#5a2d82',
-            image: product.image,
-            secondaryImage: product.secondaryImage || product.image
+            images: [product.image, product.secondaryImage || product.image].filter(Boolean)
           }))
-        : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+        : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
 
   const [selectedColor, setSelectedColor] = useState(cardVariants[0]);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [hoverIndex, setHoverIndex] = useState(0);
 
-  React.useEffect(() => {
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
     const vars = (product.colorVariants && product.colorVariants.length > 0)
       ? product.colorVariants
       : (product.colors && product.colors.length > 0
           ? product.colors.map(c => ({
               name: typeof c === 'object' ? c.name : c,
               hex: typeof c === 'object' ? c.hex : '#5a2d82',
-              image: product.image,
-              secondaryImage: product.secondaryImage || product.image
+              images: [product.image, product.secondaryImage || product.image].filter(Boolean)
             }))
-          : [{ name: 'Royal Purple', hex: '#5a2d82', image: product.image, secondaryImage: product.secondaryImage || product.image }]);
+          : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
     setSelectedColor(vars[0]);
   }, [product.id, product.colorVariants, product.colors, product.image, product.secondaryImage]);
 
-  const displayImage = selectedColor?.image || cardVariants[0]?.image || product.image;
-  const rawHoverImage = selectedColor?.secondaryImage || (selectedColor?.secondaryImage === null ? null : (cardVariants[0]?.secondaryImage || product.secondaryImage));
-  const hasSecondaryImage = Boolean(rawHoverImage && rawHoverImage.trim() !== '' && rawHoverImage !== displayImage);
-  const displayHoverImage = hasSecondaryImage ? rawHoverImage : displayImage;
+  const variantImages = (selectedColor?.images && selectedColor.images.length > 0)
+    ? selectedColor.images
+    : (selectedColor?.image
+        ? [selectedColor.image, ...(selectedColor.secondaryImage ? [selectedColor.secondaryImage] : [])].filter(Boolean)
+        : [product.image]);
+
+  const stopCycling = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (variantImages.length > 1) {
+      stopCycling();
+      intervalRef.current = setInterval(() => {
+        setHoverIndex((prev) => (prev + 1) % variantImages.length);
+      }, 700);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    stopCycling();
+    setHoverIndex(0);
+  };
+
+  useEffect(() => {
+    stopCycling();
+    setHoverIndex(0);
+    return () => stopCycling();
+  }, [selectedColor, product.id]);
 
   const isWishlisted = isInWishlist(product.id);
   const availableSizes = product.sizes || ['XS', 'S', 'M', 'L', 'XL'];
@@ -64,31 +93,30 @@ export default function ProductCard({ product }) {
 
   return (
     <div 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className="group relative flex flex-col luxury-glass border border-[#d4a373]/30 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:border-[#d4a373] gold-glow-hover"
     >
-      {/* Dual Image Container */}
+      {/* Image Container */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f8f4ee]">
         
         {/* Link to Product Details */}
         <Link to={`/product/${product.id}`} className="block w-full h-full relative overflow-hidden">
-          {hasSecondaryImage ? (
-            <>
+          {variantImages.length > 1 ? (
+            variantImages.map((imgUrl, idx) => (
               <img
-                src={getImageUrl(displayImage)}
-                alt={product.name}
-                loading="lazy"
-                className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 opacity-100 group-hover:opacity-0"
+                key={idx}
+                src={getImageUrl(imgUrl)}
+                alt={`${product.name} view ${idx + 1}`}
+                loading={idx === 0 ? "eager" : "lazy"}
+                className={`w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 ${
+                  idx === hoverIndex ? 'opacity-100 z-1' : 'opacity-0 z-0'
+                }`}
               />
-              <img
-                src={getImageUrl(displayHoverImage)}
-                alt={`${product.name} hover view`}
-                loading="lazy"
-                className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 opacity-0 group-hover:opacity-100"
-              />
-            </>
+            ))
           ) : (
             <img
-              src={getImageUrl(displayImage)}
+              src={getImageUrl(variantImages[0] || product.image)}
               alt={product.name}
               loading="lazy"
               className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"

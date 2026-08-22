@@ -598,17 +598,23 @@ export const ShopProvider = ({ children }) => {
     try {
       const res = await api.post('/orders', orderData);
       if (res.data?.order) {
-        setOrders(prev => [res.data.order, ...prev]);
-        clearCart();
-        toast.success('Order placed successfully!');
-        if (currentUser && currentUser.role !== 'admin') {
-          await fetchUserOrders();
+        const created = res.data.order;
+        const methodStr = (orderData.paymentMethod || '').toLowerCase();
+        const isCOD = methodStr.includes('cash on delivery') || methodStr.includes('cod');
+
+        if (isCOD) {
+          setOrders(prev => [created, ...prev]);
+          clearCart();
+          toast.success('Order placed successfully!');
+          if (currentUser && currentUser.role !== 'admin') {
+            await fetchUserOrders();
+          }
         }
-        return res.data.order;
+        return created;
       }
     } catch (err) {
       console.error('Error adding order:', err);
-      toast.error(err.response?.data?.message || 'Failed to place order.');
+      toast.error(err.response?.data?.message || 'Failed to initialize order.');
       throw err;
     }
   };

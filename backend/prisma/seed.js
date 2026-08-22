@@ -495,8 +495,23 @@ async function main() {
   // 5. Products
   await prisma.product.deleteMany({});
   for (const prod of PRODUCTS_CURATED) {
+    const formattedVariants = (prod.colorVariants || []).map(v => {
+      if (v.images && Array.isArray(v.images)) return v;
+      const images = [];
+      if (v.image) images.push(v.image);
+      if (v.secondaryImage && v.secondaryImage !== v.image) images.push(v.secondaryImage);
+      if (images.length === 0 && prod.image) images.push(prod.image);
+      const { image, secondaryImage, ...rest } = v;
+      return { ...rest, images };
+    });
+
     await prisma.product.create({
-      data: prod,
+      data: {
+        ...prod,
+        colorVariants: formattedVariants,
+        image: formattedVariants[0]?.images[0] || prod.image,
+        secondaryImage: formattedVariants[0]?.images[1] || formattedVariants[0]?.images[0] || prod.secondaryImage,
+      },
     });
   }
   console.log('✅ Products seeded');

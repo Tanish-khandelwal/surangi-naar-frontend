@@ -83,7 +83,7 @@ export const HERO_SLIDES = [
   }
 ];
 
-export const PRODUCTS_CURATED = [
+const RAW_PRODUCTS_CURATED = [
   {
     id: "p1",
     name: "Pink Lehariya Silk Kurta Set",
@@ -404,6 +404,21 @@ export const NEW_ARRIVALS = [
     shipping: "Dispatched within 4-7 business days."
   }
 ];
+
+export const PRODUCTS_CURATED = RAW_PRODUCTS_CURATED.map(prod => ({
+  ...prod,
+  colorVariants: (prod.colorVariants || []).map(v => {
+    if (v.images && Array.isArray(v.images)) return v;
+    const imgs = [];
+    if (v.image) imgs.push(v.image);
+    if (v.secondaryImage && v.secondaryImage !== v.image) imgs.push(v.secondaryImage);
+    if (imgs.length === 0 && prod.image) imgs.push(prod.image);
+    const { image, secondaryImage, ...rest } = v;
+    return { ...rest, images: imgs };
+  }),
+}));
+
+export const PRODUCTS = PRODUCTS_CURATED;
 
 export const EXCLUSIVE_COLLECTION = [
   {
