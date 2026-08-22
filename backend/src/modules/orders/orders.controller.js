@@ -14,10 +14,21 @@ export const createOrder = async (req, res) => {
       paymentMethod,
       discountCode,
       couponCode,
+      idempotencyKey,
     } = req.body;
 
     if (!customerName || !customerEmail || !customerPhone || !customerAddress || !items || !Array.isArray(items) || items.length === 0) {
       return sendError(res, 400, 'Missing required order fields');
+    }
+
+    // Idempotency check: if idempotencyKey is supplied and order exists, return existing order
+    if (idempotencyKey) {
+      const existingOrder = await prisma.order.findUnique({
+        where: { idempotencyKey: String(idempotencyKey) },
+      });
+      if (existingOrder) {
+        return sendSuccess(res, 200, { order: existingOrder }, 'Order retrieved (idempotent)');
+      }
     }
 
     // 1. Compute real subtotal server-side by fetching Product prices from DB
@@ -102,27 +113,45 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Format: "ORD-XXXX" matching existing pattern
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const id = `ORD-${randomSuffix}`;
     const initialStatus = 'Pending';
     const now = new Date().toISOString();
 
-    const order = await prisma.order.create({
-      data: {
-        id,
-        userId,
-        customerName,
-        customerEmail,
-        customerPhone,
-        customerAddress,
-        items: processedItems,
-        total: serverComputedTotal,
-        status: initialStatus,
-        statusHistory: [{ status: initialStatus, timestamp: now }],
-        paymentMethod: paymentMethod || 'Prepaid (UPI / Card)',
-      },
-    });
+    let order;
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      const timeComponent = Date.now().toString().slice(-6);
+      const randomComponent = Math.floor(100000 + Math.random() * 900000);
+      const id = `ORD-${timeComponent}${randomComponent}`;
+
+      try {
+        order = await prisma.order.create({
+          data: {
+            id,
+            userId,
+            customerName,
+            customerEmail,
+            customerPhone,
+            customerAddress,
+            items: processedItems,
+            total: serverComputedTotal,
+            status: initialStatus,
+            statusHistory: [{ status: initialStatus, timestamp: now }],
+            paymentMethod: paymentMethod || 'Prepaid (UPI / Card)',
+            idempotencyKey: idempotencyKey ? String(idempotencyKey) : null,
+          },
+        });
+        break;
+      } catch (dbErr) {
+        if (dbErr.code === 'P2002' && attempts < maxAttempts) {
+          console.warn(`[ORDER ID COLLISION] Retrying order ID generation (attempt ${attempts + 1})...`);
+          continue;
+        }
+        throw dbErr;
+      }
+    }
 
     // Optionally clear cart if logged in
     if (userId) {

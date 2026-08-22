@@ -140,6 +140,7 @@ model Order {
   paymentMethod     String
   razorpayOrderId   String?
   razorpayPaymentId String?
+  idempotencyKey    String?  @unique
   trackingNumber    String?
   carrier           String?
   statusHistory     Json?    // [{ status, timestamp }]

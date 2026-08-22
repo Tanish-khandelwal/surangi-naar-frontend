@@ -21,14 +21,39 @@ export const createRazorpayOrder = async (req, res) => {
 
     const amountInPaise = Math.round(Number(order.total) * 100);
 
+    // Idempotency check: if razorpayOrderId already exists for this order, return existing details
+    if (order.razorpayOrderId) {
+      return sendSuccess(
+        res,
+        200,
+        {
+          id: order.razorpayOrderId,
+          currency: 'INR',
+          amount: amountInPaise,
+          orderId: order.id,
+        },
+        'Razorpay order retrieved (idempotent)'
+      );
+    }
+
     if (!razorpay) {
       // Fallback response for dev/mock mode when Razorpay keys are not configured
-      return sendSuccess(res, 200, {
-        id: `rzp_mock_${Date.now()}`,
-        currency: 'INR',
-        amount: amountInPaise,
-        orderId,
-      }, 'Mock Razorpay order created');
+      const mockRzpId = `rzp_mock_${Date.now()}`;
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { razorpayOrderId: mockRzpId },
+      });
+      return sendSuccess(
+        res,
+        200,
+        {
+          id: mockRzpId,
+          currency: 'INR',
+          amount: amountInPaise,
+          orderId,
+        },
+        'Mock Razorpay order created'
+      );
     }
 
     const options = {
@@ -38,6 +63,13 @@ export const createRazorpayOrder = async (req, res) => {
     };
 
     const rzpOrder = await razorpay.orders.create(options);
+
+    // Persist razorpayOrderId on the order for idempotency
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { razorpayOrderId: rzpOrder.id },
+    });
+
     return sendSuccess(res, 200, rzpOrder, 'Razorpay order created');
   } catch (error) {
     console.error('Razorpay Order Error:', error);

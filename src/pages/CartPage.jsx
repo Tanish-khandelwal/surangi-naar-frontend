@@ -27,6 +27,12 @@ export default function CartPage() {
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
   const [placedOrder, setPlacedOrder] = useState(null);
+  const [idempotencyKey, setIdempotencyKey] = useState(() => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return `ik_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  });
 
   // Shipping Address Form State
   const [address, setAddress] = useState({
@@ -139,6 +145,7 @@ export default function CartPage() {
         })),
         total: finalTotal, // Informational only; backend computes true total server-side
         discountCode: couponCode || undefined,
+        idempotencyKey,
         paymentMethod: 'Prepaid (Razorpay)',
       };
 
@@ -148,6 +155,7 @@ export default function CartPage() {
       // 2. Create Razorpay Order (no amount sent; backend fetches real total from created order)
       const rzpRes = await api.post('/payments/create-order', {
         orderId: createdOrder.id,
+        idempotencyKey,
       });
 
       const rzpOrderData = rzpRes.data;
@@ -181,6 +189,11 @@ export default function CartPage() {
             if (verifyRes.data?.success) {
               setPlacedOrder(verifyRes.data.order || createdOrder);
               clearCart();
+              if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                setIdempotencyKey(crypto.randomUUID());
+              } else {
+                setIdempotencyKey(`ik_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+              }
             } else {
               toast.error('Payment verification failed.');
             }
@@ -189,6 +202,11 @@ export default function CartPage() {
             // Fallback for dev mode / test mode
             setPlacedOrder(createdOrder);
             clearCart();
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+              setIdempotencyKey(crypto.randomUUID());
+            } else {
+              setIdempotencyKey(`ik_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+            }
           } finally {
             setIsProcessingPayment(false);
           }
