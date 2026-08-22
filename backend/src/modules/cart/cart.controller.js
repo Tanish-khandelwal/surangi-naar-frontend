@@ -71,8 +71,17 @@ export const addToCart = async (req, res) => {
 
 export const updateCartItem = async (req, res) => {
   try {
+    const userId = req.user.id;
     const { id } = req.params;
     const { quantity } = req.body;
+
+    const existingItem = await prisma.cartItem.findFirst({
+      where: { id, userId },
+    });
+
+    if (!existingItem) {
+      return sendError(res, 404, 'Cart item not found or unauthorized');
+    }
 
     if (quantity <= 0) {
       await prisma.cartItem.delete({ where: { id } });
@@ -92,7 +101,17 @@ export const updateCartItem = async (req, res) => {
 
 export const deleteCartItem = async (req, res) => {
   try {
+    const userId = req.user.id;
     const { id } = req.params;
+
+    const existingItem = await prisma.cartItem.findFirst({
+      where: { id, userId },
+    });
+
+    if (!existingItem) {
+      return sendError(res, 404, 'Cart item not found or unauthorized');
+    }
+
     await prisma.cartItem.delete({ where: { id } });
     return sendSuccess(res, 200, {}, 'Cart item deleted');
   } catch (error) {

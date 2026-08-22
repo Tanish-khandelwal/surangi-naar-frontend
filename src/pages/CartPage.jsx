@@ -137,16 +137,16 @@ export default function CartPage() {
           quantity: item.quantity,
           price: item.product.price,
         })),
-        total: finalTotal,
+        total: finalTotal, // Informational only; backend computes true total server-side
+        discountCode: couponCode || undefined,
         paymentMethod: 'Prepaid (Razorpay)',
       };
 
       // 1. Create Order in Database
       const createdOrder = await addOrder(orderPayload);
 
-      // 2. Create Razorpay Order
+      // 2. Create Razorpay Order (no amount sent; backend fetches real total from created order)
       const rzpRes = await api.post('/payments/create-order', {
-        amount: finalTotal,
         orderId: createdOrder.id,
       });
 
@@ -160,11 +160,11 @@ export default function CartPage() {
         return;
       }
 
-      // 4. Open Razorpay Modal
+      // 4. Open Razorpay Modal using server-returned order total
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TRxuLFtnW8n6gu';
       const options = {
         key: razorpayKey,
-        amount: rzpOrderData.amount || finalTotal * 100,
+        amount: rzpOrderData.amount || createdOrder.total * 100,
         currency: rzpOrderData.currency || 'INR',
         name: 'Surangi Naar Atelier',
         description: 'Luxury Ethnic Fashion Order',

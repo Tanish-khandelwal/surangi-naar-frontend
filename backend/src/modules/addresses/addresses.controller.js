@@ -50,6 +50,14 @@ export const updateAddress = async (req, res) => {
     const { id } = req.params;
     const { fullName, phone, street, city, state, pincode, isDefault } = req.body;
 
+    const existingAddress = await prisma.address.findFirst({
+      where: { id, userId },
+    });
+
+    if (!existingAddress) {
+      return sendError(res, 404, 'Address not found or unauthorized');
+    }
+
     if (isDefault) {
       await prisma.address.updateMany({
         where: { userId },
@@ -78,7 +86,17 @@ export const updateAddress = async (req, res) => {
 
 export const deleteAddress = async (req, res) => {
   try {
+    const userId = req.user.id;
     const { id } = req.params;
+
+    const existingAddress = await prisma.address.findFirst({
+      where: { id, userId },
+    });
+
+    if (!existingAddress) {
+      return sendError(res, 404, 'Address not found or unauthorized');
+    }
+
     await prisma.address.delete({ where: { id } });
     return sendSuccess(res, 200, {}, 'Address deleted');
   } catch (error) {

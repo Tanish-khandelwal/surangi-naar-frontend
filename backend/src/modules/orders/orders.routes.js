@@ -21,6 +21,6 @@ const optionalAuth = (req, res, next) => {
 
 router.post('/', optionalAuth, ordersController.createOrder);
 router.get('/', requireAuth, ordersController.getUserOrders);
-router.get('/:id', ordersController.getOrderById);
+router.get('/:id', requireAuth, ordersController.getOrderById);
 
 export default router;

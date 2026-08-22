@@ -5,24 +5,34 @@ import { sendSuccess, sendError } from '../../utils/response.js';
 
 export const createRazorpayOrder = async (req, res) => {
   try {
-    const { amount, orderId } = req.body;
+    const { orderId } = req.body;
 
-    if (!amount || !orderId) {
-      return sendError(res, 400, 'amount and orderId are required');
+    if (!orderId) {
+      return sendError(res, 400, 'orderId is required');
     }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return sendError(res, 404, 'Order not found');
+    }
+
+    const amountInPaise = Math.round(Number(order.total) * 100);
 
     if (!razorpay) {
       // Fallback response for dev/mock mode when Razorpay keys are not configured
       return sendSuccess(res, 200, {
         id: `rzp_mock_${Date.now()}`,
         currency: 'INR',
-        amount: Math.round(Number(amount) * 100),
+        amount: amountInPaise,
         orderId,
       }, 'Mock Razorpay order created');
     }
 
     const options = {
-      amount: Math.round(Number(amount) * 100), // amount in paise
+      amount: amountInPaise, // amount in paise derived strictly from server-computed order.total
       currency: 'INR',
       receipt: orderId,
     };
@@ -56,7 +66,53 @@ export const verifyPaymentSignature = async (req, res) => {
       return sendError(res, 400, 'Invalid Razorpay signature');
     }
 
-    // Update order status in DB
+    // Look up the actual order from DB
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return sendError(res, 404, 'Order not found');
+    }
+
+    const expectedAmountInPaise = Math.round(Number(order.total) * 100);
+    const now = new Date().toISOString();
+    const currentHistory = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+
+    // Defense-in-depth check: fetch actual Razorpay order details and confirm paid amount matches order's stored total
+    if (razorpay) {
+      try {
+        const rzpOrder = await razorpay.orders.fetch(razorpay_order_id);
+        const actualPaidPaise = Number(rzpOrder.amount);
+
+        if (actualPaidPaise !== expectedAmountInPaise) {
+          console.warn(
+            `[SECURITY WARNING] Payment amount mismatch for order ${orderId}. Expected ${expectedAmountInPaise} paise, got ${actualPaidPaise} paise.`
+          );
+
+          await prisma.order.update({
+            where: { id: orderId },
+            data: {
+              status: 'Flagged for Review',
+              razorpayOrderId: razorpay_order_id,
+              razorpayPaymentId: razorpay_payment_id,
+              paymentMethod: 'Prepaid (Razorpay)',
+              statusHistory: [
+                ...currentHistory,
+                { status: 'Flagged for Review', timestamp: now, reason: 'Payment amount mismatch' },
+              ],
+            },
+          });
+
+          return sendError(res, 400, 'Payment amount mismatch. Order flagged for manual review.');
+        }
+      } catch (fetchError) {
+        console.error('Error fetching Razorpay order details:', fetchError);
+        return sendError(res, 500, 'Failed to fetch Razorpay order details for amount verification.');
+      }
+    }
+
+    // Update order status in DB to Processing
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: {
@@ -64,6 +120,7 @@ export const verifyPaymentSignature = async (req, res) => {
         razorpayOrderId: razorpay_order_id,
         razorpayPaymentId: razorpay_payment_id,
         paymentMethod: 'Prepaid (Razorpay)',
+        statusHistory: [...currentHistory, { status: 'Processing', timestamp: now }],
       },
     });
 
