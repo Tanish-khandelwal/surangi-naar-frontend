@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
+import NotFoundPage from './NotFoundPage';
 import { getImageUrl } from '../utils/image';
 import { 
   Heart, 
@@ -19,24 +20,24 @@ import {
 
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const { allProducts, storeSettings, addToCart, toggleWishlist, isInWishlist } = useShop();
+  const { allProducts, storeSettings, addToCart, toggleWishlist, isInWishlist, loading } = useShop();
   const BRAND_CONTACT = storeSettings || {};
 
-  const product = (allProducts || []).find(p => p.id === id) || (allProducts && allProducts[0]) || {};
+  const product = (allProducts || []).find(p => p.id === id);
 
-  const productColors = (product.colorVariants && product.colorVariants.length > 0)
+  const productColors = (product?.colorVariants && product.colorVariants.length > 0)
     ? product.colorVariants
-    : (product.colors && product.colors.length > 0
+    : (product?.colors && product.colors.length > 0
         ? product.colors.map(c => ({
             name: typeof c === 'object' ? c.name : c,
             hex: typeof c === 'object' ? c.hex : '#5a2d82',
             images: [product.image, product.secondaryImage || product.image].filter(Boolean)
           }))
-        : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
+        : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product?.image, product?.secondaryImage || product?.image].filter(Boolean) }]);
 
   const [selectedColor, setSelectedColor] = useState(productColors[0]);
   const [selectedSize, setSelectedSize] = useState(
-    product.sizes ? product.sizes[0] : 'Free Size'
+    product?.sizes ? product.sizes[0] : 'Free Size'
   );
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
@@ -44,7 +45,7 @@ export default function ProductDetailPage() {
   // Gallery Images Array for the currently selected color
   const galleryImages = (selectedColor?.images && selectedColor.images.length > 0)
     ? selectedColor.images
-    : (selectedColor?.image ? [selectedColor.image, ...(selectedColor.secondaryImage ? [selectedColor.secondaryImage] : [])] : [product.image]);
+    : (selectedColor?.image ? [selectedColor.image, ...(selectedColor.secondaryImage ? [selectedColor.secondaryImage] : [])] : [product?.image].filter(Boolean));
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -67,7 +68,7 @@ export default function ProductDetailPage() {
     setSelectedSize(product.sizes ? product.sizes[0] : 'Free Size');
     setQuantity(1);
     setActiveImageIndex(0);
-  }, [product.id, product.colorVariants, product.colors, product.sizes, product.image]);
+  }, [product?.id, product?.colorVariants, product?.colors, product?.sizes, product?.image]);
 
   // Reset active image index when color changes
   const handleColorChange = (col) => {
@@ -106,21 +107,22 @@ export default function ProductDetailPage() {
   const relatedProducts = (allProducts || []).filter(p => p?.id && p.id !== product?.id).slice(0, 4);
 
   const handleAddToCart = () => {
-    if (!product.id || product.isSoldOut) return;
+    if (!product?.id || product.isSoldOut) return;
     addToCart(product, selectedColor, selectedSize, quantity);
   };
 
-  if (!product || !product.id) {
+  if (loading || !allProducts) {
     return (
       <div className="bg-[#f7f3ee] min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <div className="w-10 h-10 border-2 border-[#d4a373] border-t-transparent rounded-full animate-spin mb-4" />
         <h2 className="font-serif text-xl font-bold text-[#39322f] mb-2">Loading Product Details...</h2>
         <p className="text-xs text-[#39322f]/60 mb-6 font-sans">Fetching artisanal details from Surangi Naar studio.</p>
-        <Link to="/shop" className="px-6 py-2.5 rounded-full bg-[#39322f] text-white text-xs font-semibold hover:bg-[#d4a373] hover:text-[#39322f] transition-all duration-300">
-          Back to Shop Catalog
-        </Link>
       </div>
     );
+  }
+
+  if (!product) {
+    return <NotFoundPage />;
   }
 
   return (
