@@ -53,6 +53,12 @@ export default function AccountPage() {
   const [phoneInput, setPhoneInput] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
+  // Change Password state
+  const [currentPasswordInput, setCurrentPasswordInput] = useState('');
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmNewPasswordInput, setConfirmNewPasswordInput] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   // Saved Addresses state
   const [addresses, setAddresses] = useState([]);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
@@ -757,6 +763,103 @@ export default function AccountPage() {
                     </button>
                   </div>
                 </form>
+
+                {/* --- Change Password Section (Email Provider Users Only) --- */}
+                {(currentUser?.provider === 'email' || !currentUser?.provider) && (
+                  <div className="pt-8 border-t border-[#e8e2d9] space-y-5 max-w-lg">
+                    <div>
+                      <h3 className="font-serif text-xl font-bold text-[#39322f]">Change Password</h3>
+                      <p className="text-xs text-[#39322f]/60 font-sans mt-0.5">Update your account password for added security</p>
+                    </div>
+
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (!currentPasswordInput || !newPasswordInput || !confirmNewPasswordInput) {
+                          toast.error('Please fill in all password fields');
+                          return;
+                        }
+                        if (newPasswordInput.length < 6) {
+                          toast.error('New password must be at least 6 characters long');
+                          return;
+                        }
+                        if (newPasswordInput !== confirmNewPasswordInput) {
+                          toast.error('New passwords do not match');
+                          return;
+                        }
+
+                        setIsChangingPassword(true);
+                        try {
+                          const res = await api.put('/users/change-password', {
+                            currentPassword: currentPasswordInput,
+                            newPassword: newPasswordInput,
+                          });
+                          toast.success(res.data?.message || 'Password changed successfully');
+                          setCurrentPasswordInput('');
+                          setNewPasswordInput('');
+                          setConfirmNewPasswordInput('');
+                        } catch (err) {
+                          toast.error(err.response?.data?.message || 'Failed to change password');
+                        } finally {
+                          setIsChangingPassword(false);
+                        }
+                      }}
+                      className="space-y-4"
+                    >
+                      <div>
+                        <label className="block text-xs uppercase font-sans font-semibold text-[#39322f] mb-1.5">
+                          Current Password
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={currentPasswordInput}
+                          onChange={(e) => setCurrentPasswordInput(e.target.value)}
+                          className="w-full px-4 py-2.5 bg-[#f7f3ee] border border-[#e8e2d9] rounded-xl text-sm font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                          placeholder="••••••••"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs uppercase font-sans font-semibold text-[#39322f] mb-1.5">
+                          New Password
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={newPasswordInput}
+                          onChange={(e) => setNewPasswordInput(e.target.value)}
+                          className="w-full px-4 py-2.5 bg-[#f7f3ee] border border-[#e8e2d9] rounded-xl text-sm font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                          placeholder="Min 6 characters"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs uppercase font-sans font-semibold text-[#39322f] mb-1.5">
+                          Confirm New Password
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={confirmNewPasswordInput}
+                          onChange={(e) => setConfirmNewPasswordInput(e.target.value)}
+                          className="w-full px-4 py-2.5 bg-[#f7f3ee] border border-[#e8e2d9] rounded-xl text-sm font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                          placeholder="Confirm new password"
+                        />
+                      </div>
+
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          disabled={isChangingPassword}
+                          className="px-6 py-2.5 bg-[#39322f] text-white rounded-full text-xs uppercase font-bold tracking-widest hover:bg-[#d4a373] transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                        >
+                          {isChangingPassword ? 'Updating Password...' : 'Update Password'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
 
                 {/* Account Security & Permanent Deletion */}
                 <div className="pt-8 border-t border-[#e8e2d9]">

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useShop } from '../context/ShopContext';
-import { X, Sparkles, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
+import api from '../services/api';
+import { X, Sparkles, Mail, Lock, User, Phone, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function AuthModal() {
   const {
@@ -14,6 +15,7 @@ export default function AuthModal() {
     loginWithGoogle
   } = useShop();
 
+  const [activeTab, setActiveTab] = useState(authModalTab || 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -21,14 +23,31 @@ export default function AuthModal() {
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [forgotSuccessMessage, setForgotSuccessMessage] = useState('');
 
   useEffect(() => {
-    setEmail('');
+    setActiveTab(authModalTab || 'login');
+    const savedEmail = localStorage.getItem('surangi_remembered_email');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    } else {
+      setEmail('');
+      setRememberMe(true);
+    }
     setPassword('');
     setName('');
     setPhone('');
     setErrorMessage('');
+    setForgotSuccessMessage('');
   }, [authModalTab, isAuthModalOpen]);
+
+  const changeTab = (tab) => {
+    setActiveTab(tab);
+    if (typeof setAuthModalTab === 'function') {
+      setAuthModalTab(tab);
+    }
+  };
 
   useEffect(() => {
     if (isAuthModalOpen) {
@@ -68,7 +87,7 @@ export default function AuthModal() {
 
     setIsSubmitting(true);
     try {
-      await loginWithEmail(trimmedEmail, password);
+      await loginWithEmail(trimmedEmail, password, rememberMe);
     } catch (err) {
       const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Login failed. Please check your credentials.';
       setErrorMessage(msg);
@@ -117,6 +136,32 @@ export default function AuthModal() {
     }
   };
 
+  const handleForgotPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setForgotSuccessMessage('');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setErrorMessage('Please enter your email address.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await api.post('/auth/forgot-password', { email: trimmedEmail });
+      setForgotSuccessMessage(res.data?.message || 'If an account exists for this email, a reset link has been sent');
+    } catch (err) {
+      setForgotSuccessMessage('If an account exists for this email, a reset link has been sent');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div 
@@ -152,9 +197,9 @@ export default function AuthModal() {
         <div className="flex bg-[#f8f4ee] p-1 rounded-2xl border border-[#e8e2d9] mb-6">
           <button
             type="button"
-            onClick={() => setAuthModalTab('login')}
+            onClick={() => changeTab('login')}
             className={`flex-1 py-2 text-xs font-sans uppercase tracking-wider font-bold rounded-xl transition-all cursor-pointer ${
-              authModalTab === 'login'
+              activeTab === 'login'
                 ? 'bg-[#39322f] text-[#f7f3ee] shadow-xs'
                 : 'text-gray-600 hover:text-[#39322f]'
             }`}
@@ -163,9 +208,9 @@ export default function AuthModal() {
           </button>
           <button
             type="button"
-            onClick={() => setAuthModalTab('register')}
+            onClick={() => changeTab('register')}
             className={`flex-1 py-2 text-xs font-sans uppercase tracking-wider font-bold rounded-xl transition-all cursor-pointer ${
-              authModalTab === 'register'
+              activeTab === 'register'
                 ? 'bg-[#39322f] text-[#f7f3ee] shadow-xs'
                 : 'text-gray-600 hover:text-[#39322f]'
             }`}
@@ -199,7 +244,7 @@ export default function AuthModal() {
         </div>
 
         {/* SIGN IN FORM */}
-        {authModalTab === 'login' ? (
+        {activeTab === 'login' ? (
           <form onSubmit={handleLoginSubmit} autoComplete="on" className="space-y-4 text-xs font-sans">
             <div>
               <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Email Address</label>
@@ -245,7 +290,11 @@ export default function AuthModal() {
                 />
                 <span>Remember me</span>
               </label>
-              <button type="button" className="text-[#b58349] font-bold hover:underline">
+              <button
+                type="button"
+                onClick={() => changeTab('forgot')}
+                className="text-[#b58349] font-bold hover:underline cursor-pointer"
+              >
                 Forgot password?
               </button>
             </div>
@@ -258,6 +307,49 @@ export default function AuthModal() {
               <span>{isSubmitting ? 'Signing In...' : 'Sign In to Account'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
+          </form>
+        ) : activeTab === 'forgot' ? (
+          /* FORGOT PASSWORD FORM */
+          <form onSubmit={handleForgotPasswordSubmit} className="space-y-4 text-xs font-sans">
+            <div>
+              <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Your Account Email</label>
+              <div className="relative">
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter your registered email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl pl-10 pr-4 py-3 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+            </div>
+
+            {forgotSuccessMessage && (
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 font-medium leading-relaxed">
+                {forgotSuccessMessage}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-bold py-3.5 px-6 rounded-2xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+            >
+              <span>{isSubmitting ? 'Sending Reset Link...' : 'Send Reset Link'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => changeTab('login')}
+                className="text-[#b58349] font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
+              </button>
+            </div>
           </form>
         ) : (
           /* CREATE ACCOUNT FORM */

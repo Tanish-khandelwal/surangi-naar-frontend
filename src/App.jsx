@@ -30,6 +30,7 @@ const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const AboutContactPage = lazy(() => import('./pages/AboutContactPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const AccountPage = lazy(() => import('./pages/AccountPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function PageLoadingFallback() {
@@ -76,6 +77,7 @@ function MainLayout() {
 
             <Route path="/about-contact" element={<AboutContactPage />} />
             <Route path="/account" element={<AccountPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/admin" element={<AdminPage />} />
 
             {/* Catch-all 404 Route */}

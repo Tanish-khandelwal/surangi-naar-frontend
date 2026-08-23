@@ -14,7 +14,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const adminToken = sessionStorage.getItem('surangi_admin_token');
-    const userToken = localStorage.getItem('surangi_access_token');
+    const userToken = localStorage.getItem('surangi_access_token') || sessionStorage.getItem('surangi_access_token');
 
     // For admin routes, strictly use adminToken from sessionStorage
     const token = config.url?.includes('/admin') ? adminToken : (userToken || adminToken);
@@ -48,13 +48,15 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem('surangi_refresh_token');
+        const isSessionOnly = Boolean(sessionStorage.getItem('surangi_access_token'));
+        const refreshToken = localStorage.getItem('surangi_refresh_token') || sessionStorage.getItem('surangi_refresh_token');
         if (refreshToken) {
           const res = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
           if (res.data?.success && res.data?.token) {
-            localStorage.setItem('surangi_access_token', res.data.token);
+            const targetStorage = isSessionOnly ? sessionStorage : localStorage;
+            targetStorage.setItem('surangi_access_token', res.data.token);
             if (res.data.refreshToken) {
-              localStorage.setItem('surangi_refresh_token', res.data.refreshToken);
+              targetStorage.setItem('surangi_refresh_token', res.data.refreshToken);
             }
             originalRequest.headers.Authorization = `Bearer ${res.data.token}`;
             return api(originalRequest);
@@ -64,6 +66,8 @@ api.interceptors.response.use(
         console.error('Token refresh failed:', refreshError);
         localStorage.removeItem('surangi_access_token');
         localStorage.removeItem('surangi_refresh_token');
+        sessionStorage.removeItem('surangi_access_token');
+        sessionStorage.removeItem('surangi_refresh_token');
       }
     }
     return Promise.reject(error);

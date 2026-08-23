@@ -82,7 +82,7 @@ export const ShopProvider = ({ children }) => {
   // 2. User Session & Cart/Wishlist Initialization (Fired in parallel on mount)
   useEffect(() => {
     const initUserSession = async () => {
-      const token = localStorage.getItem('surangi_access_token');
+      const token = localStorage.getItem('surangi_access_token') || sessionStorage.getItem('surangi_access_token');
       if (!token) {
         loadGuestCartAndWishlist();
         return;
@@ -251,12 +251,23 @@ export const ShopProvider = ({ children }) => {
   };
 
   // --- USER AUTHENTICATION METHODS ---
-  const loginWithEmail = async (email, password) => {
+  const loginWithEmail = async (email, password, rememberMe = true) => {
     try {
       const res = await api.post('/auth/login', { email, password });
       if (res.data?.token) {
-        localStorage.setItem('surangi_access_token', res.data.token);
-        localStorage.setItem('surangi_refresh_token', res.data.refreshToken);
+        if (rememberMe) {
+          localStorage.setItem('surangi_access_token', res.data.token);
+          localStorage.setItem('surangi_refresh_token', res.data.refreshToken);
+          localStorage.setItem('surangi_remembered_email', email);
+          sessionStorage.removeItem('surangi_access_token');
+          sessionStorage.removeItem('surangi_refresh_token');
+        } else {
+          sessionStorage.setItem('surangi_access_token', res.data.token);
+          sessionStorage.setItem('surangi_refresh_token', res.data.refreshToken);
+          localStorage.removeItem('surangi_access_token');
+          localStorage.removeItem('surangi_refresh_token');
+          localStorage.removeItem('surangi_remembered_email');
+        }
         setCurrentUser(res.data.user);
         await mergeGuestCart();
         await fetchUserCartAndWishlist();
@@ -322,6 +333,8 @@ export const ShopProvider = ({ children }) => {
     } finally {
       localStorage.removeItem('surangi_access_token');
       localStorage.removeItem('surangi_refresh_token');
+      sessionStorage.removeItem('surangi_access_token');
+      sessionStorage.removeItem('surangi_refresh_token');
       setCurrentUser(null);
       setCart([]);
       setWishlist([]);

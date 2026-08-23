@@ -2,6 +2,8 @@ import crypto from 'crypto';
 import razorpay from '../../config/razorpay.js';
 import prisma from '../../config/db.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
+import { sendEmail } from '../../config/email.js';
+import { getOrderConfirmationEmailTemplate } from '../../utils/emailTemplates.js';
 
 export const createRazorpayOrder = async (req, res) => {
   try {
@@ -159,6 +161,17 @@ export const verifyPaymentSignature = async (req, res) => {
     // Clear cart upon successful payment verification
     if (order.userId) {
       await prisma.cartItem.deleteMany({ where: { userId: order.userId } });
+    }
+
+    // Send order confirmation email (fire-and-forget)
+    if (updatedOrder.customerEmail) {
+      const { html, text } = getOrderConfirmationEmailTemplate({ order: updatedOrder });
+      sendEmail({
+        to: updatedOrder.customerEmail,
+        subject: `Order Confirmation - ${updatedOrder.id} | SURANGI NAAR`,
+        html,
+        text,
+      }).catch((err) => console.error('Order confirmation email error:', err));
     }
 
     return sendSuccess(res, 200, { order: updatedOrder }, 'Payment verified successfully');

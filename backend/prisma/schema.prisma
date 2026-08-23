@@ -91,6 +91,8 @@ model User {
   provider      String         @default("email") // "email" | "google"
   avatar        String?
   role          String         @default("customer") // "customer" | "admin"
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
   addresses     Address[]
   cartItems     CartItem[]
   wishlist      WishlistItem[]

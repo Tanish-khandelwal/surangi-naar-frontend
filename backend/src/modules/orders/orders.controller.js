@@ -1,5 +1,7 @@
 import prisma from '../../config/db.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
+import { sendEmail } from '../../config/email.js';
+import { getOrderConfirmationEmailTemplate } from '../../utils/emailTemplates.js';
 
 export const createOrder = async (req, res) => {
   try {
@@ -158,6 +160,17 @@ export const createOrder = async (req, res) => {
     // Clear cart ONLY for Cash on Delivery orders upon creation.
     if (userId && isCOD) {
       await prisma.cartItem.deleteMany({ where: { userId } });
+    }
+
+    // Send order confirmation email for COD orders (fire-and-forget)
+    if (isCOD && order.customerEmail) {
+      const { html, text } = getOrderConfirmationEmailTemplate({ order });
+      sendEmail({
+        to: order.customerEmail,
+        subject: `Order Confirmation - ${order.id} | SURANGI NAAR`,
+        html,
+        text,
+      }).catch((err) => console.error('COD order email error:', err));
     }
 
     return sendSuccess(res, 201, { order }, 'Order created successfully');
