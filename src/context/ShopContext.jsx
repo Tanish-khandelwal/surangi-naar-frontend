@@ -735,6 +735,20 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
+  const updateDiscountCode = async (codeStr, updatedFields) => {
+    try {
+      const res = await api.put(`/admin/discounts/${codeStr}`, updatedFields);
+      if (res.data?.discount) {
+        setDiscountCodes(prev => prev.map(d => d.code === codeStr ? res.data.discount : d));
+        await fetchDiscountCodes();
+        return res.data.discount;
+      }
+    } catch (err) {
+      console.error('Error updating discount code:', err);
+      throw err;
+    }
+  };
+
   const deleteDiscountCode = async (codeStr) => {
     try {
       await api.delete(`/admin/discounts/${codeStr}`);
@@ -863,6 +877,7 @@ export const ShopProvider = ({ children }) => {
       fetchProductReviews,
       addOrder,
       addDiscountCode,
+      updateDiscountCode,
       toggleDiscountCode,
       deleteDiscountCode,
       updateStoreSettings,

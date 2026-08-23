@@ -59,6 +59,7 @@ export default function AdminPage() {
     updateOrderStatus,
     cancelAdminOrder,
     addDiscountCode,
+    updateDiscountCode,
     toggleDiscountCode,
     deleteDiscountCode,
     updateStoreSettings,
@@ -165,25 +166,30 @@ export default function AdminPage() {
     name: '',
     slug: '',
     tagline: '',
+    count: '',
     image: '/images/products/real_product_1.jpg'
   });
 
   // Hero Slide Modal State
   const [isSlideModalOpen, setIsSlideModalOpen] = useState(false);
+  const [editingSlide, setEditingSlide] = useState(null);
   const [slideForm, setSlideForm] = useState({
     title: '',
     subtitle: '',
     description: '',
     cta: 'Explore Collection',
     categorySlug: 'kurtis',
-    image: '/images/products/real_product_1.jpg'
+    image: '/images/products/real_product_1.jpg',
+    order: 0
   });
 
   // Promo Message Input State
   const [newPromoText, setNewPromoText] = useState('');
+  const [newPromoOrder, setNewPromoOrder] = useState('');
 
   // Discount Form State
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+  const [editingDiscount, setEditingDiscount] = useState(null);
   const [discountForm, setDiscountForm] = useState({
     code: '',
     discountPercent: 10,
@@ -498,33 +504,60 @@ export default function AdminPage() {
   const handleSaveCategory = (e) => {
     e.preventDefault();
     if (!catForm.name) return;
-    const slug = catForm.slug || catForm.name.toLowerCase().replace(/\s+/g, '-');
+    const slug = catForm.slug ? catForm.slug.trim().toLowerCase() : catForm.name.toLowerCase().replace(/\s+/g, '-');
+    const payload = { ...catForm, slug };
     if (editingCat) {
-      updateCategory(editingCat.id, { ...catForm, slug });
+      updateCategory(editingCat.id, payload);
       showToast(`Category updated`);
     } else {
-      addCategory({ ...catForm, slug });
+      addCategory({ id: slug, ...payload });
       showToast(`New category added`);
     }
     setIsCatModalOpen(false);
   };
 
   // Hero Slide Handlers
-  const handleSaveHeroSlide = (e) => {
+  const handleSaveHeroSlide = async (e) => {
     e.preventDefault();
     if (!slideForm.title) return;
-    addHeroSlide(slideForm);
-    showToast(`Added new hero carousel slide`);
-    setIsSlideModalOpen(false);
+    try {
+      const payload = {
+        title: slideForm.title.trim(),
+        subtitle: (slideForm.subtitle || '').trim(),
+        description: (slideForm.description || '').trim(),
+        cta: (slideForm.cta || 'Explore Collection').trim(),
+        categorySlug: slideForm.categorySlug || 'kurtis',
+        image: slideForm.image,
+        order: Number(slideForm.order || 0)
+      };
+
+      if (editingSlide) {
+        const updatedSlides = heroSlides.map(s => s.id === editingSlide.id ? { ...s, ...payload } : s);
+        await updateHeroSlides(updatedSlides);
+        showToast(`Updated hero banner slide`);
+      } else {
+        await addHeroSlide(payload);
+        showToast(`Added new hero carousel slide`);
+      }
+      setIsSlideModalOpen(false);
+      setEditingSlide(null);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save hero slide');
+    }
   };
 
   // Promo Bar Handlers
-  const handleAddPromo = (e) => {
+  const handleAddPromo = async (e) => {
     e.preventDefault();
     if (newPromoText.trim()) {
-      addPromoMessage(newPromoText.trim());
-      setNewPromoText('');
-      showToast('Added announcement banner text');
+      try {
+        await addPromoMessage(newPromoText.trim());
+        setNewPromoText('');
+        setNewPromoOrder('');
+        showToast('Added announcement banner text');
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to add promo message');
+      }
     }
   };
 
@@ -533,17 +566,25 @@ export default function AdminPage() {
     e.preventDefault();
     if (!discountForm.code) return;
     try {
-      await addDiscountCode({
+      const payload = {
         code: discountForm.code.toUpperCase().trim(),
         discountPercent: Number(discountForm.discountPercent),
         minSpend: Number(discountForm.minSpend || 0),
         description: discountForm.description || `${discountForm.discountPercent}% OFF coupon`
-      });
+      };
+
+      if (editingDiscount) {
+        await updateDiscountCode(editingDiscount.code, payload);
+        showToast(`Updated discount code ${payload.code}`);
+      } else {
+        await addDiscountCode(payload);
+        showToast(`Created discount code ${payload.code}`);
+      }
       setIsDiscountModalOpen(false);
+      setEditingDiscount(null);
       setDiscountForm({ code: '', discountPercent: 10, minSpend: 0, description: '' });
-      showToast(`Created discount code ${discountForm.code.toUpperCase().trim()}`);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create discount code');
+      toast.error(err.response?.data?.message || 'Failed to save discount code');
     }
   };
 
@@ -1328,7 +1369,7 @@ export default function AdminPage() {
               <button
                 onClick={() => {
                   setEditingCat(null);
-                  setCatForm({ name: '', slug: '', tagline: '', image: '/images/products/real_product_1.jpg' });
+                  setCatForm({ name: '', slug: '', tagline: '', count: '', image: '/images/products/real_product_1.jpg' });
                   setIsCatModalOpen(true);
                 }}
                 className="bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-semibold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm"
@@ -1355,7 +1396,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => {
                           setEditingCat(cat);
-                          setCatForm({ name: cat.name, slug: cat.slug, tagline: cat.tagline || '', image: cat.image });
+                          setCatForm({ name: cat.name, slug: cat.slug, tagline: cat.tagline || '', count: cat.count || '', image: cat.image });
                           setIsCatModalOpen(true);
                         }}
                         className="p-2 rounded-lg bg-white border border-[#e8e2d9] hover:bg-[#d4a373] hover:text-white transition-colors cursor-pointer"
@@ -1436,13 +1477,15 @@ export default function AdminPage() {
                 </div>
                 <button
                   onClick={() => {
+                    setEditingSlide(null);
                     setSlideForm({
                       title: '',
                       subtitle: '',
                       description: '',
                       cta: 'Explore Collection',
                       categorySlug: 'kurtis',
-                      image: '/images/products/real_product_1.jpg'
+                      image: '/images/products/real_product_1.jpg',
+                      order: heroSlides.length + 1
                     });
                     setIsSlideModalOpen(true);
                   }}
@@ -1457,19 +1500,48 @@ export default function AdminPage() {
                   <div key={slide.id} className="flex flex-col sm:flex-row items-center gap-4 bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl p-4">
                     <img src={slide.image} alt={slide.title} loading="lazy" className="w-24 h-24 object-cover rounded-lg border border-[#e8e2d9] shrink-0" />
                     <div className="flex-1">
-                      <span className="text-[10px] text-[#b58349] font-bold uppercase tracking-wider">{slide.subtitle}</span>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-[10px] text-[#b58349] font-bold uppercase tracking-wider">{slide.subtitle}</span>
+                        {typeof slide.order === 'number' && (
+                          <span className="text-[9px] bg-white px-2 py-0.5 rounded-md border border-[#e8e2d9] font-bold text-gray-600">Order: {slide.order}</span>
+                        )}
+                        <span className="text-[9px] bg-[#d4a373]/15 text-[#b58349] px-2 py-0.5 rounded-md border border-[#d4a373]/30 font-bold uppercase">{slide.categorySlug || 'kurtis'}</span>
+                      </div>
                       <h4 className="text-base font-serif font-bold text-[#2d2624]">{slide.title}</h4>
                       <p className="text-xs text-gray-600 line-clamp-2 mt-1">{slide.description}</p>
+                      {slide.cta && <span className="text-[10px] text-gray-500 font-semibold block mt-1">CTA: "{slide.cta}"</span>}
                     </div>
-                    <button
-                      onClick={() => {
-                        deleteHeroSlide(slide.id);
-                        showToast('Slide removed');
-                      }}
-                      className="p-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer border border-rose-200"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingSlide(slide);
+                          setSlideForm({
+                            title: slide.title || '',
+                            subtitle: slide.subtitle || '',
+                            description: slide.description || '',
+                            cta: slide.cta || 'Explore Collection',
+                            categorySlug: slide.categorySlug || 'kurtis',
+                            image: slide.image || '',
+                            order: typeof slide.order === 'number' ? slide.order : 0
+                          });
+                          setIsSlideModalOpen(true);
+                        }}
+                        className="p-2 rounded-lg bg-white border border-[#e8e2d9] text-[#39322f] hover:bg-[#d4a373] hover:text-white transition-colors cursor-pointer"
+                        title="Edit Hero Slide"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          deleteHeroSlide(slide.id);
+                          showToast('Slide removed');
+                        }}
+                        className="p-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer border border-rose-200"
+                        title="Delete Hero Slide"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1486,7 +1558,11 @@ export default function AdminPage() {
                 <p className="text-xs text-gray-500 font-sans">Manage checkout discount codes and special offers</p>
               </div>
               <button
-                onClick={() => setIsDiscountModalOpen(true)}
+                onClick={() => {
+                  setEditingDiscount(null);
+                  setDiscountForm({ code: '', discountPercent: 10, minSpend: 0, description: '' });
+                  setIsDiscountModalOpen(true);
+                }}
                 className="bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-semibold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm"
               >
                 <Plus className="w-4 h-4 text-[#d4a373]" /> Create Coupon
@@ -1501,7 +1577,11 @@ export default function AdminPage() {
                   Create promo codes for your patrons to use during checkout.
                 </p>
                 <button
-                  onClick={() => setIsDiscountModalOpen(true)}
+                  onClick={() => {
+                    setEditingDiscount(null);
+                    setDiscountForm({ code: '', discountPercent: 10, minSpend: 0, description: '' });
+                    setIsDiscountModalOpen(true);
+                  }}
                   className="px-5 py-2.5 bg-[#39322f] hover:bg-[#d4a373] text-white hover:text-[#39322f] text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm"
                 >
                   + Create First Coupon
@@ -1534,7 +1614,22 @@ export default function AdminPage() {
                       </p>
                     </div>
 
-                    <div className="mt-4 pt-4 border-t border-[#e8e2d9] flex justify-end">
+                    <div className="mt-4 pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
+                      <button
+                        onClick={() => {
+                          setEditingDiscount(dc);
+                          setDiscountForm({
+                            code: dc.code,
+                            discountPercent: dc.discountPercent,
+                            minSpend: dc.minSpend || 0,
+                            description: dc.description || ''
+                          });
+                          setIsDiscountModalOpen(true);
+                        }}
+                        className="text-xs text-[#b58349] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" /> Edit
+                      </button>
                       <button
                         onClick={() => {
                           deleteDiscountCode(dc.code);
@@ -1554,51 +1649,128 @@ export default function AdminPage() {
 
         {/* TAB 7: STORE SETTINGS & CONTACT */}
         {activeTab === 'settings' && (
-          <div className="bg-white border border-[#e8e2d9] rounded-2xl p-6 max-w-2xl mx-auto space-y-6 shadow-xs">
+          <div className="bg-white border border-[#e8e2d9] rounded-2xl p-6 max-w-3xl mx-auto space-y-6 shadow-xs">
             <div>
               <h2 className="text-lg font-cinzel font-bold text-[#2d2624]">Studio Contact & Operating Settings</h2>
-              <p className="text-xs text-gray-500 font-sans">Updating these details updates the Footer and Contact Page automatically</p>
+              <p className="text-xs text-gray-500 font-sans">Updating these details updates the Footer and Contact Page automatically across all 10 parameters</p>
             </div>
 
             <div className="space-y-4 text-xs font-sans">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Raw Store Phone (dialer format)</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.phone || ''}
+                    onChange={(e) => updateStoreSettings({ phone: e.target.value })}
+                    placeholder="+919116655814"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Display Formatted Phone</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.displayPhone || ''}
+                    onChange={(e) => updateStoreSettings({ displayPhone: e.target.value })}
+                    placeholder="+91 91166 55814"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Store Phone</label>
+                <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Store Email Address</label>
                 <input
-                  type="text"
-                  value={storeSettings.phone}
-                  onChange={(e) => updateStoreSettings({ phone: e.target.value })}
+                  type="email"
+                  value={storeSettings?.email || ''}
+                  onChange={(e) => updateStoreSettings({ email: e.target.value })}
+                  placeholder="surangi.naar@gmail.com"
                   className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
               </div>
 
-              <div>
-                <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Store Email</label>
-                <input
-                  type="email"
-                  value={storeSettings.email}
-                  onChange={(e) => updateStoreSettings({ email: e.target.value })}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Instagram URL</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.instagram || ''}
+                    onChange={(e) => updateStoreSettings({ instagram: e.target.value })}
+                    placeholder="https://www.instagram.com/surangi.naar"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Instagram Handle</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.instagramHandle || ''}
+                    onChange={(e) => updateStoreSettings({ instagramHandle: e.target.value })}
+                    placeholder="@surangi.naar"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Facebook Page URL</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.facebook || ''}
+                    onChange={(e) => updateStoreSettings({ facebook: e.target.value })}
+                    placeholder="https://www.facebook.com/..."
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">WhatsApp Direct Link / Number</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.whatsapp || ''}
+                    onChange={(e) => updateStoreSettings({ whatsapp: e.target.value })}
+                    placeholder="https://wa.me/919116655814"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Physical Studio Address</label>
                 <textarea
                   rows={2}
-                  value={storeSettings.address}
+                  value={storeSettings?.address || ''}
                   onChange={(e) => updateStoreSettings({ address: e.target.value })}
                   className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
               </div>
 
-              <div>
-                <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Studio Operating Hours</label>
-                <input
-                  type="text"
-                  value={storeSettings.hours}
-                  onChange={(e) => updateStoreSettings({ hours: e.target.value })}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Google Maps Embed / Short Link</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.googleMaps || ''}
+                    onChange={(e) => updateStoreSettings({ googleMaps: e.target.value })}
+                    placeholder="https://maps.app.goo.gl/..."
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Studio Operating Hours</label>
+                  <input
+                    type="text"
+                    value={storeSettings?.hours || ''}
+                    onChange={(e) => updateStoreSettings({ hours: e.target.value })}
+                    placeholder="Mon - Sat: 10:30 AM - 7:30 PM IST"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1677,7 +1849,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Sale Price (₹)</label>
                   <input
@@ -1695,6 +1867,17 @@ export default function AdminPage() {
                     type="number"
                     value={productForm.originalPrice}
                     onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Stock Quantity</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={productForm.stockQuantity}
+                    onChange={(e) => setProductForm({ ...productForm, stockQuantity: Number(e.target.value) })}
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
                 </div>
@@ -1963,7 +2146,7 @@ export default function AdminPage() {
 
             <form onSubmit={handleSaveCategory} className="space-y-4 text-xs font-sans">
               <div>
-                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Category Name</label>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Category Name *</label>
                 <input
                   type="text"
                   required
@@ -1974,11 +2157,34 @@ export default function AdminPage() {
               </div>
 
               <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Category Slug</label>
+                <input
+                  type="text"
+                  placeholder="e.g. kurtis"
+                  value={catForm.slug}
+                  onChange={(e) => setCatForm({ ...catForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] font-mono focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+
+              <div>
                 <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Tagline</label>
                 <input
                   type="text"
+                  placeholder="Handprinted Malmal & Chanderi Tunics"
                   value={catForm.tagline}
                   onChange={(e) => setCatForm({ ...catForm, tagline: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Collection Count Tagline</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 28 Styles"
+                  value={catForm.count}
+                  onChange={(e) => setCatForm({ ...catForm, count: e.target.value })}
                   className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
               </div>
@@ -2016,13 +2222,15 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f] overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
-              <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">Add Hero Banner Slide</h3>
+              <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">
+                {editingSlide ? 'Edit Hero Banner Slide' : 'Add Hero Banner Slide'}
+              </h3>
               <button onClick={() => setIsSlideModalOpen(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer font-bold">✕</button>
             </div>
 
             <form onSubmit={handleSaveHeroSlide} className="space-y-4 text-xs font-sans">
               <div>
-                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Main Title</label>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Main Title *</label>
                 <input
                   type="text"
                   required
@@ -2038,6 +2246,57 @@ export default function AdminPage() {
                   type="text"
                   value={slideForm.subtitle}
                   onChange={(e) => setSlideForm({ ...slideForm, subtitle: e.target.value })}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Slide Description</label>
+                <textarea
+                  rows={2}
+                  value={slideForm.description}
+                  onChange={(e) => setSlideForm({ ...slideForm, description: e.target.value })}
+                  placeholder="Intricate hand-highlighted Zardosi & Gota Patti festive ensembles..."
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">CTA Button Label</label>
+                  <input
+                    type="text"
+                    value={slideForm.cta}
+                    onChange={(e) => setSlideForm({ ...slideForm, cta: e.target.value })}
+                    placeholder="Explore Collection"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Category Link</label>
+                  <select
+                    value={slideForm.categorySlug}
+                    onChange={(e) => setSlideForm({ ...slideForm, categorySlug: e.target.value })}
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  >
+                    {categories.map(c => (
+                      <option key={c.id} value={c.slug}>{c.name} ({c.slug})</option>
+                    ))}
+                    <option value="kurtis">Kurtis</option>
+                    <option value="short-kurtis">Short Kurtis</option>
+                    <option value="festive-wear">Festive Wear</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-wider text-[#39322f] mb-1 font-bold">Carousel Display Order</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={slideForm.order}
+                  onChange={(e) => setSlideForm({ ...slideForm, order: e.target.value })}
                   className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
               </div>
@@ -2063,7 +2322,9 @@ export default function AdminPage() {
 
               <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
                 <button type="button" onClick={() => setIsSlideModalOpen(false)} className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 cursor-pointer font-semibold">Cancel</button>
-                <button type="submit" className="px-6 py-2 rounded-xl bg-[#39322f] text-[#f7f3ee] hover:bg-[#d4a373] hover:text-[#39322f] font-bold cursor-pointer">Add Slide</button>
+                <button type="submit" className="px-6 py-2 rounded-xl bg-[#39322f] text-[#f7f3ee] hover:bg-[#d4a373] hover:text-[#39322f] font-bold cursor-pointer">
+                  {editingSlide ? 'Save Slide Changes' : 'Add Hero Slide'}
+                </button>
               </div>
             </form>
           </div>
@@ -2075,7 +2336,9 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white border border-[#d4a373]/30 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-[#39322f] overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-[#e8e2d9] pb-4">
-              <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">Create Discount Coupon</h3>
+              <h3 className="text-lg font-cinzel font-bold text-[#2d2624]">
+                {editingDiscount ? 'Edit Discount Coupon' : 'Create Discount Coupon'}
+              </h3>
               <button onClick={() => setIsDiscountModalOpen(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer font-bold">✕</button>
             </div>
 
@@ -2088,7 +2351,8 @@ export default function AdminPage() {
                   placeholder="e.g. FESTIVE15"
                   value={discountForm.code}
                   onChange={(e) => setDiscountForm({ ...discountForm, code: e.target.value })}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] uppercase tracking-wider font-mono font-bold focus:outline-none focus:border-[#d4a373]"
+                  disabled={Boolean(editingDiscount)}
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] uppercase tracking-wider font-mono font-bold focus:outline-none focus:border-[#d4a373] disabled:opacity-60"
                 />
               </div>
 
@@ -2128,7 +2392,9 @@ export default function AdminPage() {
 
               <div className="pt-4 border-t border-[#e8e2d9] flex justify-end gap-3">
                 <button type="button" onClick={() => setIsDiscountModalOpen(false)} className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 cursor-pointer font-semibold">Cancel</button>
-                <button type="submit" className="px-6 py-2 rounded-xl bg-[#39322f] text-[#f7f3ee] hover:bg-[#d4a373] hover:text-[#39322f] font-bold cursor-pointer">Create Coupon</button>
+                <button type="submit" className="px-6 py-2 rounded-xl bg-[#39322f] text-[#f7f3ee] hover:bg-[#d4a373] hover:text-[#39322f] font-bold cursor-pointer">
+                  {editingDiscount ? 'Save Coupon Changes' : 'Create Coupon'}
+                </button>
               </div>
             </form>
           </div>

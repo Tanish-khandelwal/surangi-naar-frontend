@@ -66,7 +66,7 @@ export const discountCodeSchema = z.object({
 
 export const storeSettingsSchema = z.object({
   phone: z.string(),
-  displayPhone: z.string(),
+  displayPhone: z.string().nullable().optional(),
   email: z.string().email(),
   instagram: z.string().nullable().optional(),
   instagramHandle: z.string().nullable().optional(),
