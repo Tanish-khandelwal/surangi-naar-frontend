@@ -454,7 +454,9 @@ export default function AdminPage() {
     }
 
     const priceNum = Number(productForm.price);
-    const origPriceNum = productForm.originalPrice ? Number(productForm.originalPrice) : Math.round(priceNum * 1.25);
+    const origPriceNum = (productForm.originalPrice !== '' && productForm.originalPrice !== null && productForm.originalPrice !== undefined)
+      ? Number(productForm.originalPrice)
+      : Math.round(priceNum * 1.25);
 
     const firstVarImages = productForm.colorVariants[0].images || [];
 

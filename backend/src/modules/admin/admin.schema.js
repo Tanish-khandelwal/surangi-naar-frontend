@@ -11,6 +11,7 @@ export const productSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   categorySlug: z.string().min(1, 'Category slug is required'),
   price: z.number().positive('Price must be positive'),
+  originalPrice: z.number().nullable().optional(),
   colorVariants: z.array(
     z.object({
       name: z.string().min(1, 'Color name is required'),
