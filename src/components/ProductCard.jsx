@@ -75,7 +75,8 @@ export default function ProductCard({ product }) {
   }, [selectedColor, product.id]);
 
   const isWishlisted = isInWishlist(product.id);
-  const availableSizes = product.sizes || ['XS', 'S', 'M', 'L', 'XL'];
+  const validSizes = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
+  const availableSizes = validSizes.length > 0 ? validSizes : ['M', 'L', 'XL', 'XXL'];
 
   const handleQuickAddSize = (e, size) => {
     e.stopPropagation();

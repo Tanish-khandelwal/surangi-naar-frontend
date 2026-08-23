@@ -146,7 +146,7 @@ export default function AdminPage() {
     image: '/images/products/real_product_1.jpg',
     secondaryImage: '',
     badge: 'New Arrival',
-    sizes: ['M', 'L', 'XL'],
+    sizes: ['M', 'L', 'XL', 'XXL'],
     stockQuantity: 10,
     isSoldOut: false,
     description: '',
@@ -419,7 +419,10 @@ export default function AdminPage() {
       image: product.image,
       secondaryImage: product.secondaryImage || '',
       badge: product.badge || 'Featured',
-      sizes: product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL'],
+      sizes: (() => {
+        const filtered = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
+        return filtered.length > 0 ? filtered : ['M', 'L', 'XL', 'XXL'];
+      })(),
       stockQuantity: typeof product.stockQuantity === 'number' ? product.stockQuantity : 10,
       isSoldOut: product.isSoldOut || false,
       description: product.description || '',
@@ -1041,6 +1044,7 @@ export default function AdminPage() {
                       <th className="py-3.5 px-4">Item</th>
                       <th className="py-3.5 px-4">Category</th>
                       <th className="py-3.5 px-4">Price</th>
+                      <th className="py-3.5 px-4">Sizes</th>
                       <th className="py-3.5 px-4">Badge</th>
                       <th className="py-3.5 px-4">Status</th>
                       <th className="py-3.5 px-4 text-right">Actions</th>
@@ -1071,6 +1075,19 @@ export default function AdminPage() {
                               ₹{product.originalPrice.toLocaleString()}
                             </span>
                           )}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="flex flex-wrap gap-1 max-w-[130px]">
+                            {(() => {
+                              const filtered = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
+                              const displaySizes = filtered.length > 0 ? filtered : ['M', 'L', 'XL', 'XXL'];
+                              return displaySizes.map((sz) => (
+                                <span key={sz} className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#f8f4ee] text-[#39322f] border border-[#e8e2d9]">
+                                  {sz}
+                                </span>
+                              ));
+                            })()}
+                          </div>
                         </td>
                         <td className="py-3.5 px-4">
                           <span className="px-2.5 py-0.5 rounded-md bg-[#d4a373]/15 text-[#b58349] text-[10px] font-bold border border-[#d4a373]/30">
@@ -1880,6 +1897,47 @@ export default function AdminPage() {
                     onChange={(e) => setProductForm({ ...productForm, stockQuantity: Number(e.target.value) })}
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
+                </div>
+              </div>
+
+              {/* Available Sizes Selector */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block uppercase tracking-wider text-[#39322f] font-bold">
+                    Available Sizes
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-2 p-3 bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl">
+                  {['S', 'M', 'L', 'XL', 'XXL'].map((size) => {
+                    const isSelected = (productForm.sizes || []).includes(size);
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => {
+                          const current = productForm.sizes || [];
+                          let updated;
+                          if (isSelected) {
+                            updated = current.filter(s => s !== size);
+                          } else {
+                            const order = ['S', 'M', 'L', 'XL', 'XXL'];
+                            updated = [...current, size].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+                          }
+                          setProductForm({ ...productForm, sizes: updated });
+                        }}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border flex items-center gap-1.5 ${
+                          isSelected
+                            ? 'bg-[#39322f] text-white border-[#39322f] shadow-xs'
+                            : 'bg-white text-[#39322f]/70 border-[#e8e2d9] hover:border-[#d4a373]'
+                        }`}
+                      >
+                        <span>{size}</span>
+                        <span className={`text-[10px] font-bold ${isSelected ? 'text-[#d4a373]' : 'text-gray-400'}`}>
+                          {isSelected ? '✓' : '+'}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

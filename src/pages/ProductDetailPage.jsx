@@ -47,10 +47,11 @@ export default function ProductDetailPage() {
           }))
         : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product?.image, product?.secondaryImage || product?.image].filter(Boolean) }]);
 
+  const detailSizes = (product?.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
+  const availableDetailSizes = detailSizes.length > 0 ? detailSizes : ['M', 'L', 'XL', 'XXL'];
+
   const [selectedColor, setSelectedColor] = useState(productColors[0]);
-  const [selectedSize, setSelectedSize] = useState(
-    product?.sizes ? product.sizes[0] : 'Free Size'
-  );
+  const [selectedSize, setSelectedSize] = useState(availableDetailSizes[0]);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
 
@@ -97,7 +98,8 @@ export default function ProductDetailPage() {
             }))
           : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
     setSelectedColor(cols[0]);
-    setSelectedSize(product.sizes ? product.sizes[0] : 'Free Size');
+    const validPDetailSizes = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
+    setSelectedSize(validPDetailSizes.length > 0 ? validPDetailSizes[0] : 'M');
     setQuantity(1);
     setActiveImageIndex(0);
   }, [product?.id, product?.colorVariants, product?.colors, product?.sizes, product?.image]);
@@ -404,7 +406,7 @@ export default function ProductDetailPage() {
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2.5">
-                  {(product.sizes || ['Free Size']).map((size) => (
+                  {availableDetailSizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}

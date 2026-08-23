@@ -304,7 +304,7 @@ const PRODUCTS_CURATED = [
     colorVariants: [
       { name: "Crimson Red", hex: "#8b0000", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png" }
     ],
-    sizes: ["S", "M", "L", "Custom"],
+    sizes: ["S", "M", "L", "XL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
     badge: "Royal Edit",
@@ -325,7 +325,7 @@ const PRODUCTS_CURATED = [
     colorVariants: [
       { name: "Deep Ruby", hex: "#5c1325", image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png", secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png" }
     ],
-    sizes: ["S", "M", "L", "Custom"],
+    sizes: ["S", "M", "L", "XL"],
     image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236578/surangi-naar/products/real_product_16.png",
     secondaryImage: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236582/surangi-naar/products/real_product_17.png",
     badge: "Bridal Couture",

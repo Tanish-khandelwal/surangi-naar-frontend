@@ -71,6 +71,9 @@ export const adminLogin = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const validatedData = productSchema.parse(req.body);
+    if (!validatedData.sizes || validatedData.sizes.length === 0) {
+      validatedData.sizes = ['M', 'L', 'XL', 'XXL'];
+    }
     if (validatedData.colorVariants && validatedData.colorVariants.length > 0) {
       const firstVariantImages = validatedData.colorVariants[0].images || [];
       validatedData.image = firstVariantImages[0] || validatedData.image;

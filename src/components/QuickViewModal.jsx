@@ -31,10 +31,11 @@ function QuickViewModalContent({ product, onClose }) {
           }))
         : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
 
+  const modalSizes = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
+  const availableModalSizes = modalSizes.length > 0 ? modalSizes : ['M', 'L', 'XL', 'XXL'];
+
   const [selectedColor, setSelectedColor] = useState(modalVariants[0]);
-  const [selectedSize, setSelectedSize] = useState(
-    product.sizes ? product.sizes[0] : 'Free Size'
-  );
+  const [selectedSize, setSelectedSize] = useState(availableModalSizes[0]);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -187,7 +188,7 @@ function QuickViewModalContent({ product, onClose }) {
                 Select Size: <span className="text-[#d4a373] font-normal">{selectedSize}</span>
               </label>
               <div className="flex flex-wrap gap-2">
-                {(product.sizes || ['XS', 'S', 'M', 'L', 'XL']).map((sz) => (
+                {availableModalSizes.map((sz) => (
                   <button
                     key={sz}
                     onClick={() => setSelectedSize(sz)}
