@@ -35,15 +35,19 @@ app.use(helmet({
 }));
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : '',
+  'https://suranghinaar.com',
+  'https://www.suranghinaar.com',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
-];
+].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(cleanOrigin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
