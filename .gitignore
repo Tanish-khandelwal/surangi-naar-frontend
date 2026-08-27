@@ -7,8 +7,10 @@ backend/node_modules
 # Environment & Secrets
 .env
 .env.*
+!.env.example
 backend/.env
 backend/.env.*
+!backend/.env.example
 
 # Logs
 logs
