@@ -176,13 +176,13 @@ export default function Navbar() {
                 <div className="relative p-0.5 rounded-full bg-gradient-to-tr from-[#d4a373] via-[#f3e3ca] to-[#b58349] shadow-md group-hover:scale-105 transition-transform shrink-0">
                   <img
                     src="/logo.jpg"
-                    alt="Surangi Naar Logo"
+                    alt="Suranghi Naar Logo"
                     className="w-7 h-7 sm:w-10 sm:h-10 rounded-full object-cover border border-white"
                   />
                 </div>
                 <div className="text-left">
                   <h1 className="font-cinzel text-base sm:text-xl lg:text-2xl font-bold tracking-wider text-[#2d2624] leading-none group-hover:text-[#d4a373] transition-colors">
-                    Surangi Naar
+                    Suranghi Naar
                   </h1>
                   <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.22em] sm:tracking-[0.28em] text-[#d4a373] font-bold block mt-0.5 whitespace-nowrap">
                     Luxury Apparel
@@ -332,8 +332,8 @@ export default function Navbar() {
             <div>
               <div className="pt-6 pb-4 px-5 border-b border-[#e8e2d9] flex items-center justify-between bg-[#f7f3ee]">
                 <div className="flex items-center gap-2.5">
-                  <img src="/logo.jpg" alt="Surangi Naar Logo" className="w-8 h-8 rounded-full border border-white shadow-xs shrink-0" />
-                  <span className="font-cinzel text-lg font-bold text-[#39322f] leading-none">Surangi Naar</span>
+                  <img src="/logo.jpg" alt="Suranghi Naar Logo" className="w-8 h-8 rounded-full border border-white shadow-xs shrink-0" />
+                  <span className="font-cinzel text-lg font-bold text-[#39322f] leading-none">Suranghi Naar</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}

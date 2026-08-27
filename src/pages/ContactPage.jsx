@@ -130,7 +130,7 @@ export default function ContactPage() {
               Customer Support Guidelines
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              Customers can contact SURANGI NAAR through phone/WhatsApp or email for questions, complaints, exchange requests, cancellation requests, order-related issues, privacy requests, and other concerns.
+              Customers can contact SURANGHI NAAR through phone/WhatsApp or email for questions, complaints, exchange requests, cancellation requests, order-related issues, privacy requests, and other concerns.
             </p>
           </div>
 
@@ -140,7 +140,7 @@ export default function ContactPage() {
               <span>Important Exchange & Cancellation Notice</span>
             </div>
             <p className="text-xs text-gray-700 leading-relaxed">
-              For exchanges or cancellations, customers should contact us as soon as possible and within the applicable policy period. Please do not send a product back without first contacting SURANGI NAAR and receiving exchange instructions.
+              For exchanges or cancellations, customers should contact us as soon as possible and within the applicable policy period. Please do not send a product back without first contacting SURANGHI NAAR and receiving exchange instructions.
             </p>
           </div>
 

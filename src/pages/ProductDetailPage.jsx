@@ -192,7 +192,7 @@ export default function ProductDetailPage() {
       <div className="bg-[#f7f3ee] min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
         <div className="w-10 h-10 border-2 border-[#d4a373] border-t-transparent rounded-full animate-spin mb-4" />
         <h2 className="font-serif text-xl font-bold text-[#39322f] mb-2">Loading Product Details...</h2>
-        <p className="text-xs text-[#39322f]/60 mb-6 font-sans">Fetching artisanal details from Surangi Naar studio.</p>
+        <p className="text-xs text-[#39322f]/60 mb-6 font-sans">Fetching artisanal details from Suranghi Naar studio.</p>
       </div>
     );
   }
@@ -548,7 +548,7 @@ export default function ProductDetailPage() {
                 Customer Reviews
               </h3>
               <p className="text-xs text-[#39322f]/60 font-sans mt-1">
-                Authentic feedback from verified patrons of Surangi Naar
+                Authentic feedback from verified patrons of Suranghi Naar
               </p>
             </div>
 

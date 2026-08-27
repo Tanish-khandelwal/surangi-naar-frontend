@@ -1,4 +1,4 @@
-// Mock Data for Surangi Naar E-Commerce Store with Real Catalog Images
+// Mock Data for Suranghi Naar E-Commerce Store with Real Catalog Images
 
 export const BRAND_CONTACT = {
   phone: "+91 9116655814",
@@ -445,10 +445,10 @@ export const EXCLUSIVE_COLLECTION = [
 ];
 
 export const FOUNDER_INFO = {
-  name: "Surangi Naar",
+  name: "Suranghi Naar",
   role: "Creative Director & Founder",
-  quote: "“Fashion at Surangi Naar is not merely attire — it is an emotional ode to traditional Indian craftsmanship re-imagined for the global woman.”",
-  storyParagraph1: "Surangi Naar emerged from a passion for preserving India’s rich textile heritage while catering to modern aesthetic sensibilities. Each garment tells a story of dedicated master artisans, hand-selected pure fabrics, and meticulous embroidery.",
+  quote: "“Fashion at Suranghi Naar is not merely attire — it is an emotional ode to traditional Indian craftsmanship re-imagined for the global woman.”",
+  storyParagraph1: "Suranghi Naar emerged from a passion for preserving India’s rich textile heritage while catering to modern aesthetic sensibilities. Each garment tells a story of dedicated master artisans, hand-selected pure fabrics, and meticulous embroidery.",
   storyParagraph2: "From royal Chanderi weaves to contemporary fluid short kurtis, the label blends understated luxury with expressive, feminine grace — creating timeless pieces crafted to be cherished across generations.",
   image: "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236584/surangi-naar/products/real_product_18.png",
   badges: [

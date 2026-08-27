@@ -38,7 +38,7 @@ function PageLoadingFallback() {
     <div className="min-h-[60vh] flex items-center justify-center bg-[#f7f3ee]">
       <div className="flex flex-col items-center gap-3">
         <div className="w-10 h-10 border-3 border-[#d4a373]/30 border-t-[#d4a373] rounded-full animate-spin" />
-        <span className="font-cinzel text-xs text-[#39322f] tracking-widest uppercase font-semibold">Surangi Naar</span>
+        <span className="font-cinzel text-xs text-[#39322f] tracking-widest uppercase font-semibold">Suranghi Naar</span>
       </div>
     </div>
   );

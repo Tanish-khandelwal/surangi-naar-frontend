@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
             <Sparkles className="w-6 h-6 text-[#d4a373]" />
           </div>
           <h1 className="font-cinzel text-2xl font-bold text-[#2d2624]">Reset Your Password</h1>
-          <p className="text-xs text-gray-500 font-sans mt-1">Enter your new secure password for Surangi Naar Atelier</p>
+          <p className="text-xs text-gray-500 font-sans mt-1">Enter your new secure password for Suranghi Naar Atelier</p>
         </div>
 
         {/* Missing Token Warning */}

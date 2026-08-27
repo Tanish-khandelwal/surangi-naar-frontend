@@ -62,7 +62,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
-    service: 'Surangi Naar Backend API',
+    service: 'Suranghi Naar Backend API',
     timestamp: new Date().toISOString(),
   });
 });
@@ -89,7 +89,7 @@ app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`🚀 Surangi Naar Backend running on port ${PORT}`);
+    console.log(`🚀 Suranghi Naar Backend running on port ${PORT}`);
   });
 }
 

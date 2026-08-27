@@ -42,7 +42,7 @@ export const sendEmail = async ({ to, subject, html, text }) => {
   try {
     const transporter = createEmailTransporter();
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM_EMAIL || `"SURANGI NAAR" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM_EMAIL || `"SURANGHI NAAR" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,

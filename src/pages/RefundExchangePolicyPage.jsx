@@ -28,7 +28,7 @@ export default function RefundExchangePolicyPage() {
           </p>
           <div className="w-20 h-0.5 bg-gradient-to-r from-[#d4a373] to-transparent mt-4 rounded-full" />
           <p className="text-sm text-gray-600 font-sans mt-4 leading-relaxed">
-            This page summarizes the refund, cancellation, return, and exchange terms contained in the supplied SURANGI NAAR Terms & Conditions. It is written as website-ready copy while keeping the supplied policy position.
+            This page summarizes the refund, cancellation, return, and exchange terms contained in the supplied SURANGHI NAAR Terms & Conditions. It is written as website-ready copy while keeping the supplied policy position.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default function RefundExchangePolicyPage() {
               Returns
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR does not offer returns as a standard policy. Customers should carefully review product details, size information, product description, and other relevant information before placing an order.
+              SURANGHI NAAR does not offer returns as a standard policy. Customers should carefully review product details, size information, product description, and other relevant information before placing an order.
             </p>
             <p className="text-gray-700 font-medium bg-[#f8f4ee] p-4 rounded-2xl border border-[#e8e2d9]">
               A product cannot ordinarily be returned simply because the customer changed their mind, selected the wrong size, or no longer wishes to keep the product.
@@ -59,7 +59,7 @@ export default function RefundExchangePolicyPage() {
               Exchanges
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR offers exchange within <strong className="text-[#39322f]">3 days of delivery</strong>, subject to the conditions below. Customers should contact SURANGI NAAR within the applicable exchange period through the contact details listed on this page.
+              SURANGHI NAAR offers exchange within <strong className="text-[#39322f]">3 days of delivery</strong>, subject to the conditions below. Customers should contact SURANGHI NAAR within the applicable exchange period through the contact details listed on this page.
             </p>
             <ul className="space-y-2.5 pl-2 text-gray-700">
               <li className="flex items-start gap-2.5">
@@ -88,7 +88,7 @@ export default function RefundExchangePolicyPage() {
               Exchange Shipping
             </h2>
             <p className="text-gray-700">
-              For an eligible exchange, SURANGI NAAR will bear the applicable exchange shipping cost. Customers should not send products back without first contacting SURANGI NAAR and receiving instructions regarding the exchange process.
+              For an eligible exchange, SURANGHI NAAR will bear the applicable exchange shipping cost. Customers should not send products back without first contacting SURANGHI NAAR and receiving instructions regarding the exchange process.
             </p>
           </section>
 
@@ -110,7 +110,7 @@ export default function RefundExchangePolicyPage() {
               Damaged, Defective, or Incorrect Products
             </h2>
             <p className="text-gray-700">
-              If you receive a damaged, defective, incorrect, or different product, please contact SURANGI NAAR as soon as possible and within the applicable exchange period. You may be asked to provide photographs or videos of the product and packaging so the issue can be verified. Once verified, SURANGI NAAR will arrange an eligible exchange or other appropriate remedy in accordance with applicable law and the applicable policies.
+              If you receive a damaged, defective, incorrect, or different product, please contact SURANGHI NAAR as soon as possible and within the applicable exchange period. You may be asked to provide photographs or videos of the product and packaging so the issue can be verified. Once verified, SURANGHI NAAR will arrange an eligible exchange or other appropriate remedy in accordance with applicable law and the applicable policies.
             </p>
           </section>
 
@@ -135,7 +135,7 @@ export default function RefundExchangePolicyPage() {
               No Refund Policy
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR follows a no-refund policy for ordinary product returns and exchanges. An exchange, rather than a monetary refund, will generally be provided where an exchange is permitted under this policy. Nothing in this clause is intended to exclude or limit any refund or other consumer remedy required by applicable law.
+              SURANGHI NAAR follows a no-refund policy for ordinary product returns and exchanges. An exchange, rather than a monetary refund, will generally be provided where an exchange is permitted under this policy. Nothing in this clause is intended to exclude or limit any refund or other consumer remedy required by applicable law.
             </p>
           </section>
 

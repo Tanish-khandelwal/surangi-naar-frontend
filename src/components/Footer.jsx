@@ -27,14 +27,14 @@ export default function Footer() {
               <div className="p-0.5 rounded-full bg-gradient-to-tr from-[#d4a373] to-[#b58349]">
                 <img
                   src="/logo.jpg"
-                  alt="Surangi Naar Emblem"
+                  alt="Suranghi Naar Emblem"
                   loading="lazy"
                   className="w-12 h-12 rounded-full object-cover border border-white"
                 />
               </div>
               <div>
                 <h3 className="font-cinzel text-2xl font-bold tracking-wider text-white leading-none">
-                  Surangi Naar
+                  Suranghi Naar
                 </h3>
                 <span className="text-[9px] uppercase tracking-[0.28em] text-[#e6c594] font-semibold block mt-1">
                   Jaipur Artisanal Fashion
@@ -140,7 +140,7 @@ export default function Footer() {
         {/* Bottom Bar: Copyright */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400 font-sans">
           <div className="flex items-center gap-1">
-            <span>© {new Date().getFullYear()} Surangi Naar. All Rights Reserved.</span>
+            <span>© {new Date().getFullYear()} Suranghi Naar. All Rights Reserved.</span>
           </div>
         </div>
 

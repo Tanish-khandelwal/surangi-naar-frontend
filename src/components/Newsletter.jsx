@@ -29,7 +29,7 @@ export default function Newsletter() {
         </span>
 
         <h2 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-white">
-          Enter Into The World of Surangi Naar
+          Enter Into The World of Suranghi Naar
         </h2>
 
         <p className="font-sans text-sm sm:text-base text-gray-300 font-light max-w-lg mx-auto leading-relaxed">
@@ -42,7 +42,7 @@ export default function Newsletter() {
             <div className="bg-[#d4a373]/20 border border-[#d4a373] text-[#d4a373] p-4 rounded-full flex items-center justify-center gap-2 animate-in fade-in duration-300">
               <CheckCircle2 className="w-5 h-5 text-[#d4a373]" />
               <span className="text-xs font-semibold uppercase tracking-wider">
-                Welcome to surangi naar. Check your inbox!
+                Welcome to Suranghi Naar. Check your inbox!
               </span>
             </div>
           ) : (

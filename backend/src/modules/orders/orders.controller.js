@@ -167,7 +167,7 @@ export const createOrder = async (req, res) => {
       const { html, text } = getOrderConfirmationEmailTemplate({ order });
       sendEmail({
         to: order.customerEmail,
-        subject: `Order Confirmation - ${order.id} | SURANGI NAAR`,
+        subject: `Order Confirmation - ${order.id} | SURANGHI NAAR`,
         html,
         text,
       }).catch((err) => console.error('COD order email error:', err));

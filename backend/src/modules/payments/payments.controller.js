@@ -168,7 +168,7 @@ export const verifyPaymentSignature = async (req, res) => {
       const { html, text } = getOrderConfirmationEmailTemplate({ order: updatedOrder });
       sendEmail({
         to: updatedOrder.customerEmail,
-        subject: `Order Confirmation - ${updatedOrder.id} | SURANGI NAAR`,
+        subject: `Order Confirmation - ${updatedOrder.id} | SURANGHI NAAR`,
         html,
         text,
       }).catch((err) => console.error('Order confirmation email error:', err));

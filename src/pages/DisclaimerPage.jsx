@@ -28,7 +28,7 @@ export default function DisclaimerPage() {
           </p>
           <div className="w-20 h-0.5 bg-gradient-to-r from-[#d4a373] to-transparent mt-4 rounded-full" />
           <p className="text-sm text-gray-600 font-sans mt-4 leading-relaxed">
-            The following website disclaimer is derived from the supplied SURANGI NAAR Terms & Conditions and Privacy Policy.
+            The following website disclaimer is derived from the supplied SURANGHI NAAR Terms & Conditions and Privacy Policy.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default function DisclaimerPage() {
               General Information
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR makes reasonable efforts to keep website information, product descriptions, photographs, colour details, sizes, fabric details, availability, and other content accurate. However, information may contain errors, may change, or may not reflect every real-world condition.
+              SURANGHI NAAR makes reasonable efforts to keep website information, product descriptions, photographs, colour details, sizes, fabric details, availability, and other content accurate. However, information may contain errors, may change, or may not reflect every real-world condition.
             </p>
           </section>
 
@@ -67,7 +67,7 @@ export default function DisclaimerPage() {
               </li>
               <li className="flex items-start gap-2.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#d4a373] mt-2 shrink-0" />
-                <span>SURANGI NAAR may modify, discontinue, or update products without prior notice.</span>
+                <span>SURANGHI NAAR may modify, discontinue, or update products without prior notice.</span>
               </li>
             </ul>
           </section>
@@ -79,7 +79,7 @@ export default function DisclaimerPage() {
               Website Availability
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR makes reasonable efforts to keep the website available and functioning properly, but does not guarantee that the website will always be uninterrupted, error-free, secure, or available at all times. Temporary unavailability may occur because of maintenance, technical issues, server problems, internet connectivity, or other circumstances beyond reasonable control.
+              SURANGHI NAAR makes reasonable efforts to keep the website available and functioning properly, but does not guarantee that the website will always be uninterrupted, error-free, secure, or available at all times. Temporary unavailability may occur because of maintenance, technical issues, server problems, internet connectivity, or other circumstances beyond reasonable control.
             </p>
           </section>
 
@@ -90,7 +90,7 @@ export default function DisclaimerPage() {
               Third-Party Services
             </h2>
             <p className="text-gray-700">
-              The website may use payment gateways, courier/logistics providers, hosting providers, analytics services, advertising technologies, and other third-party services. These third parties may operate under their own terms and privacy policies. SURANGI NAAR does not control independent third-party policies or failures except where applicable law requires otherwise.
+              The website may use payment gateways, courier/logistics providers, hosting providers, analytics services, advertising technologies, and other third-party services. These third parties may operate under their own terms and privacy policies. SURANGHI NAAR does not control independent third-party policies or failures except where applicable law requires otherwise.
             </p>
           </section>
 
@@ -112,7 +112,7 @@ export default function DisclaimerPage() {
               Limitation of Liability
             </h2>
             <p className="text-gray-700">
-              To the extent permitted by applicable law, SURANGI NAAR will not be responsible for losses arising from circumstances beyond reasonable control, including courier delays, payment gateway failures, internet disruptions, natural events, technical failures, or other unforeseen circumstances. Nothing in this disclaimer is intended to exclude or limit consumer rights or remedies that cannot legally be excluded or limited.
+              To the extent permitted by applicable law, SURANGHI NAAR will not be responsible for losses arising from circumstances beyond reasonable control, including courier delays, payment gateway failures, internet disruptions, natural events, technical failures, or other unforeseen circumstances. Nothing in this disclaimer is intended to exclude or limit consumer rights or remedies that cannot legally be excluded or limited.
             </p>
           </section>
 

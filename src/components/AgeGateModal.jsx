@@ -22,10 +22,10 @@ export default function AgeGateModal() {
             Age Verification
           </span>
           <h3 className="font-serif text-2xl font-bold text-[#39322f] mt-1">
-            Welcome to surangi naar
+            Welcome to Suranghi Naar
           </h3>
           <p className="text-xs uppercase tracking-widest text-[#39322f]/60 font-sans mt-0.5">
-            SURANGI NAAR
+            SURANGHI NAAR
           </p>
         </div>
 

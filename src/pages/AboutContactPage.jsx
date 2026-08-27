@@ -52,7 +52,7 @@ export default function AboutContactPage() {
         <div className="relative rounded-3xl overflow-hidden bg-[#231f1e] text-white p-6 sm:p-12 lg:p-16 text-center space-y-4 sm:space-y-6">
           <img
             src="/images/products/real_product_14.jpg"
-            alt="Surangi Naar Atelier"
+            alt="Suranghi Naar Atelier"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-40"
           />
@@ -61,7 +61,7 @@ export default function AboutContactPage() {
           <div className="relative z-10 max-w-2xl mx-auto space-y-3 sm:space-y-4">
             <img 
               src="/logo.jpg" 
-              alt="Surangi Naar Monogram" 
+              alt="Suranghi Naar Monogram" 
               loading="lazy"
               className="w-16 h-16 sm:w-24 sm:h-24 rounded-full object-cover mx-auto border-2 border-[#d4a373] shadow-2xl" 
             />
@@ -69,7 +69,7 @@ export default function AboutContactPage() {
               Jaipur Haute Couture & Concierge
             </span>
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold">
-              About Surangi Naar
+              About Suranghi Naar
             </h1>
             <p className="font-cormorant text-lg sm:text-xl text-gray-200 italic font-light">
               “Fusing centuries of Royal Rajasthani textile artistry with contemporary global grace.”
@@ -202,7 +202,7 @@ export default function AboutContactPage() {
                     <div>
                       <span className="text-[10px] text-[#39322f]/60 font-semibold uppercase tracking-wider block">Facebook</span>
                       <a href={BRAND_CONTACT.facebook} target="_blank" rel="noreferrer" className="font-semibold text-sm hover:text-[#d4a373] transition-colors">
-                        Surangi Naar Official
+                        Suranghi Naar Official
                       </a>
                     </div>
                   </li>
@@ -226,7 +226,7 @@ export default function AboutContactPage() {
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#39322f]/60 font-semibold uppercase tracking-wider block">Surangi Naar Atelier</span>
+                      <span className="text-[10px] text-[#39322f]/60 font-semibold uppercase tracking-wider block">Suranghi Naar Atelier</span>
                       <a href={BRAND_CONTACT.googleMaps} target="_blank" rel="noreferrer" className="font-medium text-xs leading-relaxed text-[#39322f] hover:text-[#d4a373] transition-colors block">
                         {BRAND_CONTACT.address}
                       </a>

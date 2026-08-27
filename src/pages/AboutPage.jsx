@@ -23,7 +23,7 @@ export default function AboutPage() {
             Jaipur, Rajasthan
           </span>
           <h1 className="font-cinzel text-3xl sm:text-5xl font-bold text-[#2d2624] mb-4">
-            SURANGI NAAR
+            SURANGHI NAAR
           </h1>
           <p className="text-sm text-gray-600 font-sans max-w-2xl mx-auto leading-relaxed">
             An Indian clothing brand based in Jaipur, Rajasthan, offering high-quality cotton kurtis and fashion apparel designed for style and comfort.
@@ -39,7 +39,7 @@ export default function AboutPage() {
               Our Brand Approach
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              SURANGI NAAR is an Indian clothing brand based in Jaipur, Rajasthan. Our approach is centered on offering customers an easy online shopping experience with clear product information, secure online payments, reliable order processing, customer support, and delivery across India.
+              SURANGHI NAAR is an Indian clothing brand based in Jaipur, Rajasthan. Our approach is centered on offering customers an easy online shopping experience with clear product information, secure online payments, reliable order processing, customer support, and delivery across India.
             </p>
             <p className="text-gray-700 leading-relaxed">
               We focus on delivering beautifully crafted apparel with authentic design details, premium fabrics, and trusted service for customers looking for quality Indian fashion.
@@ -79,7 +79,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-700">
               <div>
                 <span className="font-bold text-[#2d2624] block mb-0.5">Business Name</span>
-                <span>SURANGI NAAR</span>
+                <span>SURANGHI NAAR</span>
               </div>
               <div>
                 <span className="font-bold text-[#2d2624] block mb-0.5">Location Base</span>

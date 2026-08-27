@@ -801,9 +801,9 @@ export const ShopProvider = ({ children }) => {
     if (is18Plus) {
       localStorage.setItem('surangi_age_verified', 'true');
       setIsAgeVerified(true);
-      toast.success('Welcome to Surangi Naar!');
+      toast.success('Welcome to Suranghi Naar!');
     } else {
-      toast.error("You must be 18 or older to browse Surangi Naar.");
+      toast.error("You must be 18 or older to browse Suranghi Naar.");
     }
   };
 

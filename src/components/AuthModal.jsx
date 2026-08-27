@@ -182,7 +182,7 @@ export default function AuthModal() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#f8f4ee] text-[#b58349] border border-[#d4a373]/30 mb-3 shadow-xs">
             <Sparkles className="w-6 h-6 text-[#d4a373]" />
           </div>
-          <h2 className="font-cinzel text-2xl font-bold text-[#2d2624]">Surangi Naar Atelier</h2>
+          <h2 className="font-cinzel text-2xl font-bold text-[#2d2624]">Suranghi Naar Atelier</h2>
           <p className="text-xs text-gray-500 font-sans mt-1">Sign in to access your luxury account & order history</p>
         </div>
 

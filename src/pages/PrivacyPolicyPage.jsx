@@ -28,11 +28,11 @@ export default function PrivacyPolicyPage() {
           </p>
           <div className="w-20 h-0.5 bg-gradient-to-r from-[#d4a373] to-transparent mt-4 rounded-full" />
           <p className="text-sm text-gray-600 font-sans mt-4 leading-relaxed">
-            At SURANGI NAAR, we respect your privacy and are committed to protecting the personal information you provide when you visit or use our website. This Privacy Policy explains what information we collect, how we use it, how we share it, how we protect it, and the choices available to you.
+            At SURANGHI NAAR, we respect your privacy and are committed to protecting the personal information you provide when you visit or use our website. This Privacy Policy explains what information we collect, how we use it, how we share it, how we protect it, and the choices available to you.
           </p>
 
           <div className="mt-6 pt-6 border-t border-[#e8e2d9] grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-700">
-            <div><strong>Business Name:</strong> SURANGI NAAR</div>
+            <div><strong>Business Name:</strong> SURANGHI NAAR</div>
             <div><strong>Phone / WhatsApp:</strong> <a href="https://wa.me/919116655814" target="_blank" rel="noreferrer" className="text-[#b58349] font-bold hover:underline">+91 9116655814</a></div>
             <div><strong>Email:</strong> <a href="mailto:surangi.naar@gmail.com" className="text-[#b58349] font-bold hover:underline">surangi.naar@gmail.com</a></div>
             <div><strong>Address:</strong> 13-16, Paras Apartment, Chopra Enclave, Mangyawas, Mansarovar, Jaipur, Rajasthan, India</div>
@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
               Payment Information
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR accepts online payments through <strong>Razorpay</strong>. Payment-related information may be processed by Razorpay and relevant banking/payment networks. SURANGI NAAR does not intentionally collect or store sensitive payment credentials such as card PIN, CVV, UPI PIN, or complete banking credentials on its own systems.
+              SURANGHI NAAR accepts online payments through <strong>Razorpay</strong>. Payment-related information may be processed by Razorpay and relevant banking/payment networks. SURANGHI NAAR does not intentionally collect or store sensitive payment credentials such as card PIN, CVV, UPI PIN, or complete banking credentials on its own systems.
             </p>
           </section>
 
@@ -104,7 +104,7 @@ export default function PrivacyPolicyPage() {
               </li>
               <li className="flex items-start gap-2.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#d4a373] mt-2 shrink-0" />
-                <span>Communicate through WhatsApp where you contact SURANGI NAAR or where required for support.</span>
+                <span>Communicate through WhatsApp where you contact SURANGHI NAAR or where required for support.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#d4a373] mt-2 shrink-0" />
@@ -139,7 +139,7 @@ export default function PrivacyPolicyPage() {
               Meta and Advertising
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR may use Meta advertising and tracking technologies, including Meta Pixel or similar technologies, to measure advertising performance, understand website activity resulting from advertisements, create or measure audiences, improve campaigns, show relevant advertising, and understand customer interactions. Meta may process collected information under its own policies.
+              SURANGHI NAAR may use Meta advertising and tracking technologies, including Meta Pixel or similar technologies, to measure advertising performance, understand website activity resulting from advertisements, create or measure audiences, improve campaigns, show relevant advertising, and understand customer interactions. Meta may process collected information under its own policies.
             </p>
           </section>
 
@@ -161,7 +161,7 @@ export default function PrivacyPolicyPage() {
               Sharing Information
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR does not sell personal information as a standalone product. Necessary information may be shared with payment providers such as Razorpay, shipping/logistics providers, technology and service providers, advertising/marketing platforms including Meta, and legal or government authorities where required or permitted by applicable law.
+              SURANGHI NAAR does not sell personal information as a standalone product. Necessary information may be shared with payment providers such as Razorpay, shipping/logistics providers, technology and service providers, advertising/marketing platforms including Meta, and legal or government authorities where required or permitted by applicable law.
             </p>
           </section>
 
@@ -194,7 +194,7 @@ export default function PrivacyPolicyPage() {
               Children, Third-Party Services, Fraud, and Legal Compliance
             </h2>
             <p className="text-gray-700">
-              SURANGI NAAR does not impose a specific age restriction for browsing or purchasing, but will comply with applicable law regarding children’s data. The website may contain third-party links or integrations, whose privacy practices are outside this policy. Information may be processed for fraud prevention, account security, and compliance with laws, tax/accounting requirements, court orders, government requests, regulatory requirements, and legal proceedings.
+              SURANGHI NAAR does not impose a specific age restriction for browsing or purchasing, but will comply with applicable law regarding children’s data. The website may contain third-party links or integrations, whose privacy practices are outside this policy. Information may be processed for fraud prevention, account security, and compliance with laws, tax/accounting requirements, court orders, government requests, regulatory requirements, and legal proceedings.
             </p>
           </section>
 

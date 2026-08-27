@@ -183,7 +183,7 @@ export default function CartPage() {
         key: razorpayKey,
         amount: rzpOrderData.amount || createdOrder.total * 100,
         currency: rzpOrderData.currency || 'INR',
-        name: 'Surangi Naar Atelier',
+        name: 'Suranghi Naar Atelier',
         description: 'Luxury Ethnic Fashion Order',
         order_id: rzpOrderData.id,
         handler: async (response) => {
@@ -567,7 +567,7 @@ export default function CartPage() {
                     <ShieldCheck className="w-4 h-4 text-[#d4a373]" />
                     <span>100% Encrypted & Secure Checkout</span>
                   </div>
-                  <p>Guaranteed authentic silk and handcrafted embroidery directly from surangi naar Atelier, Jaipur.</p>
+                  <p>Guaranteed authentic silk and handcrafted embroidery directly from Suranghi Naar Atelier, Jaipur.</p>
                 </div>
 
               </div>

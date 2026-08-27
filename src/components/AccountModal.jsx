@@ -120,7 +120,7 @@ export default function AccountModal() {
             </div>
             <p className="text-xs text-gray-500 font-sans truncate mt-0.5">{currentUser.email}</p>
             <span className="text-[10px] text-[#b58349] font-bold uppercase tracking-wider block mt-1">
-              Surangi VIP Member
+              Suranghi VIP Member
             </span>
           </div>
         </div>

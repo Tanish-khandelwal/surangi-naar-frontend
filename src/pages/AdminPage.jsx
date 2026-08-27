@@ -633,7 +633,7 @@ export default function AdminPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#f7f3ee] text-[#b58349] mb-4 border border-[#d4a373]/40 shadow-sm">
               <Lock className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-cinzel font-bold tracking-wide text-[#2d2624]">Surangi Naar Studio</h1>
+            <h1 className="text-2xl font-cinzel font-bold tracking-wide text-[#2d2624]">Suranghi Naar Studio</h1>
             <p className="text-xs text-[#b58349] tracking-widest uppercase font-semibold mt-1">Light Admin Control Panel</p>
           </div>
 
@@ -762,7 +762,7 @@ export default function AdminPage() {
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-cinzel text-lg font-bold text-[#2d2624] tracking-wide">SURANGI NAAR</span>
+              <span className="font-cinzel text-lg font-bold text-[#2d2624] tracking-wide">SURANGHI NAAR</span>
               <span className="ml-2 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-md bg-[#d4a373]/15 text-[#b58349] font-bold border border-[#d4a373]/30">
                 Studio Admin
               </span>
@@ -991,7 +991,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-[#e8e2d9] text-xs text-[#39322f]/70 space-y-1.5 font-sans">
-                  <p>Store Name: <span className="text-[#2d2624] font-semibold">Surangi Naar Fashion Studio</span></p>
+                  <p>Store Name: <span className="text-[#2d2624] font-semibold">Suranghi Naar Fashion Studio</span></p>
                   <p>Location: <span className="text-[#2d2624] font-semibold">Jaipur, Rajasthan, India</span></p>
                   <p>Status: <span className="text-emerald-700 font-bold">● Active Storefront</span></p>
                 </div>

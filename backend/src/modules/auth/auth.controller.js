@@ -185,7 +185,7 @@ export const forgotPassword = async (req, res) => {
       // Safe fire-and-forget email dispatch
       sendEmail({
         to: user.email,
-        subject: 'Reset Your Password | SURANGI NAAR',
+        subject: 'Reset Your Password | SURANGHI NAAR',
         html,
         text,
       }).catch((err) => console.error('Forgot password email error:', err));
@@ -195,7 +195,7 @@ export const forgotPassword = async (req, res) => {
 
       sendEmail({
         to: user.email,
-        subject: 'Google Account Sign-In Notice | SURANGI NAAR',
+        subject: 'Google Account Sign-In Notice | SURANGHI NAAR',
         html,
         text,
       }).catch((err) => console.error('Forgot password email error:', err));

@@ -558,7 +558,7 @@ export default function AccountPage() {
                     <Package className="w-12 h-12 text-[#d4a373]/60 mx-auto" />
                     <div>
                       <h3 className="font-serif text-lg font-bold text-[#39322f]">No Orders Yet</h3>
-                      <p className="text-xs text-[#39322f]/60 font-sans mt-1">You haven't placed any orders with Surangi Naar yet.</p>
+                      <p className="text-xs text-[#39322f]/60 font-sans mt-1">You haven't placed any orders with Suranghi Naar yet.</p>
                     </div>
                     <button
                       onClick={() => navigate('/shop')}
@@ -871,7 +871,7 @@ export default function AccountPage() {
                     onClick={deleteUserAccount}
                     className="px-4 py-2 rounded-xl border border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-600 hover:text-white transition-all text-xs font-semibold cursor-pointer"
                   >
-                    Delete My Surangi Naar Account
+                    Delete My Suranghi Naar Account
                   </button>
                 </div>
               </div>
