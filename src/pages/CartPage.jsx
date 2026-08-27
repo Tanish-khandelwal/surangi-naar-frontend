@@ -604,9 +604,6 @@ export default function CartPage() {
                 <span className="text-gray-500">Status:</span>
                 <span className="font-bold text-emerald-700">● {placedOrder.status}</span>
               </p>
-              <p className="text-[10px] text-gray-500 pt-1 border-t border-[#e8e2d9] mt-2">
-                Order details are now viewable in the <Link to="/admin" className="text-[#b58349] font-bold underline">Admin Studio Orders Tab</Link>!
-              </p>
             </div>
 
             <div className="flex gap-3 pt-2">
