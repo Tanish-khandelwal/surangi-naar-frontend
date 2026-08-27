@@ -87,6 +87,49 @@ export const getForgotPasswordEmailTemplate = ({ resetUrl, userName }) => {
 };
 
 /**
+ * Google Account Password Reset Notice Email Template
+ */
+export const getGoogleAccountForgotPasswordEmailTemplate = ({ userName }) => {
+  const nameDisplay = userName ? userName : 'Valued Customer';
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Google Sign-In Account Notice - SURANGI NAAR</title>
+      </head>
+      <body style="background-color: #f2ece4; font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 30px 10px;">
+        <div style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(57, 50, 47, 0.08); overflow: hidden; border: 1px solid #e8e2d9;">
+          ${getEmailHeader()}
+          
+          <div style="padding: 32px 28px; background-color: #ffffff;">
+            <h2 style="color: #2d2624; font-family: 'Georgia', serif; font-size: 20px; margin-top: 0; margin-bottom: 12px; text-align: center;">
+              Account Sign-In Notice
+            </h2>
+            
+            <p style="color: #39322f; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+              Hello ${nameDisplay},
+            </p>
+            
+            <p style="color: #594f4a; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+              This email is linked to a Google account with Surangi Naar. There's no password to reset — just use <strong>'Continue with Google'</strong> to sign in.
+            </p>
+          </div>
+          
+          ${getEmailFooter()}
+        </div>
+      </body>
+    </html>
+  `;
+
+  const text = `Hello ${nameDisplay},\n\nThis email is linked to a Google account with Surangi Naar. There's no password to reset — just use 'Continue with Google' to sign in.`;
+
+  return { html, text };
+};
+
+/**
  * Order Confirmation Email Template
  */
 export const getOrderConfirmationEmailTemplate = ({ order }) => {

@@ -42,8 +42,12 @@ export const registerUser = async ({ name, email, phone, password }) => {
 
 export const loginUser = async ({ email, password }) => {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !user.passwordHash) {
+  if (!user) {
     throw new Error('Invalid email or password');
+  }
+
+  if (!user.passwordHash || user.provider === 'google') {
+    throw new Error("This account was created with Google Sign-In. Please use 'Continue with Google' to sign in.");
   }
 
   const isValidPassword = await bcrypt.compare(password, user.passwordHash);

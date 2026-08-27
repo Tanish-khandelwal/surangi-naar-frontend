@@ -98,11 +98,11 @@ function MainLayout() {
 
 import { Toaster } from 'react-hot-toast';
 
-export default function App() {
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
+export default function App() {
   return (
-    <GoogleOAuthProvider clientId={googleClientId}>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Router>
         <SmoothScroll>
           <ShopProvider>

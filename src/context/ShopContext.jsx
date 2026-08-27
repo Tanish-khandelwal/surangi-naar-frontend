@@ -276,7 +276,6 @@ export const ShopProvider = ({ children }) => {
         return res.data.user;
       }
     } catch (err) {
-      console.error('Login Error:', err);
       const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
       toast.error(msg);
       throw err;

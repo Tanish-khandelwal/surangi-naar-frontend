@@ -5,7 +5,7 @@ import { registerSchema, loginSchema, googleAuthSchema } from './auth.schema.js'
 import * as authService from './auth.service.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
 import { sendEmail } from '../../config/email.js';
-import { getForgotPasswordEmailTemplate } from '../../utils/emailTemplates.js';
+import { getForgotPasswordEmailTemplate, getGoogleAccountForgotPasswordEmailTemplate } from '../../utils/emailTemplates.js';
 
 export const register = async (req, res, next) => {
   try {
@@ -156,16 +156,22 @@ export const changePassword = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    console.log("Forgot password request received for: " + email);
+
     const genericMsg = 'If an account exists for this email, a reset link has been sent';
 
     if (!email || typeof email !== 'string') {
+      console.log("No account exists for this email");
       return sendSuccess(res, 200, {}, genericMsg);
     }
 
     const cleanEmail = email.trim().toLowerCase();
     const user = await prisma.user.findUnique({ where: { email: cleanEmail } });
 
-    if (user && user.provider === 'email') {
+    if (!user) {
+      console.log("No account exists for this email");
+    } else if (user.provider === 'email' && user.passwordHash) {
+      console.log("User found, generating reset token");
       const resetToken = crypto.randomBytes(32).toString('hex');
       const resetTokenExpiry = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
@@ -182,10 +188,26 @@ export const forgotPassword = async (req, res) => {
 
       const { html, text } = getForgotPasswordEmailTemplate({ resetUrl, userName: user.name });
 
+      console.log("Attempting to send reset email via Nodemailer to: " + email);
+
       // Safe fire-and-forget email dispatch
       sendEmail({
         to: user.email,
         subject: 'Reset Your Password | SURANGI NAAR',
+        html,
+        text,
+      }).catch((err) => console.error('Forgot password email error:', err));
+    } else {
+      // User exists, but is Google-only (no password hash or provider is google)
+      console.log("Account exists but is Google-only, no password to reset");
+
+      const { html, text } = getGoogleAccountForgotPasswordEmailTemplate({ userName: user.name });
+
+      console.log("Attempting to send Google account notice email via Nodemailer to: " + email);
+
+      sendEmail({
+        to: user.email,
+        subject: 'Google Account Sign-In Notice | SURANGI NAAR',
         html,
         text,
       }).catch((err) => console.error('Forgot password email error:', err));
