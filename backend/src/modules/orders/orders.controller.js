@@ -100,10 +100,14 @@ export const createOrder = async (req, res) => {
     }
 
     // 3. Shipping Fee calculation
-    const freeShippingThreshold = 5000;
-    const shippingFee = calculatedSubtotal >= freeShippingThreshold ? 0 : 250;
+    const storeSettings = await prisma.storeSettings.findFirst();
+    const configuredShippingFee = storeSettings?.shippingFee ?? 250;
+    const configuredFreeThreshold = storeSettings?.freeShippingThreshold ?? 5000;
 
-    const serverComputedTotal = Math.max(0, Math.round(calculatedSubtotal - discountAmount + shippingFee));
+    const subtotalAfterDiscount = calculatedSubtotal - discountAmount;
+    const shippingFee = subtotalAfterDiscount >= configuredFreeThreshold ? 0 : configuredShippingFee;
+
+    const serverComputedTotal = Math.max(0, Math.round(subtotalAfterDiscount + shippingFee));
 
     // 4. Warning check for client total discrepancy
     if (total !== undefined && total !== null && total !== '') {

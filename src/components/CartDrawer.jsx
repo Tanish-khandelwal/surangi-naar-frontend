@@ -24,7 +24,8 @@ export default function CartDrawer() {
     setIsCartOpen, 
     removeFromCart, 
     updateQuantity, 
-    cartSubtotal
+    cartSubtotal,
+    storeSettings
   } = useShop();
 
   const [orderNote, setOrderNote] = useState('');
@@ -68,9 +69,12 @@ export default function CartDrawer() {
     }
   };
 
-  const finalTotal = Math.max(0, cartSubtotal - discountAmount);
-  const freeShippingThreshold = 5000;
-  const progressToFreeShipping = Math.min(100, (cartSubtotal / freeShippingThreshold) * 100);
+  const subtotalAfterDiscount = Math.max(0, cartSubtotal - discountAmount);
+  const freeShippingThreshold = storeSettings?.freeShippingThreshold ?? 5000;
+  const configuredShippingFee = storeSettings?.shippingFee ?? 250;
+  const isFreeShipping = subtotalAfterDiscount >= freeShippingThreshold;
+  const shippingFee = isFreeShipping ? 0 : configuredShippingFee;
+  const progressToFreeShipping = Math.min(100, (subtotalAfterDiscount / freeShippingThreshold) * 100);
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-300">
@@ -105,7 +109,9 @@ export default function CartDrawer() {
 
         {/* Animated Free Shipping Progress Indicator */}
         <div className="bg-[#f7f3ee]/90 px-5 py-3.5 border-b border-[#e8e2d9] text-xs font-sans shadow-inner">
-          {cartSubtotal >= freeShippingThreshold ? (
+          {!storeSettings ? (
+            <div className="text-center text-gray-400 font-medium animate-pulse">Loading shipping details...</div>
+          ) : isFreeShipping ? (
             <div className="flex items-center justify-between text-emerald-800 font-semibold bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-emerald-600 animate-bounce" />
@@ -116,7 +122,7 @@ export default function CartDrawer() {
           ) : (
             <div className="space-y-1.5">
               <div className="flex justify-between text-[#39322f]">
-                <span className="font-medium">Add ₹{(freeShippingThreshold - cartSubtotal).toLocaleString('en-IN')} more for <strong className="text-[#d4a373]">FREE Express Shipping</strong></span>
+                <span className="font-medium">Add ₹{(freeShippingThreshold - subtotalAfterDiscount).toLocaleString('en-IN')} more for <strong className="text-[#d4a373]">FREE Express Shipping</strong></span>
                 <span className="font-bold text-[#d4a373]">{Math.round(progressToFreeShipping)}%</span>
               </div>
               <div className="w-full h-2 bg-[#e8e2d9] rounded-full overflow-hidden p-0.5">
@@ -326,12 +332,26 @@ export default function CartDrawer() {
 
               <div className="flex justify-between text-[#39322f]/70">
                 <span>Estimated Shipping</span>
-                <span>{cartSubtotal >= freeShippingThreshold ? 'FREE' : '₹250'}</span>
+                <span>
+                  {!storeSettings ? (
+                    <span className="text-gray-400 text-xs font-sans animate-pulse">Loading...</span>
+                  ) : isFreeShipping ? (
+                    'FREE'
+                  ) : (
+                    `₹${configuredShippingFee.toLocaleString('en-IN')}`
+                  )}
+                </span>
               </div>
 
               <div className="flex justify-between text-base font-serif font-bold text-[#39322f] pt-2 border-t border-[#e8e2d9]">
                 <span>Total</span>
-                <span>₹{(finalTotal + (cartSubtotal >= freeShippingThreshold ? 0 : 250)).toLocaleString('en-IN')}</span>
+                <span>
+                  {!storeSettings ? (
+                    <span className="text-gray-400 text-xs font-sans animate-pulse">Calculating...</span>
+                  ) : (
+                    `₹${(subtotalAfterDiscount + shippingFee).toLocaleString('en-IN')}`
+                  )}
+                </span>
               </div>
             </div>
 

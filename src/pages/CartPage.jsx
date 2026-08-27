@@ -19,7 +19,7 @@ import {
 
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, cartSubtotal, clearCart, discountCodes, addOrder, currentUser, openAuthModal } = useShop();
+  const { cart, removeFromCart, updateQuantity, cartSubtotal, clearCart, discountCodes, addOrder, currentUser, openAuthModal, storeSettings } = useShop();
 
   const [orderNote, setOrderNote] = useState('');
   const [couponCode, setCouponCode] = useState('');
@@ -33,6 +33,13 @@ export default function CartPage() {
     }
     return `ik_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   });
+
+  const freeShippingThreshold = storeSettings?.freeShippingThreshold ?? 5000;
+  const configuredShippingFee = storeSettings?.shippingFee ?? 250;
+  const subtotalAfterDiscount = Math.max(0, cartSubtotal - discountAmount);
+  const isFreeShipping = subtotalAfterDiscount >= freeShippingThreshold;
+  const shippingFee = isFreeShipping ? 0 : configuredShippingFee;
+  const finalTotal = Math.max(0, subtotalAfterDiscount + shippingFee);
 
   // Shipping Address Form State
   const [address, setAddress] = useState({
@@ -94,11 +101,6 @@ export default function CartPage() {
       setAppliedCoupon('');
     }
   };
-
-  const freeShippingThreshold = 5000;
-  const isFreeShipping = cartSubtotal >= freeShippingThreshold;
-  const shippingFee = isFreeShipping ? 0 : 250;
-  const finalTotal = Math.max(0, cartSubtotal - discountAmount + shippingFee);
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -553,12 +555,26 @@ export default function CartPage() {
 
                   <div className="flex justify-between">
                     <span className="text-[#39322f]/70">Estimated Shipping</span>
-                    <span className="font-semibold">{isFreeShipping ? 'FREE' : '₹250'}</span>
+                    <span className="font-semibold">
+                      {!storeSettings ? (
+                        <span className="text-gray-400 text-xs font-sans animate-pulse">Loading...</span>
+                      ) : isFreeShipping ? (
+                        'FREE'
+                      ) : (
+                        `₹${configuredShippingFee.toLocaleString('en-IN')}`
+                      )}
+                    </span>
                   </div>
 
                   <div className="flex justify-between font-serif font-bold text-lg text-[#39322f] pt-3 border-t border-[#e8e2d9]">
                     <span>Total Amount</span>
-                    <span>₹{finalTotal.toLocaleString('en-IN')}</span>
+                    <span>
+                      {!storeSettings ? (
+                        <span className="text-gray-400 text-sm font-sans animate-pulse">Calculating...</span>
+                      ) : (
+                        `₹${finalTotal.toLocaleString('en-IN')}`
+                      )}
+                    </span>
                   </div>
                 </div>
 

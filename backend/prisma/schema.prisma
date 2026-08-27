@@ -69,17 +69,19 @@ model DiscountCode {
 }
 
 model StoreSettings {
-  id              Int     @id @default(1)
-  phone           String
-  displayPhone    String
-  email           String
-  instagram       String?
-  instagramHandle String?
-  facebook        String?
-  whatsapp        String?
-  address         String
-  googleMaps      String?
-  hours           String
+  id                    Int     @id @default(1)
+  phone                 String
+  displayPhone          String
+  email                 String
+  instagram             String?
+  instagramHandle       String?
+  facebook              String?
+  whatsapp              String?
+  address               String
+  googleMaps            String?
+  hours                 String
+  shippingFee           Int     @default(250)
+  freeShippingThreshold Int     @default(5000)
 }
 
 model User {

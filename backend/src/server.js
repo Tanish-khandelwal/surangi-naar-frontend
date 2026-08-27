@@ -22,7 +22,12 @@ import couponsRoutes from './modules/coupons/coupons.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
+
+if (!process.env.FRONTEND_URL) {
+  throw new Error('FRONTEND_URL environment variable is required');
+}
 
 // Security & Cross-Origin Middleware
 app.use(helmet({
@@ -30,7 +35,7 @@ app.use(helmet({
 }));
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'https://surangi-naar.netlify.app',
+  process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
@@ -38,7 +43,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

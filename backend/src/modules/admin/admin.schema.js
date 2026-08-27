@@ -76,4 +76,6 @@ export const storeSettingsSchema = z.object({
   address: z.string(),
   googleMaps: z.string().nullable().optional(),
   hours: z.string(),
+  shippingFee: z.number().int('Shipping fee must be an integer').nonnegative('Shipping fee cannot be negative').optional(),
+  freeShippingThreshold: z.number().int('Free shipping threshold must be an integer').nonnegative('Free shipping threshold cannot be negative').optional(),
 });

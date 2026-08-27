@@ -159,6 +159,15 @@ export default function AdminPage() {
     ]
   });
 
+  // Store Settings Form State
+  const [settingsForm, setSettingsForm] = useState(null);
+
+  React.useEffect(() => {
+    if (storeSettings) {
+      setSettingsForm(storeSettings);
+    }
+  }, [storeSettings]);
+
   // Category Modal State
   const [isCatModalOpen, setIsCatModalOpen] = useState(false);
   const [editingCat, setEditingCat] = useState(null);
@@ -1680,8 +1689,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Raw Store Phone (dialer format)</label>
                   <input
                     type="text"
-                    value={storeSettings?.phone || ''}
-                    onChange={(e) => updateStoreSettings({ phone: e.target.value })}
+                    value={settingsForm?.phone ?? storeSettings?.phone ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="+919116655814"
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1691,8 +1700,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Display Formatted Phone</label>
                   <input
                     type="text"
-                    value={storeSettings?.displayPhone || ''}
-                    onChange={(e) => updateStoreSettings({ displayPhone: e.target.value })}
+                    value={settingsForm?.displayPhone ?? storeSettings?.displayPhone ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, displayPhone: e.target.value }))}
                     placeholder="+91 91166 55814"
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1703,8 +1712,8 @@ export default function AdminPage() {
                 <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Store Email Address</label>
                 <input
                   type="email"
-                  value={storeSettings?.email || ''}
-                  onChange={(e) => updateStoreSettings({ email: e.target.value })}
+                  value={settingsForm?.email ?? storeSettings?.email ?? ''}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="surangi.naar@gmail.com"
                   className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
@@ -1715,8 +1724,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Instagram URL</label>
                   <input
                     type="text"
-                    value={storeSettings?.instagram || ''}
-                    onChange={(e) => updateStoreSettings({ instagram: e.target.value })}
+                    value={settingsForm?.instagram ?? storeSettings?.instagram ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, instagram: e.target.value }))}
                     placeholder="https://www.instagram.com/surangi.naar"
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1726,8 +1735,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Instagram Handle</label>
                   <input
                     type="text"
-                    value={storeSettings?.instagramHandle || ''}
-                    onChange={(e) => updateStoreSettings({ instagramHandle: e.target.value })}
+                    value={settingsForm?.instagramHandle ?? storeSettings?.instagramHandle ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, instagramHandle: e.target.value }))}
                     placeholder="@surangi.naar"
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1739,8 +1748,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Facebook Page URL</label>
                   <input
                     type="text"
-                    value={storeSettings?.facebook || ''}
-                    onChange={(e) => updateStoreSettings({ facebook: e.target.value })}
+                    value={settingsForm?.facebook ?? storeSettings?.facebook ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, facebook: e.target.value }))}
                     placeholder="https://www.facebook.com/..."
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1750,8 +1759,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">WhatsApp Direct Link / Number</label>
                   <input
                     type="text"
-                    value={storeSettings?.whatsapp || ''}
-                    onChange={(e) => updateStoreSettings({ whatsapp: e.target.value })}
+                    value={settingsForm?.whatsapp ?? storeSettings?.whatsapp ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, whatsapp: e.target.value }))}
                     placeholder="https://wa.me/919116655814"
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1762,8 +1771,8 @@ export default function AdminPage() {
                 <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Physical Studio Address</label>
                 <textarea
                   rows={2}
-                  value={storeSettings?.address || ''}
-                  onChange={(e) => updateStoreSettings({ address: e.target.value })}
+                  value={settingsForm?.address ?? storeSettings?.address ?? ''}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, address: e.target.value }))}
                   className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
               </div>
@@ -1773,8 +1782,8 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Google Maps Embed / Short Link</label>
                   <input
                     type="text"
-                    value={storeSettings?.googleMaps || ''}
-                    onChange={(e) => updateStoreSettings({ googleMaps: e.target.value })}
+                    value={settingsForm?.googleMaps ?? storeSettings?.googleMaps ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, googleMaps: e.target.value }))}
                     placeholder="https://maps.app.goo.gl/..."
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
@@ -1784,9 +1793,41 @@ export default function AdminPage() {
                   <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Studio Operating Hours</label>
                   <input
                     type="text"
-                    value={storeSettings?.hours || ''}
-                    onChange={(e) => updateStoreSettings({ hours: e.target.value })}
+                    value={settingsForm?.hours ?? storeSettings?.hours ?? ''}
+                    onChange={(e) => setSettingsForm(prev => ({ ...prev, hours: e.target.value }))}
                     placeholder="Mon - Sat: 10:30 AM - 7:30 PM IST"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Shipping Fee (₹)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={settingsForm?.shippingFee ?? storeSettings?.shippingFee ?? 250}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setSettingsForm(prev => ({ ...prev, shippingFee: isNaN(val) ? 0 : val }));
+                    }}
+                    placeholder="250"
+                    className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Free Shipping Threshold (₹)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={settingsForm?.freeShippingThreshold ?? storeSettings?.freeShippingThreshold ?? 5000}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setSettingsForm(prev => ({ ...prev, freeShippingThreshold: isNaN(val) ? 0 : val }));
+                    }}
+                    placeholder="5000"
                     className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-xl px-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                   />
                 </div>
@@ -1795,7 +1836,16 @@ export default function AdminPage() {
 
             <div className="pt-4 border-t border-[#e8e2d9] flex justify-end">
               <button
-                onClick={() => showToast('Store settings updated successfully!')}
+                onClick={async () => {
+                  try {
+                    if (settingsForm) {
+                      await updateStoreSettings(settingsForm);
+                      showToast('Store settings updated successfully!');
+                    }
+                  } catch (err) {
+                    showToast(err.response?.data?.message || 'Failed to update store settings');
+                  }
+                }}
                 className="bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f] font-semibold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-md"
               >
                 <Save className="w-4 h-4 text-[#d4a373]" /> Save Settings

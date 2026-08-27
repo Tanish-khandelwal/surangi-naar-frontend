@@ -440,10 +440,24 @@ export const deleteDiscountCode = async (req, res) => {
 export const updateStoreSettings = async (req, res) => {
   try {
     const validatedData = storeSettingsSchema.partial().parse(req.body);
+    const defaultSettings = {
+      phone: "+919116655814",
+      displayPhone: "+91 91166 55814",
+      email: "surangi.naar@gmail.com",
+      instagram: "https://www.instagram.com/surangi.naar",
+      instagramHandle: "@surangi.naar",
+      facebook: "https://www.facebook.com/profile.php?id=1274421192401737&hr=1&wtsid=rdr_0GcwbFGifB7kgtTxr",
+      whatsapp: "https://wa.me/919116655814",
+      address: "13-16, Paras Apartment, Chopra Enclave, Mangyawas, Mansarovar, Jaipur, Rajasthan, India",
+      googleMaps: "https://maps.app.goo.gl/9kU8jVfN7ZBhj5fG9",
+      hours: "Mon - Sat: 10:30 AM - 7:30 PM IST",
+      shippingFee: 250,
+      freeShippingThreshold: 5000,
+    };
     const settings = await prisma.storeSettings.upsert({
       where: { id: 1 },
       update: validatedData,
-      create: { id: 1, ...validatedData },
+      create: { id: 1, ...defaultSettings, ...validatedData },
     });
     return sendSuccess(res, 200, { settings }, 'Store settings updated');
   } catch (error) {
