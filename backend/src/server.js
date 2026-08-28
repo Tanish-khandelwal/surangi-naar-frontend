@@ -22,7 +22,7 @@ import couponsRoutes from './modules/coupons/coupons.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 5000;
 
 if (!process.env.FRONTEND_URL) {
