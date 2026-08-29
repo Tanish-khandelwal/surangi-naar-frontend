@@ -31,7 +31,11 @@ export const login = async (req, res, next) => {
       const firstMsg = error.errors?.[0]?.message || 'Validation Error';
       return sendError(res, 400, firstMsg, error.errors);
     }
-    return sendError(res, 401, error.message);
+    if (error.isCredentialError) {
+      return sendError(res, 401, error.message);
+    }
+    console.error('Customer login error:', error);
+    return sendError(res, 500, error.isServerError ? error.message : 'Server temporarily unavailable, please try again');
   }
 };
 

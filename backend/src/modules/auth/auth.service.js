@@ -41,18 +41,33 @@ export const registerUser = async ({ name, email, phone, password }) => {
 };
 
 export const loginUser = async ({ email, password }) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  let user;
+  try {
+    user = await prisma.user.findUnique({ where: { email } });
+  } catch (dbErr) {
+    console.error('Login DB query error:', dbErr);
+    const serverErr = new Error('Server temporarily unavailable, please try again');
+    serverErr.isServerError = true;
+    throw serverErr;
+  }
+
   if (!user) {
-    throw new Error('Invalid email or password');
+    const authErr = new Error('Invalid email or password');
+    authErr.isCredentialError = true;
+    throw authErr;
   }
 
   if (!user.passwordHash || user.provider === 'google') {
-    throw new Error("This account was created with Google Sign-In. Please use 'Continue with Google' to sign in.");
+    const authErr = new Error("This account was created with Google Sign-In. Please use 'Continue with Google' to sign in.");
+    authErr.isCredentialError = true;
+    throw authErr;
   }
 
   const isValidPassword = await bcrypt.compare(password, user.passwordHash);
   if (!isValidPassword) {
-    throw new Error('Invalid email or password');
+    const authErr = new Error('Invalid email or password');
+    authErr.isCredentialError = true;
+    throw authErr;
   }
 
   const userPayload = {

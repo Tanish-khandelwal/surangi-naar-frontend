@@ -26,8 +26,15 @@ export const adminLogin = async (req, res) => {
     let isAdminValid = false;
     let userPayload = null;
 
-    // Check database admin user first
-    const adminUser = await prisma.user.findUnique({ where: { email } });
+    // Check database admin user first with explicit DB error handling
+    let adminUser;
+    try {
+      adminUser = await prisma.user.findUnique({ where: { email } });
+    } catch (dbErr) {
+      console.error('Admin login DB error:', dbErr);
+      return sendError(res, 500, 'Server temporarily unavailable, please try again');
+    }
+
     if (adminUser && adminUser.role === 'admin' && adminUser.passwordHash) {
       isAdminValid = await bcrypt.compare(password, adminUser.passwordHash);
       if (isAdminValid) {
@@ -63,7 +70,8 @@ export const adminLogin = async (req, res) => {
       const firstMsg = error.errors?.[0]?.message || 'Validation Error';
       return sendError(res, 400, firstMsg, error.errors);
     }
-    return sendError(res, 500, error.message);
+    console.error('Admin login unexpected error:', error);
+    return sendError(res, 500, 'Server temporarily unavailable, please try again');
   }
 };
 
