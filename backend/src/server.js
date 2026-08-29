@@ -21,8 +21,17 @@ import couponsRoutes from './modules/coupons/coupons.routes.js';
 
 import { errorHandler } from './middleware/errorHandler.js';
 
+// Process-level error handlers to log uncaught errors without crashing Node process
+process.on('uncaughtException', (err) => {
+  console.error('CRITICAL: Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 if (!process.env.FRONTEND_URL) {
