@@ -107,7 +107,7 @@ export default function ProductCard({ product }) {
             variantImages.map((imgUrl, idx) => (
               <img
                 key={idx}
-                src={getImageUrl(imgUrl)}
+                src={getImageUrl(imgUrl, { width: 800 })}
                 alt={`${product.name} view ${idx + 1}`}
                 loading={idx === 0 ? "eager" : "lazy"}
                 className={`w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 ${
@@ -117,7 +117,7 @@ export default function ProductCard({ product }) {
             ))
           ) : (
             <img
-              src={getImageUrl(variantImages[0] || product.image)}
+              src={getImageUrl(variantImages[0] || product.image, { width: 800 })}
               alt={product.name}
               loading="lazy"
               className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"

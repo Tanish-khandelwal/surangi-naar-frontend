@@ -233,7 +233,7 @@ export default function ProductDetailPage() {
                         : 'border-[#e8e2d9] opacity-70 hover:opacity-100 hover:border-[#d4a373]/60'
                     }`}
                   >
-                    <img src={getImageUrl(imgUrl)} alt={`${product.name} thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img src={getImageUrl(imgUrl, { width: 200 })} alt={`${product.name} thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -248,7 +248,7 @@ export default function ProductDetailPage() {
                 onTouchEnd={onTouchEnd}
               >
                 <img
-                  src={getImageUrl(galleryImages[activeImageIndex] || galleryImages[0])}
+                  src={getImageUrl(galleryImages[activeImageIndex] || galleryImages[0], { width: 1200 })}
                   alt={product.name}
                   className="w-full h-full object-cover object-center transition-all duration-500"
                 />

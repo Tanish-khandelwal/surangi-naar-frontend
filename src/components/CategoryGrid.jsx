@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import { getImageUrl } from '../utils/image';
 import { ArrowRight } from 'lucide-react';
 
 export default function CategoryGrid() {
@@ -32,7 +33,7 @@ export default function CategoryGrid() {
             >
               {/* Background Image */}
               <img
-                src={cat.image}
+                src={getImageUrl(cat.image, { width: 800 })}
                 alt={cat.name}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-108"

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { ChevronLeft, ChevronRight, Pause, Play, Sparkles } from 'lucide-react';
+import { getImageUrl } from '../utils/image';
 
 export default function HeroCarousel() {
   const { heroSlides } = useShop();
@@ -40,9 +41,10 @@ export default function HeroCarousel() {
         >
           {/* Background Image */}
           <img
-            src={slide.image}
+            src={getImageUrl(slide.image, { width: 1400 })}
             alt={slide.title}
             loading={index === 0 ? 'eager' : 'lazy'}
+            fetchPriority={index === 0 ? 'high' : 'auto'}
             className="w-full h-full object-cover object-center scale-105 transition-transform duration-10000 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#231f1e]/85 via-[#231f1e]/50 to-transparent" />
