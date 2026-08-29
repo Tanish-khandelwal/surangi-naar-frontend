@@ -1,8 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 
 /**
- * Ensures Neon PostgreSQL pooled connection strings include ?pgbouncer=true&connection_limit=1
- * as recommended by Prisma documentation to prevent stale connection engine crashes.
+ * Ensures Neon PostgreSQL connection strings include ?pgbouncer=true when connecting via Neon's connection pooler.
+ * 
+ * ARCHITECTURE NOTE FOR PERSISTENT SERVERS:
+ * Do NOT set `connection_limit=1` here. A `connection_limit=1` parameter is intended strictly for
+ * ephemeral serverless environments (e.g. Vercel Functions / AWS Lambda) handling 1 invocation per container.
+ * This Node/Express application runs as a persistent long-running server on Hostinger and requires Prisma's
+ * default multi-connection pool size to serve concurrent API requests without queue starvation.
  */
 export function getFormattedDatabaseUrl(urlStr) {
   if (!urlStr) return urlStr;
@@ -10,9 +15,6 @@ export function getFormattedDatabaseUrl(urlStr) {
     const url = new URL(urlStr);
     if (!url.searchParams.has('pgbouncer')) {
       url.searchParams.set('pgbouncer', 'true');
-    }
-    if (!url.searchParams.has('connection_limit')) {
-      url.searchParams.set('connection_limit', '1');
     }
     return url.toString();
   } catch (e) {
@@ -54,6 +56,14 @@ export async function resetPrismaClient() {
   return currentPrisma;
 }
 
+/**
+ * Identifies genuine, unrecoverable database engine panics or connection termination errors.
+ * 
+ * NOTE ON ERROR CODES:
+ * P2024 ("Timed out waiting for a connection from the pool") is intentionally EXCLUDED from this list.
+ * P2024 is a capacity/load signal indicating pool wait timeout under heavy traffic — NOT an engine crash.
+ * Resetting the Prisma client on P2024 tears down the pool and adds reconnection overhead during traffic spikes.
+ */
 export function isPrismaFatalError(error) {
   if (!error) return false;
   const name = error.name || '';
@@ -64,7 +74,7 @@ export function isPrismaFatalError(error) {
     name === 'PrismaClientRustPanicError' ||
     name === 'PrismaClientInitializationError' ||
     name === 'PrismaClientUnknownRequestError' ||
-    (name === 'PrismaClientKnownRequestError' && ['P1001', 'P1002', 'P1017', 'P2024'].includes(code)) ||
+    (name === 'PrismaClientKnownRequestError' && ['P1001', 'P1002', 'P1017'].includes(code)) ||
     message.includes('timer has gone away') ||
     message.includes('Engine has already exited') ||
     message.includes('Connection reset by peer') ||
