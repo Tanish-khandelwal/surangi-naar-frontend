@@ -71,8 +71,8 @@ export const createOrder = async (req, res) => {
       calculatedSubtotal += itemPrice * quantity;
 
       // Capture product image snapshot at moment of purchase
-      let itemImage = item.image || null;
-      if (!itemImage && product) {
+      let itemImage = item.image || item.secondaryImage || null;
+      if (product) {
         if (item.color && Array.isArray(product.colorVariants)) {
           const colorStr = typeof item.color === 'object' ? item.color.name : String(item.color);
           const matchedVariant = product.colorVariants.find(
@@ -83,7 +83,7 @@ export const createOrder = async (req, res) => {
           }
         }
         if (!itemImage) {
-          itemImage = product.image || product.secondaryImage || null;
+          itemImage = product.image || product.secondaryImage || itemImage || null;
         }
       }
 
@@ -91,7 +91,7 @@ export const createOrder = async (req, res) => {
         ...item,
         price: itemPrice,
         quantity,
-        image: itemImage || null,
+        image: itemImage || item.image || null,
       });
     }
 
