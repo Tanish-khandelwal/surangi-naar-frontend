@@ -503,9 +503,13 @@ export default function AccountPage() {
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-20 rounded-xl bg-[#f7f3ee] overflow-hidden border border-[#e8e2d9] shrink-0">
                             <img
-                              src={item.image || '/images/products/real_product_1.jpg'}
+                              src={item.image || '/logo.jpg'}
                               alt={item.name}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = '/logo.jpg';
+                              }}
                             />
                           </div>
                           <div>

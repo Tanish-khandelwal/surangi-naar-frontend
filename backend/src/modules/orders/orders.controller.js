@@ -70,10 +70,28 @@ export const createOrder = async (req, res) => {
       const quantity = Math.max(1, Number(item.quantity) || 1);
       calculatedSubtotal += itemPrice * quantity;
 
+      // Capture product image snapshot at moment of purchase
+      let itemImage = item.image || null;
+      if (!itemImage && product) {
+        if (item.color && Array.isArray(product.colorVariants)) {
+          const colorStr = typeof item.color === 'object' ? item.color.name : String(item.color);
+          const matchedVariant = product.colorVariants.find(
+            (v) => v && v.name && v.name.toLowerCase() === colorStr.toLowerCase()
+          );
+          if (matchedVariant && Array.isArray(matchedVariant.images) && matchedVariant.images.length > 0) {
+            itemImage = matchedVariant.images[0];
+          }
+        }
+        if (!itemImage) {
+          itemImage = product.image || product.secondaryImage || null;
+        }
+      }
+
       processedItems.push({
         ...item,
         price: itemPrice,
         quantity,
+        image: itemImage || null,
       });
     }
 
