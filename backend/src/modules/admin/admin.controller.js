@@ -13,6 +13,15 @@ import {
   storeSettingsSchema,
 } from './admin.schema.js';
 
+const withTimeout = (promise, ms = 10000) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Database query timed out after ${ms / 1000}s`)), ms)
+    ),
+  ]);
+};
+
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = adminLoginSchema.parse(req.body);
@@ -23,19 +32,16 @@ export const adminLogin = async (req, res) => {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Look up the admin user by EXACT email match only (case-insensitive)
-    let adminUser;
-    try {
-      adminUser = await prisma.user.findFirst({
+    // Look up the admin user by EXACT email match only (case-insensitive) with 10s timeout
+    const adminUser = await withTimeout(
+      prisma.user.findFirst({
         where: {
           role: 'admin',
           email: { equals: cleanEmail, mode: 'insensitive' },
         },
-      });
-    } catch (dbErr) {
-      console.error('Admin login DB error:', dbErr);
-      return sendError(res, 500, 'Server temporarily unavailable, please try again');
-    }
+      }),
+      10000
+    );
 
     if (!adminUser || !adminUser.passwordHash) {
       return sendError(res, 401, 'Invalid admin email or password');
@@ -62,8 +68,8 @@ export const adminLogin = async (req, res) => {
       const firstMsg = error.errors?.[0]?.message || 'Validation Error';
       return sendError(res, 400, firstMsg, error.errors);
     }
-    console.error('Admin login unexpected error:', error);
-    return sendError(res, 500, 'Server temporarily unavailable, please try again');
+    console.error('🔥 Admin login full error stack trace:', error);
+    return sendError(res, 500, `Admin login error: ${error.message || 'Unexpected server error'}`);
   }
 };
 
