@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "admin:set-password": "node scripts/set-admin-password.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
