@@ -76,6 +76,23 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root & API Info Check
+app.get(['/', '/api'], (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'Suranghi Naar Backend API',
+    message: 'Suranghi Naar API Server is operational',
+    endpoints: {
+      health: '/api/health',
+      products: '/api/products',
+      categories: '/api/categories',
+      heroSlides: '/api/hero-slides',
+      storeSettings: '/api/store-settings',
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Health Check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
