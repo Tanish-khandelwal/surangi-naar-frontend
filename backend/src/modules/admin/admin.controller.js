@@ -78,7 +78,7 @@ export const adminLogin = async (req, res) => {
         } else if (process.env.ADMIN_PASSWORD) {
           isAdminValid = password === process.env.ADMIN_PASSWORD;
         } else {
-          isAdminValid = password === 'admin123' || password === 'admin1234';
+          isAdminValid = password === 'admin@1234' || password === 'admin1234' || password === 'admin123';
         }
 
         if (isAdminValid) {

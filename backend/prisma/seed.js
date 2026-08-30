@@ -536,7 +536,7 @@ async function main() {
 
   // 8. Admin User
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@suranginaar.com';
-  const hashedAdminPassword = process.env.ADMIN_PASSWORD_HASH || (await bcrypt.hash('admin123', 10));
+  const hashedAdminPassword = process.env.ADMIN_PASSWORD_HASH || (await bcrypt.hash('admin@1234', 10));
 
   await prisma.user.upsert({
     where: { email: adminEmail },
