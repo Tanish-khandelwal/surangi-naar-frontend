@@ -12,6 +12,9 @@ export function getFormattedDatabaseUrl(urlStr) {
     if (!url.searchParams.has('pgbouncer')) {
       url.searchParams.set('pgbouncer', 'true');
     }
+    if (!url.searchParams.has('sslmode')) {
+      url.searchParams.set('sslmode', 'verify-full');
+    }
     return url.toString();
   } catch (e) {
     return urlStr;
@@ -29,6 +32,7 @@ function createPrismaInstance() {
       max: 10,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
+      ssl: { rejectUnauthorized: false },
     });
     const adapter = new PrismaPg(pool);
     options.adapter = adapter;

@@ -47,6 +47,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : '',
   'https://suranghinaar.com',
   'https://www.suranghinaar.com',
+  'https://api.suranghinaar.com',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:4173',
@@ -56,10 +57,13 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     const cleanOrigin = origin.replace(/\/$/, '');
-    if (allowedOrigins.includes(cleanOrigin)) {
+    const isAllowed = allowedOrigins.includes(cleanOrigin) ||
+                      /^https:\/\/(.*\.)?suranghinaar\.com$/.test(cleanOrigin) ||
+                      /^http:\/\/localhost:\d+$/.test(cleanOrigin);
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     }
   },
   credentials: true,
