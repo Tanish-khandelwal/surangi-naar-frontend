@@ -535,7 +535,7 @@ async function main() {
   console.log('✅ Initial Orders seeded');
 
   // 8. Admin User
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@suranginaar.com';
+  const adminEmail = (process.env.ADMIN_EMAIL || 'surangi.naar.admin@gmail.com').trim().toLowerCase();
   const hashedAdminPassword = process.env.ADMIN_PASSWORD_HASH || (await bcrypt.hash('admin@1234', 10));
 
   await prisma.user.upsert({
@@ -543,6 +543,7 @@ async function main() {
     update: {
       role: 'admin',
       name: 'Admin User',
+      passwordHash: hashedAdminPassword,
     },
     create: {
       name: 'Admin User',

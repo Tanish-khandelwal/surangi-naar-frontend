@@ -22,12 +22,8 @@ export const adminLogin = async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const envAdminEmail = (process.env.ADMIN_EMAIL || 'admin@suranginaar.com').trim().toLowerCase();
 
-    let isAdminValid = false;
-    let userPayload = null;
-
-    // Check database for matching admin user
+    // Look up the admin user by EXACT email match only (case-insensitive)
     let adminUser;
     try {
       adminUser = await prisma.user.findFirst({
@@ -36,65 +32,26 @@ export const adminLogin = async (req, res) => {
           email: { equals: cleanEmail, mode: 'insensitive' },
         },
       });
-
-      // Fallback: If cleanEmail is an admin alias, fetch primary DB admin
-      if (!adminUser) {
-        adminUser = await prisma.user.findFirst({
-          where: { role: 'admin' },
-        });
-      }
     } catch (dbErr) {
       console.error('Admin login DB error:', dbErr);
       return sendError(res, 500, 'Server temporarily unavailable, please try again');
     }
 
-    if (adminUser && adminUser.passwordHash) {
-      const isDbPasswordValid = await bcrypt.compare(password, adminUser.passwordHash);
-      if (isDbPasswordValid) {
-        isAdminValid = true;
-        userPayload = {
-          id: adminUser.id,
-          email: adminUser.email,
-          name: adminUser.name || 'Admin User',
-          role: 'admin',
-        };
-      }
-    }
-
-    // Fallback master admin authentication for common admin emails
-    if (!isAdminValid) {
-      const allowedAdminEmails = [
-        'surangi.naar.admin@gmail.com',
-        'suranghinaar.admin@gmail.com',
-        'suranginaar.admin@gmail.com',
-        'surangi.naar@gmail.com',
-        'admin@suranginaar.com',
-        envAdminEmail,
-      ];
-
-      if (allowedAdminEmails.includes(cleanEmail)) {
-        if (process.env.ADMIN_PASSWORD_HASH) {
-          isAdminValid = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
-        } else if (process.env.ADMIN_PASSWORD) {
-          isAdminValid = password === process.env.ADMIN_PASSWORD;
-        } else {
-          isAdminValid = password === 'admin@1234' || password === 'admin1234' || password === 'admin123';
-        }
-
-        if (isAdminValid) {
-          userPayload = {
-            id: adminUser?.id || 'admin-root-id',
-            email: adminUser?.email || cleanEmail,
-            name: adminUser?.name || 'Admin User',
-            role: 'admin',
-          };
-        }
-      }
-    }
-
-    if (!isAdminValid || !userPayload) {
+    if (!adminUser || !adminUser.passwordHash) {
       return sendError(res, 401, 'Invalid admin email or password');
     }
+
+    const isValidPassword = await bcrypt.compare(password, adminUser.passwordHash);
+    if (!isValidPassword) {
+      return sendError(res, 401, 'Invalid admin email or password');
+    }
+
+    const userPayload = {
+      id: adminUser.id,
+      email: adminUser.email,
+      name: adminUser.name || 'Admin User',
+      role: 'admin',
+    };
 
     const token = generateAccessToken(userPayload);
     const refreshToken = generateRefreshToken(userPayload);
