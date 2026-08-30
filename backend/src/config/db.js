@@ -16,12 +16,6 @@ export function getFormattedDatabaseUrl(urlStr) {
     if (!url.searchParams.has('pgbouncer')) {
       url.searchParams.set('pgbouncer', 'true');
     }
-    if (!url.searchParams.has('connection_limit')) {
-      url.searchParams.set('connection_limit', '5');
-    }
-    if (!url.searchParams.has('pool_timeout')) {
-      url.searchParams.set('pool_timeout', '20');
-    }
     return url.toString();
   } catch (e) {
     return urlStr;
@@ -47,28 +41,54 @@ function createPrismaInstance() {
 }
 
 let currentPrisma = createPrismaInstance();
+let resetPromise = null;
+let lastResetTimestamp = 0;
+const RESET_COOLDOWN_MS = 5000; // Minimum 5 seconds between client reinstantiations
 
-export async function resetPrismaClient() {
-  console.warn('🔄 Prisma engine error or connection panic detected. Resetting PrismaClient instance...');
-  const oldPrisma = currentPrisma;
-  currentPrisma = createPrismaInstance();
-  if (oldPrisma) {
-    try {
-      await oldPrisma.$disconnect();
-    } catch (err) {
-      // Ignore errors when disconnecting an already crashed client
-    }
+export async function resetPrismaClient(triggerError) {
+  const now = Date.now();
+  
+  // If a reset is already in progress, wait for it to complete instead of spawning parallel clients
+  if (resetPromise) {
+    return resetPromise;
   }
-  return currentPrisma;
+
+  // If client was reset very recently (< 5s ago), skip reinstantiation to prevent thundering herd
+  if (now - lastResetTimestamp < RESET_COOLDOWN_MS) {
+    return currentPrisma;
+  }
+
+  resetPromise = (async () => {
+    try {
+      const errDetail = triggerError ? `[${triggerError.name || 'Error'}${triggerError.code ? ' / ' + triggerError.code : ''}]: ${triggerError.message || triggerError}` : '';
+      console.warn(`🔄 Prisma connection error detected ${errDetail}. Resetting PrismaClient instance...`);
+
+      const oldPrisma = currentPrisma;
+      currentPrisma = createPrismaInstance();
+      lastResetTimestamp = Date.now();
+
+      if (oldPrisma) {
+        try {
+          await oldPrisma.$disconnect();
+        } catch (err) {
+          // Ignore errors when disconnecting an already crashed client
+        }
+      }
+      return currentPrisma;
+    } finally {
+      resetPromise = null;
+    }
+  })();
+
+  return resetPromise;
 }
 
 /**
  * Identifies genuine, unrecoverable database engine panics or connection termination errors.
  * 
  * NOTE ON ERROR CODES:
- * P2024 ("Timed out waiting for a connection from the pool") is intentionally EXCLUDED from this list.
+ * P2024 ("Timed out waiting for a connection from the pool") is intentionally EXCLUDED.
  * P2024 is a capacity/load signal indicating pool wait timeout under heavy traffic — NOT an engine crash.
- * Resetting the Prisma client on P2024 tears down the pool and adds reconnection overhead during traffic spikes.
  */
 export function isPrismaFatalError(error) {
   if (!error) return false;
@@ -101,11 +121,20 @@ const prismaProxy = new Proxy(currentPrisma, {
     if (typeof val === 'function') {
       return function (...args) {
         try {
-          const result = val.apply(activeTarget, args);
+          const result = val.apply(currentPrisma, args);
           if (result && typeof result.then === 'function') {
             return result.catch(async (err) => {
               if (isPrismaFatalError(err)) {
-                await resetPrismaClient();
+                await resetPrismaClient(err);
+                // Auto-retry operation once on the fresh PrismaClient instance
+                try {
+                  const retryVal = Reflect.get(currentPrisma, prop, currentPrisma);
+                  if (typeof retryVal === 'function') {
+                    return await retryVal.apply(currentPrisma, args);
+                  }
+                } catch (retryErr) {
+                  throw retryErr;
+                }
               }
               throw err;
             });
@@ -113,7 +142,7 @@ const prismaProxy = new Proxy(currentPrisma, {
           return result;
         } catch (err) {
           if (isPrismaFatalError(err)) {
-            resetPrismaClient().catch(() => {});
+            resetPrismaClient(err).catch(() => {});
           }
           throw err;
         }
@@ -134,7 +163,16 @@ const prismaProxy = new Proxy(currentPrisma, {
                 if (result && typeof result.then === 'function') {
                   return result.catch(async (err) => {
                     if (isPrismaFatalError(err)) {
-                      await resetPrismaClient();
+                      await resetPrismaClient(err);
+                      // Auto-retry model query once on the fresh PrismaClient instance
+                      try {
+                        const freshModel = currentPrisma[prop];
+                        if (freshModel && typeof freshModel[modelProp] === 'function') {
+                          return await freshModel[modelProp].apply(freshModel, args);
+                        }
+                      } catch (retryErr) {
+                        throw retryErr;
+                      }
                     }
                     throw err;
                   });
@@ -142,7 +180,7 @@ const prismaProxy = new Proxy(currentPrisma, {
                 return result;
               } catch (err) {
                 if (isPrismaFatalError(err)) {
-                  resetPrismaClient().catch(() => {});
+                  resetPrismaClient(err).catch(() => {});
                 }
                 throw err;
               }
