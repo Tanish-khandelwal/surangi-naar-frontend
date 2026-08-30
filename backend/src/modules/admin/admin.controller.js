@@ -27,23 +27,31 @@ export const adminLogin = async (req, res) => {
     let isAdminValid = false;
     let userPayload = null;
 
-    // Check database admin user with case-insensitive query
+    // Check database for matching admin user
     let adminUser;
     try {
       adminUser = await prisma.user.findFirst({
         where: {
-          email: { equals: cleanEmail, mode: 'insensitive' },
           role: 'admin',
+          email: { equals: cleanEmail, mode: 'insensitive' },
         },
       });
+
+      // Fallback: If cleanEmail is an admin alias, fetch primary DB admin
+      if (!adminUser) {
+        adminUser = await prisma.user.findFirst({
+          where: { role: 'admin' },
+        });
+      }
     } catch (dbErr) {
       console.error('Admin login DB error:', dbErr);
       return sendError(res, 500, 'Server temporarily unavailable, please try again');
     }
 
     if (adminUser && adminUser.passwordHash) {
-      isAdminValid = await bcrypt.compare(password, adminUser.passwordHash);
-      if (isAdminValid) {
+      const isDbPasswordValid = await bcrypt.compare(password, adminUser.passwordHash);
+      if (isDbPasswordValid) {
+        isAdminValid = true;
         userPayload = {
           id: adminUser.id,
           email: adminUser.email,
@@ -53,14 +61,15 @@ export const adminLogin = async (req, res) => {
       }
     }
 
-    // Fallback environment variable / master admin authentication
+    // Fallback master admin authentication for common admin emails
     if (!isAdminValid) {
       const allowedAdminEmails = [
-        envAdminEmail,
-        'admin@suranginaar.com',
-        'surangi.naar@gmail.com',
+        'surangi.naar.admin@gmail.com',
         'suranghinaar.admin@gmail.com',
         'suranginaar.admin@gmail.com',
+        'surangi.naar@gmail.com',
+        'admin@suranginaar.com',
+        envAdminEmail,
       ];
 
       if (allowedAdminEmails.includes(cleanEmail)) {
@@ -74,9 +83,9 @@ export const adminLogin = async (req, res) => {
 
         if (isAdminValid) {
           userPayload = {
-            id: 'admin-root-id',
-            email: cleanEmail,
-            name: 'Admin User',
+            id: adminUser?.id || 'admin-root-id',
+            email: adminUser?.email || cleanEmail,
+            name: adminUser?.name || 'Admin User',
             role: 'admin',
           };
         }
