@@ -1,13 +1,9 @@
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 
 /**
  * Ensures Neon PostgreSQL connection strings include ?pgbouncer=true when connecting via Neon's connection pooler.
- * 
- * ARCHITECTURE NOTE FOR PERSISTENT SERVERS:
- * Do NOT set `connection_limit=1` here. A `connection_limit=1` parameter is intended strictly for
- * ephemeral serverless environments (e.g. Vercel Functions / AWS Lambda) handling 1 invocation per container.
- * This Node/Express application runs as a persistent long-running server on Hostinger and requires Prisma's
- * default multi-connection pool size to serve concurrent API requests without queue starvation.
  */
 export function getFormattedDatabaseUrl(urlStr) {
   if (!urlStr) return urlStr;
@@ -24,16 +20,20 @@ export function getFormattedDatabaseUrl(urlStr) {
 
 function createPrismaInstance() {
   const rawUrl = process.env.DATABASE_URL;
-  const formattedUrl = getFormattedDatabaseUrl(rawUrl);
+  const connectionString = getFormattedDatabaseUrl(rawUrl);
 
   const options = {};
-  if (formattedUrl) {
-    options.datasources = {
-      db: {
-        url: formattedUrl,
-      },
-    };
+  if (connectionString) {
+    const pool = new pg.Pool({
+      connectionString,
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    });
+    const adapter = new PrismaPg(pool);
+    options.adapter = adapter;
   }
+
   if (process.env.NODE_ENV !== 'production') {
     options.log = ['warn'];
   }
@@ -43,17 +43,15 @@ function createPrismaInstance() {
 let currentPrisma = createPrismaInstance();
 let resetPromise = null;
 let lastResetTimestamp = 0;
-const RESET_COOLDOWN_MS = 5000; // Minimum 5 seconds between client reinstantiations
+const RESET_COOLDOWN_MS = 5000;
 
 export async function resetPrismaClient(triggerError) {
   const now = Date.now();
   
-  // If a reset is already in progress, wait for it to complete instead of spawning parallel clients
   if (resetPromise) {
     return resetPromise;
   }
 
-  // If client was reset very recently (< 5s ago), skip reinstantiation to prevent thundering herd
   if (now - lastResetTimestamp < RESET_COOLDOWN_MS) {
     return currentPrisma;
   }
@@ -83,13 +81,6 @@ export async function resetPrismaClient(triggerError) {
   return resetPromise;
 }
 
-/**
- * Identifies genuine, unrecoverable database engine panics or connection termination errors.
- * 
- * NOTE ON ERROR CODES:
- * P2024 ("Timed out waiting for a connection from the pool") is intentionally EXCLUDED.
- * P2024 is a capacity/load signal indicating pool wait timeout under heavy traffic — NOT an engine crash.
- */
 export function isPrismaFatalError(error) {
   if (!error) return false;
   const name = error.name || '';
@@ -126,7 +117,6 @@ const prismaProxy = new Proxy(currentPrisma, {
             return result.catch(async (err) => {
               if (isPrismaFatalError(err)) {
                 await resetPrismaClient(err);
-                // Auto-retry operation once on the fresh PrismaClient instance
                 try {
                   const retryVal = Reflect.get(currentPrisma, prop, currentPrisma);
                   if (typeof retryVal === 'function') {
@@ -164,7 +154,6 @@ const prismaProxy = new Proxy(currentPrisma, {
                   return result.catch(async (err) => {
                     if (isPrismaFatalError(err)) {
                       await resetPrismaClient(err);
-                      // Auto-retry model query once on the fresh PrismaClient instance
                       try {
                         const freshModel = currentPrisma[prop];
                         if (freshModel && typeof freshModel[modelProp] === 'function') {
