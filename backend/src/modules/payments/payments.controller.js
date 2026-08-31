@@ -109,6 +109,10 @@ export const verifyPaymentSignature = async (req, res) => {
       return sendError(res, 404, 'Order not found');
     }
 
+    if (order.razorpayOrderId !== razorpay_order_id) {
+      return sendError(res, 400, 'Payment does not match this order');
+    }
+
     const expectedAmountInPaise = Math.round(Number(order.total) * 100);
     const now = new Date().toISOString();
     const currentHistory = Array.isArray(order.statusHistory) ? order.statusHistory : [];
