@@ -13,7 +13,7 @@ export function getFormattedDatabaseUrl(urlStr) {
       url.searchParams.set('pgbouncer', 'true');
     }
     if (!url.searchParams.has('sslmode')) {
-      url.searchParams.set('sslmode', 'verify-full');
+      url.searchParams.set('sslmode', 'require');
     }
     return url.toString();
   } catch (e) {
