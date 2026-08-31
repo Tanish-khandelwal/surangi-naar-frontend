@@ -145,12 +145,10 @@ async function warmUpDatabase() {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-  (async () => {
-    await warmUpDatabase();
-    app.listen(PORT, () => {
-      console.log(`🚀 Suranghi Naar Backend running on port ${PORT}`);
-    });
-  })();
+  app.listen(PORT, () => {
+    console.log(`🚀 Suranghi Naar Backend running on port ${PORT}`);
+    warmUpDatabase();
+  });
 }
 
 export default app;
