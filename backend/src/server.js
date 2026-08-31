@@ -25,13 +25,25 @@ import couponsRoutes from './modules/coupons/coupons.routes.js';
 
 import { errorHandler } from './middleware/errorHandler.js';
 
-// Process-level error handlers to log uncaught errors without crashing Node process
+// Process-level error and exit handlers to log process events without crashing Node
 process.on('uncaughtException', (err) => {
   console.error('CRITICAL: Uncaught Exception:', err);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('exit', (code) => {
+  console.log(`⚠️ PROCESS EXITING with code ${code}`);
+});
+
+process.on('SIGTERM', () => {
+  console.log('⚠️ Received SIGTERM signal (platform shutdown/restart request)');
+});
+
+process.on('SIGINT', () => {
+  console.log('⚠️ Received SIGINT signal (interrupt request)');
 });
 
 const app = express();
@@ -133,14 +145,23 @@ app.use(errorHandler);
 async function testDatabaseConnection() {
   let timer;
   try {
-    const queryPromise = prisma.$queryRaw`SELECT 1`;
-    const timeoutPromise = new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error('Connection timed out after 10s')), 10000);
+    const queryPromise = prisma.$queryRaw`SELECT 1`.catch((err) => {
+      // Prevent unhandled promise rejection if startup test times out
+      return 'FAILED_QUERY';
     });
-    await Promise.race([queryPromise, timeoutPromise]);
-    console.log('✅ Database connectivity confirmed at startup');
+    const timeoutPromise = new Promise((resolve) => {
+      timer = setTimeout(() => resolve('TIMEOUT'), 10000);
+    });
+    const result = await Promise.race([queryPromise, timeoutPromise]);
+    if (result === 'TIMEOUT') {
+      console.error('❌ Database connectivity FAILED at startup: Connection timed out after 10s (server will continue running)');
+    } else if (result === 'FAILED_QUERY') {
+      console.error('❌ Database connectivity FAILED at startup: Query execution failed (server will continue running)');
+    } else {
+      console.log('✅ Database connectivity confirmed at startup');
+    }
   } catch (err) {
-    console.error(`❌ Database connectivity FAILED at startup: ${err?.message || err}`);
+    console.error(`❌ Database connectivity FAILED at startup: ${err?.message || err} (server will continue running)`);
   } finally {
     if (timer) clearTimeout(timer);
   }
