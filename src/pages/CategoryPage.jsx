@@ -14,7 +14,10 @@ export default function CategoryPage() {
   const [sortBy, setSortBy] = useState('recommended');
   const [maxPrice, setMaxPrice] = useState(40000);
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [selectedSizeFilter, setSelectedSizeFilter] = useState('All');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  const FILTER_SIZES = ['All', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'];
 
   // Find active category info
   const catList = categories || [];
@@ -46,10 +49,13 @@ export default function CategoryPage() {
     );
   }
 
-  // Filter by price & stock
+  // Filter by price & stock & size
   products = products.filter(p => p.price <= maxPrice);
   if (inStockOnly) {
     products = products.filter(p => !p.isSoldOut);
+  }
+  if (selectedSizeFilter && selectedSizeFilter !== 'All') {
+    products = products.filter(p => (p.sizes || []).includes(selectedSizeFilter));
   }
 
   // Sort products
@@ -175,6 +181,39 @@ export default function CategoryPage() {
               </ul>
             </div>
 
+            {/* Size Filter Section */}
+            <div className="space-y-3 pt-4 border-t border-[#e8e2d9]">
+              <div className="flex justify-between items-center">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#39322f]">Select Size</h4>
+                {selectedSizeFilter !== 'All' && (
+                  <button
+                    onClick={() => setSelectedSizeFilter('All')}
+                    className="text-[10px] text-[#d4a373] hover:underline uppercase font-bold cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {FILTER_SIZES.map((sz) => {
+                  const isSelected = selectedSizeFilter === sz;
+                  return (
+                    <button
+                      key={sz}
+                      onClick={() => setSelectedSizeFilter(sz)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold uppercase font-sans border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#39322f] text-white border-[#39322f] shadow-xs'
+                          : 'bg-white text-[#39322f]/80 border-[#e8e2d9] hover:border-[#d4a373]'
+                      }`}
+                    >
+                      {sz}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="space-y-3 pt-4 border-t border-[#e8e2d9]">
               <div className="flex justify-between items-center text-xs font-sans">
                 <span className="font-semibold uppercase tracking-wider text-[#39322f]">Max Price</span>
@@ -210,7 +249,7 @@ export default function CategoryPage() {
                 <p className="font-serif text-xl text-[#39322f] font-semibold">No products found</p>
                 <p className="text-xs text-gray-500 font-sans mt-1">Try adjusting your filters or price slider.</p>
                 <button
-                  onClick={() => { setMaxPrice(40000); setInStockOnly(false); }}
+                  onClick={() => { setMaxPrice(40000); setInStockOnly(false); setSelectedSizeFilter('All'); }}
                   className="mt-4 px-6 py-2 bg-[#39322f] text-white text-xs uppercase tracking-widest font-sans rounded-full cursor-pointer hover:bg-[#d4a373] transition-colors"
                 >
                   Reset Filters
@@ -260,7 +299,7 @@ export default function CategoryPage() {
             </div>
 
             <div className="space-y-2 pt-4 border-t">
-              <span className="text-xs font-semibold uppercase">Max Price: ₹{maxPrice.toLocaleString('en-IN')}</span>
+              <span className="text-xs font-semibold uppercase text-[#39322f]">Max Price: ₹{maxPrice.toLocaleString('en-IN')}</span>
               <input
                 type="range"
                 min="3000"
@@ -270,6 +309,38 @@ export default function CategoryPage() {
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
                 className="w-full accent-[#d4a373]"
               />
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-[#e8e2d9]">
+              <div className="flex justify-between items-center">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#39322f]">Size</h4>
+                {selectedSizeFilter !== 'All' && (
+                  <button
+                    onClick={() => setSelectedSizeFilter('All')}
+                    className="text-[10px] text-[#d4a373] hover:underline uppercase font-bold"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {FILTER_SIZES.map((sz) => {
+                  const isSelected = selectedSizeFilter === sz;
+                  return (
+                    <button
+                      key={sz}
+                      onClick={() => { setSelectedSizeFilter(sz); setIsMobileFilterOpen(false); }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold uppercase font-sans border transition-all ${
+                        isSelected
+                          ? 'bg-[#39322f] text-white border-[#39322f]'
+                          : 'bg-white text-[#39322f]/80 border-[#e8e2d9]'
+                      }`}
+                    >
+                      {sz}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

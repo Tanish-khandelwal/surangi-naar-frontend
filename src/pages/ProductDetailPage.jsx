@@ -47,8 +47,8 @@ export default function ProductDetailPage() {
           }))
         : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product?.image, product?.secondaryImage || product?.image].filter(Boolean) }]);
 
-  const detailSizes = (product?.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
-  const availableDetailSizes = detailSizes.length > 0 ? detailSizes : ['M', 'L', 'XL', 'XXL'];
+  const detailSizes = (product?.sizes || []).filter(s => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'].includes(s));
+  const availableDetailSizes = detailSizes.length > 0 ? detailSizes : (product?.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL', 'XXL']);
 
   const [selectedColor, setSelectedColor] = useState(productColors[0]);
   const [selectedSize, setSelectedSize] = useState(availableDetailSizes[0]);
@@ -98,8 +98,8 @@ export default function ProductDetailPage() {
             }))
           : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
     setSelectedColor(cols[0]);
-    const validPDetailSizes = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
-    setSelectedSize(validPDetailSizes.length > 0 ? validPDetailSizes[0] : 'M');
+    const validPDetailSizes = (product.sizes || []).filter(s => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'].includes(s));
+    setSelectedSize(validPDetailSizes.length > 0 ? validPDetailSizes[0] : (product.sizes && product.sizes[0] ? product.sizes[0] : 'M'));
     setQuantity(1);
     setActiveImageIndex(0);
   }, [product?.id, product?.colorVariants, product?.colors, product?.sizes, product?.image]);

@@ -31,8 +31,8 @@ function QuickViewModalContent({ product, onClose }) {
           }))
         : [{ name: 'Royal Purple', hex: '#5a2d82', images: [product.image, product.secondaryImage || product.image].filter(Boolean) }]);
 
-  const modalSizes = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
-  const availableModalSizes = modalSizes.length > 0 ? modalSizes : ['M', 'L', 'XL', 'XXL'];
+  const modalSizes = (product.sizes || []).filter(s => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'].includes(s));
+  const availableModalSizes = modalSizes.length > 0 ? modalSizes : (product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL', 'XXL']);
 
   const [selectedColor, setSelectedColor] = useState(modalVariants[0]);
   const [selectedSize, setSelectedSize] = useState(availableModalSizes[0]);

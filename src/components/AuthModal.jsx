@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useShop } from '../context/ShopContext';
 import api from '../services/api';
-import { X, Sparkles, Mail, Lock, User, Phone, ArrowRight, ArrowLeft } from 'lucide-react';
+import { X, Sparkles, Mail, Lock, User, Phone, ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 export default function AuthModal() {
   const {
@@ -23,6 +23,8 @@ export default function AuthModal() {
   const [phoneError, setPhoneError] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [forgotSuccessMessage, setForgotSuccessMessage] = useState('');
 
@@ -276,15 +278,24 @@ export default function AuthModal() {
               <div className="relative">
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
+                  type={showLoginPassword ? 'text' : 'password'}
                   name="password"
                   required
                   autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl pl-10 pr-4 py-3 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl pl-10 pr-10 py-3 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  tabIndex={-1}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#39322f] transition-colors cursor-pointer focus:outline-none"
+                  aria-label={showLoginPassword ? "Hide password" : "Show password"}
+                >
+                  {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -434,15 +445,24 @@ export default function AuthModal() {
               <div className="relative">
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
+                  type={showRegisterPassword ? 'text' : 'password'}
                   name="password"
                   required
                   autoComplete="new-password"
                   placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl pl-10 pr-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl pl-10 pr-10 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                  tabIndex={-1}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#39322f] transition-colors cursor-pointer focus:outline-none"
+                  aria-label={showRegisterPassword ? "Hide password" : "Show password"}
+                >
+                  {showRegisterPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 

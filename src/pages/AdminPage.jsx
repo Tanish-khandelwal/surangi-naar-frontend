@@ -28,7 +28,9 @@ import {
   Save,
   Truck,
   Users,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -107,6 +109,7 @@ export default function AdminPage() {
 
   const [adminEmailInput, setAdminEmailInput] = useState('');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
   // Active Tab State
@@ -429,8 +432,9 @@ export default function AdminPage() {
       secondaryImage: product.secondaryImage || '',
       badge: product.badge || 'Featured',
       sizes: (() => {
-        const filtered = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
-        return filtered.length > 0 ? filtered : ['M', 'L', 'XL', 'XXL'];
+        const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'];
+        const filtered = (product.sizes || []).filter(s => validSizes.includes(s));
+        return filtered.length > 0 ? filtered : (product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL', 'XXL']);
       })(),
       stockQuantity: typeof product.stockQuantity === 'number' ? product.stockQuantity : 10,
       isSoldOut: product.isSoldOut || false,
@@ -665,14 +669,25 @@ export default function AdminPage() {
               <label className="block text-xs uppercase tracking-wider text-[#b58349] mb-1 font-bold">
                 Admin Password
               </label>
-              <input
-                type="password"
-                required
-                value={adminPasswordInput}
-                onChange={(e) => setAdminPasswordInput(e.target.value)}
-                placeholder="Enter password"
-                className={`w-full bg-[#f8f4ee] border ${loginError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl px-4 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors`}
-              />
+              <div className="relative">
+                <input
+                  type={showAdminPassword ? 'text' : 'password'}
+                  required
+                  value={adminPasswordInput}
+                  onChange={(e) => setAdminPasswordInput(e.target.value)}
+                  placeholder="Enter password"
+                  className={`w-full bg-[#f8f4ee] border ${loginError ? 'border-rose-500' : 'border-[#d4a373]/40'} rounded-2xl pl-4 pr-10 py-2.5 text-sm text-[#39322f] focus:outline-none focus:border-[#d4a373] transition-colors`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAdminPassword(!showAdminPassword)}
+                  tabIndex={-1}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#39322f] transition-colors cursor-pointer focus:outline-none"
+                  aria-label={showAdminPassword ? "Hide password" : "Show password"}
+                >
+                  {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
               {loginError && (
                 <p className="text-rose-600 text-xs mt-2 text-center font-medium">
                   Invalid admin email or password.
@@ -1089,9 +1104,10 @@ export default function AdminPage() {
                         </td>
                         <td className="py-3.5 px-4">
                           <div className="flex flex-wrap gap-1 max-w-[130px]">
-                            {(() => {
-                              const filtered = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
-                              const displaySizes = filtered.length > 0 ? filtered : ['M', 'L', 'XL', 'XXL'];
+                             {(() => {
+                              const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'];
+                              const filtered = (product.sizes || []).filter(s => validSizes.includes(s));
+                              const displaySizes = filtered.length > 0 ? filtered : (product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL', 'XXL']);
                               return displaySizes.map((sz) => (
                                 <span key={sz} className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#f8f4ee] text-[#39322f] border border-[#e8e2d9]">
                                   {sz}
@@ -1960,7 +1976,7 @@ export default function AdminPage() {
                   </label>
                 </div>
                 <div className="flex flex-wrap gap-2 p-3 bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl">
-                  {['S', 'M', 'L', 'XL', 'XXL'].map((size) => {
+                  {['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'].map((size) => {
                     const isSelected = (productForm.sizes || []).includes(size);
                     return (
                       <button
@@ -1972,7 +1988,7 @@ export default function AdminPage() {
                           if (isSelected) {
                             updated = current.filter(s => s !== size);
                           } else {
-                            const order = ['S', 'M', 'L', 'XL', 'XXL'];
+                            const order = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'];
                             updated = [...current, size].sort((a, b) => order.indexOf(a) - order.indexOf(b));
                           }
                           setProductForm({ ...productForm, sizes: updated });

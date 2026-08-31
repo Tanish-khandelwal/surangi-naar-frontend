@@ -75,8 +75,8 @@ export default function ProductCard({ product }) {
   }, [selectedColor, product.id]);
 
   const isWishlisted = isInWishlist(product.id);
-  const validSizes = (product.sizes || []).filter(s => ['S', 'M', 'L', 'XL', 'XXL'].includes(s));
-  const availableSizes = validSizes.length > 0 ? validSizes : ['M', 'L', 'XL', 'XXL'];
+  const validSizes = (product.sizes || []).filter(s => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'].includes(s));
+  const availableSizes = validSizes.length > 0 ? validSizes : (product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL', 'XXL']);
 
   const handleQuickAddSize = (e, size) => {
     e.stopPropagation();
