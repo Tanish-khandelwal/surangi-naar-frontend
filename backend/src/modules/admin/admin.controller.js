@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import prisma, { isPrismaFatalError } from '../../config/db.js';
+import prisma, { isPrismaFatalError, withQueryTimeout } from '../../config/db.js';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
 import {
@@ -23,17 +23,24 @@ export const adminLogin = async (req, res) => {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Look up the admin user by EXACT email match only (case-insensitive)
+    // Look up the admin user by EXACT email match only (case-insensitive) with 8s timeout
     let adminUser;
     try {
-      adminUser = await prisma.user.findFirst({
-        where: {
-          role: 'admin',
-          email: { equals: cleanEmail, mode: 'insensitive' },
-        },
-      });
+      adminUser = await withQueryTimeout(
+        prisma.user.findFirst({
+          where: {
+            role: 'admin',
+            email: { equals: cleanEmail, mode: 'insensitive' },
+          },
+        }),
+        8000,
+        'POST /api/admin/login'
+      );
     } catch (dbErr) {
-      console.error('Admin login DB query error:', dbErr);
+      console.error('🔥 Admin login DB query error:', dbErr?.message || dbErr, dbErr?.stack || '');
+      if (dbErr.isTimeout || dbErr?.message?.includes('timeout')) {
+        return sendError(res, 503, 'Database query timeout after 8s');
+      }
       if (isPrismaFatalError(dbErr) || dbErr?.code === 'P2024' || dbErr?.message?.includes('P2024')) {
         return sendError(res, 503, 'Server temporarily unavailable, please try again');
       }
@@ -64,6 +71,9 @@ export const adminLogin = async (req, res) => {
     if (error.name === 'ZodError') {
       const firstMsg = error.errors?.[0]?.message || 'Validation Error';
       return sendError(res, 400, firstMsg, error.errors);
+    }
+    if (error.isTimeout || error?.message?.includes('timeout')) {
+      return sendError(res, 503, 'Database query timeout after 8s');
     }
     if (isPrismaFatalError(error) || error?.code === 'P2024' || error?.message?.includes('P2024')) {
       return sendError(res, 503, 'Server temporarily unavailable, please try again');

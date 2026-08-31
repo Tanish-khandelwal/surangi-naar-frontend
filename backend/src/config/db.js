@@ -34,6 +34,15 @@ function createPrismaInstance() {
       connectionTimeoutMillis: 10000,
       ssl: { rejectUnauthorized: false },
     });
+
+    pool.on('error', (err) => {
+      console.error('🔥 PG POOL ERROR:', err?.message || err, err?.stack || '');
+    });
+
+    pool.on('connect', () => {
+      console.log('✅ PG POOL CONNECTED TO DATABASE');
+    });
+
     const adapter = new PrismaPg(pool);
     options.adapter = adapter;
   }
@@ -42,6 +51,22 @@ function createPrismaInstance() {
     options.log = ['warn'];
   }
   return new PrismaClient(options);
+}
+
+export function withQueryTimeout(promise, ms = 8000, label = 'Database query') {
+  let timer;
+  const timeoutPromise = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const err = new Error(`${label} timeout after ${ms / 1000}s`);
+      err.isTimeout = true;
+      console.error(`🔥 TIMEOUT EXCEEDED: ${label} timed out after ${ms / 1000}s`);
+      reject(err);
+    }, ms);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
 }
 
 let currentPrisma = createPrismaInstance();

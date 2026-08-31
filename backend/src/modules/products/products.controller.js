@@ -1,4 +1,4 @@
-import prisma from '../../config/db.js';
+import prisma, { withQueryTimeout } from '../../config/db.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
 
 export const getProducts = async (req, res) => {
@@ -34,23 +34,34 @@ export const getProducts = async (req, res) => {
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
 
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({
-        where,
-        skip,
-        take,
-        orderBy: { createdAt: 'desc' },
-      }),
-      prisma.product.count({ where }),
-    ]);
+    const [products, total] = await withQueryTimeout(
+      Promise.all([
+        prisma.product.findMany({
+          where,
+          skip,
+          take,
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.product.count({ where }),
+      ]),
+      8000,
+      'GET /api/products'
+    );
 
     const productIds = products.map(p => p.id);
-    const reviewAggregates = await prisma.review.groupBy({
-      by: ['productId'],
-      where: { productId: { in: productIds } },
-      _avg: { rating: true },
-      _count: { rating: true },
-    });
+    let reviewAggregates = [];
+    if (productIds.length > 0) {
+      reviewAggregates = await withQueryTimeout(
+        prisma.review.groupBy({
+          by: ['productId'],
+          where: { productId: { in: productIds } },
+          _avg: { rating: true },
+          _count: { rating: true },
+        }),
+        8000,
+        'GET /api/products reviews'
+      );
+    }
 
     const metricsMap = {};
     reviewAggregates.forEach(agg => {
@@ -78,6 +89,10 @@ export const getProducts = async (req, res) => {
       },
     }, 'Products fetched successfully');
   } catch (error) {
+    console.error('🔥 GET /api/products error:', error?.message || error, error?.stack || '');
+    if (error.isTimeout || error.message?.includes('timeout')) {
+      return sendError(res, 503, 'Database query timeout after 8s');
+    }
     return sendError(res, 500, error.message);
   }
 };
