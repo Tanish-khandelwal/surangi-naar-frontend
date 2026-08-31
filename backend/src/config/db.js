@@ -40,8 +40,11 @@ function createPrismaInstance() {
       connectionString,
       family: 4,
       max: 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 20000,
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10000,
+      allowExitOnIdle: false,
       ssl: { rejectUnauthorized: false },
       lookup: (hostname, opts, callback) => {
         dns.lookup(hostname, { family: 4 }, callback);
@@ -83,7 +86,7 @@ function runSingleTimeout(promiseOrFn, ms, label) {
   });
 }
 
-export async function withQueryTimeout(promiseOrFn, ms = 8000, label = 'Database query') {
+export async function withQueryTimeout(promiseOrFn, ms = 15000, label = 'Database query') {
   try {
     return await runSingleTimeout(promiseOrFn, ms, label);
   } catch (err) {
