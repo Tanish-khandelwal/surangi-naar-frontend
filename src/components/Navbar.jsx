@@ -76,8 +76,8 @@ export default function Navbar() {
       {/* Main Navbar */}
       <div
         className={`w-full transition-all duration-300 border-b border-[#d4a373]/25 ${isScrolled
-            ? 'bg-[#f8f4ee]/95 backdrop-blur-xl shadow-md py-3'
-            : 'bg-[#f8f4ee]/90 backdrop-blur-md py-4'
+          ? 'bg-[#f8f4ee]/95 backdrop-blur-xl shadow-md py-3'
+          : 'bg-[#f8f4ee]/90 backdrop-blur-md py-4'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,28 +121,24 @@ export default function Navbar() {
                         const isCatActive = location.pathname === `/category/${cat.slug}`;
                         return (
                           <li key={cat.slug || cat.id}>
-                            <Link 
+                            <Link
                               to={`/category/${cat.slug}`}
                               onClick={() => setIsMegaMenuOpen(false)}
-                              className={`group flex items-center justify-between p-2.5 rounded-xl transition-all ${
-                                isCatActive ? 'bg-[#39322f] text-[#d4a373] font-bold' : 'hover:bg-[#f8f4ee]'
-                              }`}
+                              className={`group flex items-center justify-between p-2.5 rounded-xl transition-all ${isCatActive ? 'bg-[#39322f] text-[#d4a373] font-bold' : 'hover:bg-[#f8f4ee]'
+                                }`}
                             >
                               <div>
-                                <div className={`text-xs tracking-wider uppercase font-semibold ${
-                                  isCatActive ? 'text-[#d4a373]' : 'text-[#2d2624] group-hover:text-[#d4a373]'
-                                }`}>
+                                <div className={`text-xs tracking-wider uppercase font-semibold ${isCatActive ? 'text-[#d4a373]' : 'text-[#2d2624] group-hover:text-[#d4a373]'
+                                  }`}>
                                   {cat.name}
                                 </div>
-                                <p className={`text-[10px] font-sans ${
-                                  isCatActive ? 'text-[#e8e2d9]' : 'text-[#2d2624]/60'
-                                }`}>
+                                <p className={`text-[10px] font-sans ${isCatActive ? 'text-[#e8e2d9]' : 'text-[#2d2624]/60'
+                                  }`}>
                                   {cat.description || cat.tagline}
                                 </p>
                               </div>
-                              <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                                isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#d4a373]/15 text-[#b58349]'
-                              }`}>
+                              <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#d4a373]/15 text-[#b58349]'
+                                }`}>
                                 {cat.tag || 'Explore'}
                               </span>
                             </Link>
@@ -198,7 +194,7 @@ export default function Navbar() {
                     Suranghi Naar
                   </h1>
                   <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.22em] sm:tracking-[0.28em] text-[#d4a373] font-bold block mt-0.5 whitespace-nowrap">
-                    Luxury Apparel
+                    WEAR YOUR COLOURS
                   </span>
                 </div>
               </Link>
@@ -296,16 +292,14 @@ export default function Navbar() {
                 <li key={cat.slug || cat.id}>
                   <Link
                     to={`/category/${cat.slug}`}
-                    className={`transition-colors flex items-center gap-1.5 py-1 px-3 rounded-full ${
-                      isCatActive
+                    className={`transition-colors flex items-center gap-1.5 py-1 px-3 rounded-full ${isCatActive
                         ? 'bg-[#39322f] text-[#d4a373] font-bold shadow-xs'
                         : 'hover:text-[#d4a373]'
-                    }`}
+                      }`}
                   >
                     <span>{cat.name}</span>
-                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                      isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#f7f3ee] border border-[#e8e2d9] text-[#d4a373]'
-                    }`}>
+                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#f7f3ee] border border-[#e8e2d9] text-[#d4a373]'
+                      }`}>
                       {cat.tag || 'Explore'}
                     </span>
                   </Link>
@@ -350,7 +344,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-[100] flex lg:hidden animate-in fade-in duration-300">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setIsMobileMenuOpen(false)} />
-          <div 
+          <div
             className="relative w-4/5 max-w-sm bg-[#fcfbfa] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto overscroll-contain"
             data-lenis-prevent
           >
@@ -381,11 +375,10 @@ export default function Navbar() {
                       <Link
                         to="/shop"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans font-semibold uppercase tracking-wide transition-all active:scale-[0.98] ${
-                          isShopActive
+                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans font-semibold uppercase tracking-wide transition-all active:scale-[0.98] ${isShopActive
                             ? 'bg-[#d4a373] text-white border-2 border-[#39322f] shadow-md font-bold'
                             : 'bg-[#39322f] text-white hover:bg-[#d4a373] active:bg-[#d4a373]'
-                        }`}
+                          }`}
                       >
                         <span className="flex items-center gap-2">
                           {isShopActive && <span className="w-2 h-2 rounded-full bg-white shrink-0" />}
@@ -403,19 +396,17 @@ export default function Navbar() {
                         key={cat.slug || cat.id}
                         to={`/category/${cat.slug}`}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans uppercase tracking-wide transition-all active:scale-[0.98] ${
-                          isCatActive
+                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans uppercase tracking-wide transition-all active:scale-[0.98] ${isCatActive
                             ? 'bg-[#39322f] text-[#d4a373] border-2 border-[#d4a373] shadow-md font-bold'
                             : 'bg-[#f7f3ee]/60 border border-[#e8e2d9]/60 text-[#39322f] font-semibold hover:border-[#d4a373] active:bg-[#d4a373]/20'
-                        }`}
+                          }`}
                       >
                         <span className="flex items-center gap-2">
                           {isCatActive && <span className="w-2 h-2 rounded-full bg-[#d4a373] shrink-0" />}
                           <span>{cat.name}</span>
                         </span>
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                          isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#d4a373]/20 text-[#b58349]'
-                        }`}>
+                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#d4a373]/20 text-[#b58349]'
+                          }`}>
                           {cat.tag || 'Explore'}
                         </span>
                       </Link>
@@ -443,11 +434,10 @@ export default function Navbar() {
                       <Link
                         to="/about"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center justify-between p-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all active:scale-[0.98] ${
-                          isAboutActive
+                        className={`flex items-center justify-between p-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all active:scale-[0.98] ${isAboutActive
                             ? 'bg-[#39322f] text-[#d4a373] border-2 border-[#d4a373] shadow-md font-bold'
                             : 'bg-[#f7f3ee] border border-[#e8e2d9] text-[#39322f] active:bg-[#d4a373]/20'
-                        }`}
+                          }`}
                       >
                         <span className="flex items-center gap-2">
                           {isAboutActive && <span className="w-2 h-2 rounded-full bg-[#d4a373] shrink-0" />}
@@ -464,11 +454,10 @@ export default function Navbar() {
                       <Link
                         to="/account"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`w-full flex items-center justify-between p-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] ${
-                          isAccountActive
+                        className={`w-full flex items-center justify-between p-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] ${isAccountActive
                             ? 'bg-[#39322f] text-[#d4a373] border-2 border-[#d4a373] shadow-md font-bold'
                             : 'bg-[#d4a373]/15 border border-[#d4a373]/40 text-[#39322f] font-bold active:bg-[#d4a373]/30'
-                        }`}
+                          }`}
                       >
                         <span className="flex items-center gap-2">
                           <Package className="w-4 h-4 text-[#d4a373]" />
