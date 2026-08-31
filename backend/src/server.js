@@ -1,3 +1,6 @@
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -127,18 +130,17 @@ app.use('/api/coupons', couponsRoutes);
 // Centralized Error Handler
 app.use(errorHandler);
 
-async function warmUpDatabase() {
-  console.log('🔄 Warming up database connection...');
+async function testDatabaseConnection() {
   let timer;
   try {
-    const warmUpPromise = prisma.$queryRaw`SELECT 1`;
+    const queryPromise = prisma.$queryRaw`SELECT 1`;
     const timeoutPromise = new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error('Warm-up timed out after 20s')), 20000);
+      timer = setTimeout(() => reject(new Error('Connection timed out after 10s')), 10000);
     });
-    await Promise.race([warmUpPromise, timeoutPromise]);
-    console.log('✅ Database warmed up and ready');
+    await Promise.race([queryPromise, timeoutPromise]);
+    console.log('✅ Database connectivity confirmed at startup');
   } catch (err) {
-    console.error(`❌ Database warm-up failed after 20s: ${err?.message || err}`);
+    console.error(`❌ Database connectivity FAILED at startup: ${err?.message || err}`);
   } finally {
     if (timer) clearTimeout(timer);
   }
@@ -147,7 +149,7 @@ async function warmUpDatabase() {
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`🚀 Suranghi Naar Backend running on port ${PORT}`);
-    warmUpDatabase();
+    testDatabaseConnection();
   });
 }
 

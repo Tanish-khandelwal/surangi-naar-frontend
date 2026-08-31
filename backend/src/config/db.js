@@ -38,6 +38,7 @@ function createPrismaInstance() {
   if (connectionString) {
     const pool = new pg.Pool({
       connectionString,
+      family: 4,
       max: 10,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
