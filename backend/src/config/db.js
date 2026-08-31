@@ -1,6 +1,15 @@
+import dns from 'node:dns';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+
+if (dns.setDefaultResultOrder) {
+  try {
+    dns.setDefaultResultOrder('ipv4first');
+  } catch (e) {
+    // Ignore if not supported in environment
+  }
+}
 
 /**
  * Ensures Neon PostgreSQL connection strings include ?pgbouncer=true when connecting via Neon's connection pooler.
@@ -33,6 +42,9 @@ function createPrismaInstance() {
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
       ssl: { rejectUnauthorized: false },
+      lookup: (hostname, opts, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
+      },
     });
 
     pool.on('error', (err) => {
