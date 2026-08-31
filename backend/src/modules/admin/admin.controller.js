@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import prisma from '../../config/db.js';
+import prisma, { isPrismaFatalError } from '../../config/db.js';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
 import {
@@ -13,15 +13,6 @@ import {
   storeSettingsSchema,
 } from './admin.schema.js';
 
-const withTimeout = (promise, ms = 10000) => {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(`Database query timed out after ${ms / 1000}s`)), ms)
-    ),
-  ]);
-};
-
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = adminLoginSchema.parse(req.body);
@@ -32,16 +23,22 @@ export const adminLogin = async (req, res) => {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Look up the admin user by EXACT email match only (case-insensitive) with 10s timeout
-    const adminUser = await withTimeout(
-      prisma.user.findFirst({
+    // Look up the admin user by EXACT email match only (case-insensitive)
+    let adminUser;
+    try {
+      adminUser = await prisma.user.findFirst({
         where: {
           role: 'admin',
           email: { equals: cleanEmail, mode: 'insensitive' },
         },
-      }),
-      10000
-    );
+      });
+    } catch (dbErr) {
+      console.error('Admin login DB query error:', dbErr);
+      if (isPrismaFatalError(dbErr) || dbErr?.code === 'P2024' || dbErr?.message?.includes('P2024')) {
+        return sendError(res, 503, 'Server temporarily unavailable, please try again');
+      }
+      throw dbErr;
+    }
 
     if (!adminUser || !adminUser.passwordHash) {
       return sendError(res, 401, 'Invalid admin email or password');
@@ -67,6 +64,9 @@ export const adminLogin = async (req, res) => {
     if (error.name === 'ZodError') {
       const firstMsg = error.errors?.[0]?.message || 'Validation Error';
       return sendError(res, 400, firstMsg, error.errors);
+    }
+    if (isPrismaFatalError(error) || error?.code === 'P2024' || error?.message?.includes('P2024')) {
+      return sendError(res, 503, 'Server temporarily unavailable, please try again');
     }
     console.error('🔥 Admin login full error stack trace:', error);
     return sendError(res, 500, `Admin login error: ${error.message || 'Unexpected server error'}`);
