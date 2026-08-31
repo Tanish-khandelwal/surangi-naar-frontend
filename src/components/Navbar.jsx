@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import {
   Search,
@@ -18,6 +18,7 @@ import {
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     categories,
     cartCount,
@@ -109,27 +110,38 @@ export default function Navbar() {
                     </div>
 
                     <ul className="space-y-3">
-                      {navCategories.map((cat) => (
-                        <li key={cat.slug || cat.id}>
-                          <Link 
-                            to={`/category/${cat.slug}`}
-                            onClick={() => setIsMegaMenuOpen(false)}
-                            className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-[#f8f4ee] transition-all"
-                          >
-                            <div>
-                              <div className="text-xs tracking-wider uppercase font-semibold text-[#2d2624] group-hover:text-[#d4a373]">
-                                {cat.name}
+                      {navCategories.map((cat) => {
+                        const isCatActive = location.pathname === `/category/${cat.slug}`;
+                        return (
+                          <li key={cat.slug || cat.id}>
+                            <Link 
+                              to={`/category/${cat.slug}`}
+                              onClick={() => setIsMegaMenuOpen(false)}
+                              className={`group flex items-center justify-between p-2.5 rounded-xl transition-all ${
+                                isCatActive ? 'bg-[#39322f] text-[#d4a373] font-bold' : 'hover:bg-[#f8f4ee]'
+                              }`}
+                            >
+                              <div>
+                                <div className={`text-xs tracking-wider uppercase font-semibold ${
+                                  isCatActive ? 'text-[#d4a373]' : 'text-[#2d2624] group-hover:text-[#d4a373]'
+                                }`}>
+                                  {cat.name}
+                                </div>
+                                <p className={`text-[10px] font-sans ${
+                                  isCatActive ? 'text-[#e8e2d9]' : 'text-[#2d2624]/60'
+                                }`}>
+                                  {cat.description || cat.tagline}
+                                </p>
                               </div>
-                              <p className="text-[10px] text-[#2d2624]/60 font-sans">
-                                {cat.description || cat.tagline}
-                              </p>
-                            </div>
-                            <span className="text-[9px] bg-[#d4a373]/15 text-[#b58349] px-2 py-0.5 rounded-full font-bold">
-                              {cat.tag || 'Explore'}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
+                              <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                                isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#d4a373]/15 text-[#b58349]'
+                              }`}>
+                                {cat.tag || 'Explore'}
+                              </span>
+                            </Link>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
@@ -274,16 +286,28 @@ export default function Navbar() {
       <div className="hidden lg:block bg-[#fcfbfa] border-b border-[#e8e2d9]/60 py-2.5">
         <div className="max-w-7xl mx-auto px-4">
           <ul className="flex items-center justify-center space-x-12 text-xs tracking-widest uppercase font-semibold text-[#39322f]">
-            {navCategories.map((cat) => (
-              <li key={cat.slug || cat.id}>
-                <Link to={`/category/${cat.slug}`} className="hover:text-[#d4a373] transition-colors flex items-center gap-1.5">
-                  <span>{cat.name}</span>
-                  <span className="text-[9px] bg-[#f7f3ee] border border-[#e8e2d9] px-2 py-0.5 rounded-full font-bold text-[#d4a373]">
-                    {cat.tag || 'Explore'}
-                  </span>
-                </Link>
-              </li>
-            ))}
+            {navCategories.map((cat) => {
+              const isCatActive = location.pathname === `/category/${cat.slug}`;
+              return (
+                <li key={cat.slug || cat.id}>
+                  <Link
+                    to={`/category/${cat.slug}`}
+                    className={`transition-colors flex items-center gap-1.5 py-1 px-3 rounded-full ${
+                      isCatActive
+                        ? 'bg-[#39322f] text-[#d4a373] font-bold shadow-xs'
+                        : 'hover:text-[#d4a373]'
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                      isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#f7f3ee] border border-[#e8e2d9] text-[#d4a373]'
+                    }`}>
+                      {cat.tag || 'Explore'}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
             <li>
               <Link to="/shop" className="text-[#b58349] font-bold hover:underline">All Collection</Link>
             </li>
@@ -350,34 +374,58 @@ export default function Navbar() {
                 </div>
 
                 <div className="space-y-2">
-                  {navCategories.map((cat) => (
-                    <Link
-                      key={cat.slug || cat.id}
-                      to={`/category/${cat.slug}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-between p-3 rounded-xl bg-[#f7f3ee]/60 border border-[#e8e2d9]/60 text-sm font-sans text-[#39322f] font-semibold uppercase tracking-wide hover:border-[#d4a373]"
-                    >
-                      <span>{cat.name}</span>
-                      <span className="text-[9px] bg-[#d4a373]/20 text-[#b58349] px-2 py-0.5 rounded-full font-bold">
-                        {cat.tag || 'Explore'}
-                      </span>
-                    </Link>
-                  ))}
+                  {navCategories.map((cat) => {
+                    const isCatActive = location.pathname === `/category/${cat.slug}`;
+                    return (
+                      <Link
+                        key={cat.slug || cat.id}
+                        to={`/category/${cat.slug}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans uppercase tracking-wide transition-all active:scale-[0.98] ${
+                          isCatActive
+                            ? 'bg-[#39322f] text-[#d4a373] border-2 border-[#d4a373] shadow-md font-bold'
+                            : 'bg-[#f7f3ee]/60 border border-[#e8e2d9]/60 text-[#39322f] font-semibold hover:border-[#d4a373] active:bg-[#d4a373]/20'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {isCatActive && <span className="w-2 h-2 rounded-full bg-[#d4a373] shrink-0" />}
+                          <span>{cat.name}</span>
+                        </span>
+                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                          isCatActive ? 'bg-[#d4a373] text-white' : 'bg-[#d4a373]/20 text-[#b58349]'
+                        }`}>
+                          {cat.tag || 'Explore'}
+                        </span>
+                      </Link>
+                    );
+                  })}
 
-                  <Link
-                    to="/shop"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between p-3 rounded-xl bg-[#39322f] text-white text-sm font-sans font-semibold uppercase tracking-wide"
-                  >
-                    <span>View All Products</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  {(() => {
+                    const isShopActive = location.pathname === '/shop';
+                    return (
+                      <Link
+                        to="/shop"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans font-semibold uppercase tracking-wide transition-all active:scale-[0.98] ${
+                          isShopActive
+                            ? 'bg-[#d4a373] text-white border-2 border-[#39322f] shadow-md font-bold'
+                            : 'bg-[#39322f] text-white hover:bg-[#d4a373] active:bg-[#d4a373]'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {isShopActive && <span className="w-2 h-2 rounded-full bg-white shrink-0" />}
+                          <span>View All Products</span>
+                        </span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    );
+                  })()}
                 </div>
 
                 <div className="pt-4 border-t border-[#e8e2d9] space-y-2">
                   <button
                     onClick={() => { setIsMobileMenuOpen(false); setIsWishlistOpen(true); }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl bg-[#f7f3ee] border border-[#e8e2d9] text-xs uppercase tracking-wider text-[#39322f] font-semibold cursor-pointer"
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-[#f7f3ee] border border-[#e8e2d9] text-xs uppercase tracking-wider text-[#39322f] font-semibold cursor-pointer transition-all active:scale-[0.98] active:bg-[#d4a373]/20"
                   >
                     <span className="flex items-center gap-2">
                       <Heart className="w-4 h-4 text-[#d4a373]" />
@@ -388,27 +436,47 @@ export default function Navbar() {
                     </span>
                   </button>
 
-                  <Link
-                    to="/about"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-[#f7f3ee] border border-[#e8e2d9] text-xs uppercase tracking-wider text-[#39322f] font-semibold"
-                  >
-                    <span>About Us & Contact</span>
-                  </Link>
+                  {(() => {
+                    const isAboutActive = location.pathname === '/about' || location.pathname === '/contact';
+                    return (
+                      <Link
+                        to="/about"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center justify-between p-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all active:scale-[0.98] ${
+                          isAboutActive
+                            ? 'bg-[#39322f] text-[#d4a373] border-2 border-[#d4a373] shadow-md font-bold'
+                            : 'bg-[#f7f3ee] border border-[#e8e2d9] text-[#39322f] active:bg-[#d4a373]/20'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {isAboutActive && <span className="w-2 h-2 rounded-full bg-[#d4a373] shrink-0" />}
+                          <span>About Us & Contact</span>
+                        </span>
+                        {isAboutActive && <span className="text-[9px] bg-[#d4a373] text-white px-2 py-0.5 rounded-full font-bold">Active</span>}
+                      </Link>
+                    );
+                  })()}
 
-                  {currentUser && (
-                    <Link
-                      to="/account"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="w-full flex items-center justify-between p-3 rounded-xl bg-[#d4a373]/15 border border-[#d4a373]/40 text-xs uppercase tracking-wider text-[#39322f] font-bold"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Package className="w-4 h-4 text-[#d4a373]" />
-                        Track Orders & Account
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-[#d4a373]" />
-                    </Link>
-                  )}
+                  {currentUser && (() => {
+                    const isAccountActive = location.pathname === '/account';
+                    return (
+                      <Link
+                        to="/account"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`w-full flex items-center justify-between p-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] ${
+                          isAccountActive
+                            ? 'bg-[#39322f] text-[#d4a373] border-2 border-[#d4a373] shadow-md font-bold'
+                            : 'bg-[#d4a373]/15 border border-[#d4a373]/40 text-[#39322f] font-bold active:bg-[#d4a373]/30'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-[#d4a373]" />
+                          Track Orders & Account
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-[#d4a373]" />
+                      </Link>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

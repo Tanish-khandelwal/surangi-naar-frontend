@@ -12,7 +12,8 @@ import {
   Tag, 
   FileText,
   Sparkles,
-  Gift
+  Gift,
+  Check
 } from 'lucide-react';
 import { getImageUrl } from '../utils/image';
 import api from '../services/api';
@@ -275,19 +276,46 @@ export default function CartDrawer() {
                     placeholder="Try HAPPY5 or LAH10"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-white border border-[#e8e2d9] rounded-md text-xs uppercase font-sans text-[#39322f] placeholder-gray-400 focus:outline-none focus:border-[#d4a373]"
+                    disabled={!!appliedCoupon}
+                    className="flex-1 px-3 py-2 bg-white border border-[#e8e2d9] rounded-md text-xs uppercase font-sans text-[#39322f] placeholder-gray-400 focus:outline-none focus:border-[#d4a373] disabled:bg-gray-100 disabled:text-gray-500"
                   />
-                  <button
-                    type="submit"
-                    className="bg-[#39322f] hover:bg-[#d4a373] text-white px-4 py-2 rounded-md text-xs font-sans uppercase font-semibold transition-colors cursor-pointer"
-                  >
-                    Apply
-                  </button>
+                  {appliedCoupon ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="bg-emerald-700 text-white px-3 py-2 rounded-md text-xs font-sans uppercase font-semibold flex items-center gap-1 cursor-default shadow-xs"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Applied</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="bg-[#39322f] hover:bg-[#d4a373] text-white px-4 py-2 rounded-md text-xs font-sans uppercase font-semibold transition-colors cursor-pointer"
+                    >
+                      Apply
+                    </button>
+                  )}
                 </div>
                 {appliedCoupon && (
-                  <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Coupon applied: {appliedCoupon}
-                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-emerald-600 font-semibold pt-1">
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Coupon applied: {appliedCoupon}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAppliedCoupon('');
+                        setDiscountAmount(0);
+                        setCouponCode('');
+                        setCouponError('');
+                      }}
+                      className="text-[11px] text-rose-600 hover:underline flex items-center gap-0.5 font-sans cursor-pointer ml-2"
+                    >
+                      <X className="w-3 h-3" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
                 )}
                 {couponError && (
                   <p className="text-[11px] text-red-500">{couponError}</p>

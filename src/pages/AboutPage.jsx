@@ -87,7 +87,7 @@ export default function AboutPage() {
               </div>
               <div>
                 <span className="font-bold text-[#2d2624] block mb-0.5">Website</span>
-                <span className="text-[#b58349] font-medium">surnaginaar.com</span>
+                <span className="text-[#b58349] font-medium">suranghinaar.com</span>
               </div>
               <div>
                 <span className="font-bold text-[#2d2624] block mb-0.5">Customer Support</span>

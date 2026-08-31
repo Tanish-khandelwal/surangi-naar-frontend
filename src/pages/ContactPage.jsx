@@ -116,7 +116,7 @@ export default function ContactPage() {
             </div>
             <div className="pt-2 border-t border-[#e8e2d9] text-xs text-gray-500 flex items-center gap-2">
               <Globe className="w-4 h-4 text-[#d4a373]" />
-              <span>Website: <strong className="text-[#39322f]">surnaginaar.com</strong></span>
+              <span>Website: <strong className="text-[#39322f]">suranghinaar.com</strong></span>
             </div>
           </div>
 

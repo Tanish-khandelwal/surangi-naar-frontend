@@ -51,7 +51,7 @@ export default function HeroCarousel() {
           <div className="absolute inset-0 bg-black/20" />
 
           {/* Slide Text Content Container */}
-          <div className="absolute inset-0 max-w-7xl mx-auto px-5 sm:px-12 lg:px-16 flex flex-col justify-center text-white">
+          <div className="absolute inset-0 max-w-7xl mx-auto px-11 sm:px-16 lg:px-20 flex flex-col justify-center text-white">
             <div className="max-w-xl space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
               
               <div className="inline-flex items-center gap-1.5 bg-[#d4a373]/25 backdrop-blur-md border border-[#d4a373]/60 px-3 py-1 rounded-full text-[10px] sm:text-xs font-sans uppercase tracking-[0.25em] text-[#e6c594] font-semibold shadow-md">
@@ -86,17 +86,17 @@ export default function HeroCarousel() {
       <button
         onClick={prevSlide}
         aria-label="Previous Slide"
-        className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/25 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+        className="absolute left-1.5 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-black/75 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-95"
       >
-        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+        <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
       </button>
 
       <button
         onClick={nextSlide}
         aria-label="Next Slide"
-        className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/25 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+        className="absolute right-1.5 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/45 hover:bg-black/75 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-95"
       >
-        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+        <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
       </button>
 
       {/* Slide Navigation Dots & Play/Pause */}

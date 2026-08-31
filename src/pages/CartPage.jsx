@@ -14,7 +14,9 @@ import {
   ArrowRight,
   Sparkles,
   ChevronRight,
-  FileText
+  FileText,
+  Check,
+  X
 } from 'lucide-react';
 
 
@@ -26,6 +28,7 @@ export default function CartPage() {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [placedOrder, setPlacedOrder] = useState(null);
   const [idempotencyKey, setIdempotencyKey] = useState(() => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -127,6 +130,15 @@ export default function CartPage() {
     if (!address.fullName || !address.phone) {
       toast.error("Please fill in your full name and contact phone number.");
       return;
+    }
+
+    const cleanPhone = (address.phone || '').toString().trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setPhoneError('Enter a valid 10-digit mobile number');
+      toast.error('Enter a valid 10-digit mobile number');
+      return;
+    } else {
+      setPhoneError('');
     }
 
     setIsProcessingPayment(true);
@@ -420,11 +432,27 @@ export default function CartPage() {
                     <input
                       type="tel"
                       required
-                      placeholder="+91 98765 43210"
+                      placeholder="98765 43210"
                       value={address.phone}
-                      onChange={(e) => setAddress({...address, phone: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-xs focus:outline-none focus:border-[#d4a373]"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAddress({...address, phone: val});
+                        const clean = val.trim().replace(/\D/g, '');
+                        if (clean && !/^[6-9]\d{9}$/.test(clean)) {
+                          setPhoneError('Enter a valid 10-digit mobile number');
+                        } else {
+                          setPhoneError('');
+                        }
+                      }}
+                      className={`w-full p-3 bg-white border rounded-xl text-xs focus:outline-none ${
+                        phoneError ? 'border-rose-500' : 'border-[#e8e2d9] focus:border-[#d4a373]'
+                      }`}
                     />
+                    {phoneError && (
+                      <p className="text-[11px] text-rose-600 font-semibold mt-1">
+                        {phoneError}
+                      </p>
+                    )}
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-[#39322f] font-semibold mb-1">Email Address *</label>
@@ -505,19 +533,46 @@ export default function CartPage() {
                       placeholder="Try HAPPY5 or LAH10"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="flex-1 px-3.5 py-2.5 bg-white border border-[#e8e2d9] rounded-lg text-xs uppercase font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                      disabled={!!appliedCoupon}
+                      className="flex-1 px-3.5 py-2.5 bg-white border border-[#e8e2d9] rounded-lg text-xs uppercase font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373] disabled:bg-gray-100 disabled:text-gray-500"
                     />
-                    <button
-                      type="submit"
-                      className="bg-[#39322f] hover:bg-[#d4a373] text-white px-5 py-2.5 rounded-lg text-xs font-sans uppercase font-semibold transition-colors cursor-pointer"
-                    >
-                      Apply
-                    </button>
+                    {appliedCoupon ? (
+                      <button
+                        type="button"
+                        disabled
+                        className="bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-xs font-sans uppercase font-semibold flex items-center gap-1 cursor-default shadow-xs"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Applied</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="bg-[#39322f] hover:bg-[#d4a373] text-white px-5 py-2.5 rounded-lg text-xs font-sans uppercase font-semibold transition-colors cursor-pointer"
+                      >
+                        Apply
+                      </button>
+                    )}
                   </div>
                   {appliedCoupon && (
-                    <p className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5" /> Coupon Applied: {appliedCoupon}
-                    </p>
+                    <div className="flex items-center justify-between text-xs text-emerald-600 font-semibold pt-1">
+                      <span className="flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5" /> Coupon Applied: {appliedCoupon}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAppliedCoupon('');
+                          setDiscountAmount(0);
+                          setCouponCode('');
+                          setCouponError('');
+                        }}
+                        className="text-xs text-rose-600 hover:underline flex items-center gap-1 font-sans cursor-pointer ml-2"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        <span>Remove</span>
+                      </button>
+                    </div>
                   )}
                   {couponError && (
                     <p className="text-xs text-red-500">{couponError}</p>

@@ -30,7 +30,6 @@ export default function AccountPage() {
     currentUser,
     setCurrentUser,
     logoutUser,
-    deleteUserAccount,
     openAuthModal,
     orders,
     fetchUserOrders,
@@ -51,6 +50,8 @@ export default function AccountPage() {
   // Profile Form state
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
+  const [profilePhoneError, setProfilePhoneError] = useState('');
+  const [addressPhoneError, setAddressPhoneError] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   // Change Password state
@@ -116,11 +117,20 @@ export default function AccountPage() {
       return;
     }
 
+    const cleanPhone = phoneInput.trim().replace(/\D/g, '');
+    if (!phoneInput.trim() || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setProfilePhoneError('Enter a valid 10-digit mobile number');
+      toast.error('Enter a valid 10-digit mobile number');
+      return;
+    } else {
+      setProfilePhoneError('');
+    }
+
     setIsSavingProfile(true);
     try {
       const res = await api.put('/users/me', {
         name: nameInput.trim(),
-        phone: phoneInput.trim()
+        phone: cleanPhone
       });
 
       if (res.data?.user) {
@@ -137,6 +147,7 @@ export default function AccountPage() {
   // Address CRUD Handlers
   const handleOpenAddAddress = () => {
     setEditingAddressId(null);
+    setAddressPhoneError('');
     setAddressForm({
       fullName: currentUser?.name || '',
       phone: currentUser?.phone || '',
@@ -151,6 +162,7 @@ export default function AccountPage() {
 
   const handleOpenEditAddress = (addr) => {
     setEditingAddressId(addr.id);
+    setAddressPhoneError('');
     setAddressForm({
       fullName: addr.fullName || '',
       phone: addr.phone || '',
@@ -170,14 +182,24 @@ export default function AccountPage() {
       return;
     }
 
+    const cleanPhone = (addressForm.phone || '').trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setAddressPhoneError('Enter a valid 10-digit mobile number');
+      toast.error('Enter a valid 10-digit mobile number');
+      return;
+    } else {
+      setAddressPhoneError('');
+    }
+
     try {
+      const payload = { ...addressForm, phone: cleanPhone };
       if (editingAddressId) {
-        const res = await api.put(`/addresses/${editingAddressId}`, addressForm);
+        const res = await api.put(`/addresses/${editingAddressId}`, payload);
         if (res.data?.address) {
           toast.success('Address updated');
         }
       } else {
-        const res = await api.post('/addresses', addressForm);
+        const res = await api.post('/addresses', payload);
         if (res.data?.address) {
           toast.success('New address added');
         }
@@ -731,15 +753,32 @@ export default function AccountPage() {
 
                   <div>
                     <label className="block text-xs uppercase font-sans font-semibold text-[#39322f] mb-1.5">
-                      Phone Number
+                      Phone Number *
                     </label>
                     <input
                       type="tel"
+                      required
                       value={phoneInput}
-                      onChange={(e) => setPhoneInput(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-[#f7f3ee] border border-[#e8e2d9] rounded-xl text-sm font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373]"
-                      placeholder="+91 98765 43210"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPhoneInput(val);
+                        const clean = val.trim().replace(/\D/g, '');
+                        if (clean && !/^[6-9]\d{9}$/.test(clean)) {
+                          setProfilePhoneError('Enter a valid 10-digit mobile number');
+                        } else {
+                          setProfilePhoneError('');
+                        }
+                      }}
+                      className={`w-full px-4 py-2.5 bg-[#f7f3ee] border rounded-xl text-sm font-sans text-[#39322f] focus:outline-none ${
+                        profilePhoneError ? 'border-rose-500' : 'border-[#e8e2d9] focus:border-[#d4a373]'
+                      }`}
+                      placeholder="98765 43210"
                     />
+                    {profilePhoneError && (
+                      <p className="text-[11px] text-rose-600 font-semibold mt-1">
+                        {profilePhoneError}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -864,20 +903,6 @@ export default function AccountPage() {
                     </form>
                   </div>
                 )}
-
-                {/* Account Security & Permanent Deletion */}
-                <div className="pt-8 border-t border-[#e8e2d9]">
-                  <h4 className="font-serif text-sm font-bold text-rose-800 mb-2">Account Permanence</h4>
-                  <p className="text-xs text-[#39322f]/70 font-sans mb-4">
-                    Deleting your account permanently removes all order history, saved addresses, and active user session data.
-                  </p>
-                  <button
-                    onClick={deleteUserAccount}
-                    className="px-4 py-2 rounded-xl border border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-600 hover:text-white transition-all text-xs font-semibold cursor-pointer"
-                  >
-                    Delete My Suranghi Naar Account
-                  </button>
-                </div>
               </div>
             )}
 
@@ -917,15 +942,31 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="block text-xs uppercase font-semibold text-[#39322f] mb-1">Phone Number</label>
+                <label className="block text-xs uppercase font-semibold text-[#39322f] mb-1">Phone Number *</label>
                 <input
                   type="tel"
                   required
                   value={addressForm.phone}
-                  onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-                  className="w-full px-3.5 py-2 bg-[#f7f3ee] border border-[#e8e2d9] rounded-xl text-xs text-[#39322f] focus:outline-none focus:border-[#d4a373]"
-                  placeholder="+91 91166 55814"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAddressForm({ ...addressForm, phone: val });
+                    const clean = val.trim().replace(/\D/g, '');
+                    if (clean && !/^[6-9]\d{9}$/.test(clean)) {
+                      setAddressPhoneError('Enter a valid 10-digit mobile number');
+                    } else {
+                      setAddressPhoneError('');
+                    }
+                  }}
+                  className={`w-full px-3.5 py-2 bg-[#f7f3ee] border rounded-xl text-xs text-[#39322f] focus:outline-none ${
+                    addressPhoneError ? 'border-rose-500' : 'border-[#e8e2d9] focus:border-[#d4a373]'
+                  }`}
+                  placeholder="98765 43210"
                 />
+                {addressPhoneError && (
+                  <p className="text-[11px] text-rose-600 font-semibold mt-1">
+                    {addressPhoneError}
+                  </p>
+                )}
               </div>
 
               <div>

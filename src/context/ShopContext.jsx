@@ -343,19 +343,6 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  const deleteUserAccount = async () => {
-    try {
-      await api.delete('/users/me');
-      await logoutUser();
-      toast.success('Your account has been permanently deleted.');
-    } catch (err) {
-      console.error('Delete Account Error:', err);
-      const errMsg = err.response?.data?.message || 'Failed to delete account.';
-      toast.error(errMsg);
-      throw err;
-    }
-  };
-
   // --- CART METHODS ---
   const addToCart = async (product, color = null, size = null, quantity = 1) => {
     if (!currentUser) {
@@ -843,7 +830,6 @@ export const ShopProvider = ({ children }) => {
       registerWithEmail,
       loginWithGoogle,
       logoutUser,
-      deleteUserAccount,
 
       // Cart & Wishlist
       cart,

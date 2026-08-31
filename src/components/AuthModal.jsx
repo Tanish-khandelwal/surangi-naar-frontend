@@ -20,6 +20,7 @@ export default function AuthModal() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -38,6 +39,7 @@ export default function AuthModal() {
     setPassword('');
     setName('');
     setPhone('');
+    setPhoneError('');
     setErrorMessage('');
     setForgotSuccessMessage('');
   }, [authModalTab, isAuthModalOpen]);
@@ -114,6 +116,12 @@ export default function AuthModal() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
       setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    const cleanPhone = trimmedPhone.replace(/\D/g, '');
+    if (!trimmedPhone || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setPhoneError('Enter a valid 10-digit mobile number');
+      setErrorMessage('Enter a valid 10-digit mobile number');
       return;
     }
     if (!password) {
@@ -389,19 +397,36 @@ export default function AuthModal() {
             </div>
 
             <div>
-              <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Phone Number</label>
+              <label className="block text-[#39322f] uppercase tracking-wider mb-1 font-bold">Phone Number *</label>
               <div className="relative">
                 <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="tel"
                   name="phone"
+                  required
                   autoComplete="tel"
-                  placeholder="+91 98765 43210"
+                  placeholder="98765 43210"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-[#f8f4ee] border border-[#e8e2d9] rounded-2xl pl-10 pr-4 py-2.5 text-[#39322f] focus:outline-none focus:border-[#d4a373]"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setPhone(val);
+                    const clean = val.trim().replace(/\D/g, '');
+                    if (clean && !/^[6-9]\d{9}$/.test(clean)) {
+                      setPhoneError('Enter a valid 10-digit mobile number');
+                    } else {
+                      setPhoneError('');
+                    }
+                  }}
+                  className={`w-full bg-[#f8f4ee] border rounded-2xl pl-10 pr-4 py-2.5 text-[#39322f] focus:outline-none ${
+                    phoneError ? 'border-rose-500' : 'border-[#e8e2d9] focus:border-[#d4a373]'
+                  }`}
                 />
               </div>
+              {phoneError && (
+                <p className="text-[11px] text-rose-600 font-semibold mt-1">
+                  {phoneError}
+                </p>
+              )}
             </div>
 
             <div>

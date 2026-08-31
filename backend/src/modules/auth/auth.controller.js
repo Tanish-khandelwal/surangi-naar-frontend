@@ -79,15 +79,6 @@ export const me = async (req, res, next) => {
   }
 };
 
-export const deleteAccount = async (req, res, next) => {
-  try {
-    await authService.deleteUserAccount(req.user.id);
-    return sendSuccess(res, 200, {}, 'Account permanently deleted');
-  } catch (error) {
-    return sendError(res, 400, error.message);
-  }
-};
-
 export const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;

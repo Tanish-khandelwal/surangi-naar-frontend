@@ -23,6 +23,11 @@ export const createOrder = async (req, res) => {
       return sendError(res, 400, 'Missing required order fields');
     }
 
+    const cleanCustomerPhone = (customerPhone || '').toString().trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(cleanCustomerPhone)) {
+      return sendError(res, 400, 'Enter a valid 10-digit mobile number');
+    }
+
     // Idempotency check: if idempotencyKey is supplied and order exists, return existing order
     if (idempotencyKey) {
       const existingOrder = await prisma.order.findUnique({

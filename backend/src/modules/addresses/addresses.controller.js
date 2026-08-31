@@ -18,6 +18,11 @@ export const addAddress = async (req, res) => {
     const userId = req.user.id;
     const { fullName, phone, street, city, state, pincode, isDefault } = req.body;
 
+    const cleanPhone = (phone || '').toString().trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      return sendError(res, 400, 'Enter a valid 10-digit mobile number');
+    }
+
     if (isDefault) {
       await prisma.address.updateMany({
         where: { userId },
@@ -29,7 +34,7 @@ export const addAddress = async (req, res) => {
       data: {
         userId,
         fullName,
-        phone,
+        phone: cleanPhone,
         street,
         city,
         state,
@@ -58,6 +63,14 @@ export const updateAddress = async (req, res) => {
       return sendError(res, 404, 'Address not found or unauthorized');
     }
 
+    let cleanPhone = undefined;
+    if (phone !== undefined) {
+      cleanPhone = (phone || '').toString().trim().replace(/\D/g, '');
+      if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+        return sendError(res, 400, 'Enter a valid 10-digit mobile number');
+      }
+    }
+
     if (isDefault) {
       await prisma.address.updateMany({
         where: { userId },
@@ -69,7 +82,7 @@ export const updateAddress = async (req, res) => {
       where: { id },
       data: {
         fullName,
-        phone,
+        phone: cleanPhone !== undefined ? cleanPhone : existingAddress.phone,
         street,
         city,
         state,
