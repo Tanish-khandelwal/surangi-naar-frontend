@@ -30,6 +30,8 @@ export function getFormattedDatabaseUrl(urlStr) {
   }
 }
 
+let currentPool = null;
+
 function createPrismaInstance() {
   const rawUrl = process.env.DATABASE_URL;
   const connectionString = getFormattedDatabaseUrl(rawUrl);
@@ -58,6 +60,8 @@ function createPrismaInstance() {
     pool.on('connect', () => {
       console.log('✅ PG POOL CONNECTED TO DATABASE');
     });
+
+    currentPool = pool;
 
     const adapter = new PrismaPg(pool);
     options.adapter = adapter;
@@ -141,6 +145,21 @@ export async function resetPrismaClient(triggerError) {
   })();
 
   return resetPromise;
+}
+
+export async function closeDatabasePool() {
+  try {
+    if (currentPool) {
+      await currentPool.end();
+      currentPool = null;
+    }
+    if (currentPrisma) {
+      await currentPrisma.$disconnect();
+    }
+    console.log('✅ Gracefully closed database pool on shutdown');
+  } catch (err) {
+    console.error('Error closing database pool on shutdown:', err?.message || err);
+  }
 }
 
 export function isPrismaFatalError(error) {

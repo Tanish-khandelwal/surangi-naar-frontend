@@ -5,7 +5,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import prisma from './config/db.js';
+import prisma, { closeDatabasePool } from './config/db.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import userRoutes from './modules/users/users.routes.js';
@@ -38,13 +38,23 @@ process.on('exit', (code) => {
   console.log(`⚠️ PROCESS EXITING with code ${code}`);
 });
 
-process.on('SIGTERM', () => {
-  console.log('⚠️ Received SIGTERM signal (platform shutdown/restart request)');
-});
+let isShuttingDown = false;
 
-process.on('SIGINT', () => {
-  console.log('⚠️ Received SIGINT signal (interrupt request)');
-});
+const handleGracefulShutdown = async (signal) => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log(`⚠️ Received ${signal} signal (platform shutdown/restart request)`);
+  try {
+    await closeDatabasePool();
+  } catch (err) {
+    console.error(`Error during ${signal} graceful shutdown:`, err?.message || err);
+  } finally {
+    process.exit(0);
+  }
+};
+
+process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
 
 const app = express();
 app.set('trust proxy', 1);
