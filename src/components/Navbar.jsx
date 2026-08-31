@@ -85,6 +85,13 @@ export default function Navbar() {
 
             {/* Left Nav Actions (Desktop) */}
             <div className="hidden lg:flex items-center space-x-8 text-sm font-sans tracking-wide">
+              <Link
+                to="/shop"
+                className="uppercase text-xs tracking-widest font-semibold text-[#2d2624] hover:text-[#d4a373] transition-colors py-2"
+              >
+                All Products
+              </Link>
+
               {/* Shop by Category Mega Menu Trigger */}
               <div
                 className="relative"
@@ -147,12 +154,6 @@ export default function Navbar() {
                 )}
               </div>
 
-              <Link
-                to="/shop"
-                className="uppercase text-xs tracking-widest font-semibold text-[#2d2624] hover:text-[#d4a373] transition-colors py-2"
-              >
-                All Products
-              </Link>
               <Link
                 to="/about"
                 className="uppercase text-xs tracking-widest font-semibold text-[#2d2624] hover:text-[#d4a373] transition-colors py-2"
@@ -286,6 +287,9 @@ export default function Navbar() {
       <div className="hidden lg:block bg-[#fcfbfa] border-b border-[#e8e2d9]/60 py-2.5">
         <div className="max-w-7xl mx-auto px-4">
           <ul className="flex items-center justify-center space-x-12 text-xs tracking-widest uppercase font-semibold text-[#39322f]">
+            <li>
+              <Link to="/shop" className="text-[#b58349] font-bold hover:underline">All Collection</Link>
+            </li>
             {navCategories.map((cat) => {
               const isCatActive = location.pathname === `/category/${cat.slug}`;
               return (
@@ -308,9 +312,6 @@ export default function Navbar() {
                 </li>
               );
             })}
-            <li>
-              <Link to="/shop" className="text-[#b58349] font-bold hover:underline">All Collection</Link>
-            </li>
           </ul>
         </div>
       </div>
@@ -374,6 +375,27 @@ export default function Navbar() {
                 </div>
 
                 <div className="space-y-2">
+                  {(() => {
+                    const isShopActive = location.pathname === '/shop';
+                    return (
+                      <Link
+                        to="/shop"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans font-semibold uppercase tracking-wide transition-all active:scale-[0.98] ${
+                          isShopActive
+                            ? 'bg-[#d4a373] text-white border-2 border-[#39322f] shadow-md font-bold'
+                            : 'bg-[#39322f] text-white hover:bg-[#d4a373] active:bg-[#d4a373]'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {isShopActive && <span className="w-2 h-2 rounded-full bg-white shrink-0" />}
+                          <span>View All Products</span>
+                        </span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    );
+                  })()}
+
                   {navCategories.map((cat) => {
                     const isCatActive = location.pathname === `/category/${cat.slug}`;
                     return (
@@ -399,27 +421,6 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
-
-                  {(() => {
-                    const isShopActive = location.pathname === '/shop';
-                    return (
-                      <Link
-                        to="/shop"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center justify-between p-3 rounded-xl text-sm font-sans font-semibold uppercase tracking-wide transition-all active:scale-[0.98] ${
-                          isShopActive
-                            ? 'bg-[#d4a373] text-white border-2 border-[#39322f] shadow-md font-bold'
-                            : 'bg-[#39322f] text-white hover:bg-[#d4a373] active:bg-[#d4a373]'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {isShopActive && <span className="w-2 h-2 rounded-full bg-white shrink-0" />}
-                          <span>View All Products</span>
-                        </span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    );
-                  })()}
                 </div>
 
                 <div className="pt-4 border-t border-[#e8e2d9] space-y-2">
