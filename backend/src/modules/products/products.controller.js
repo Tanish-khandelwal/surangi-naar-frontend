@@ -35,7 +35,7 @@ export const getProducts = async (req, res) => {
     const take = Number(limit);
 
     const [products, total] = await withQueryTimeout(
-      Promise.all([
+      () => Promise.all([
         prisma.product.findMany({
           where,
           skip,
@@ -52,7 +52,7 @@ export const getProducts = async (req, res) => {
     let reviewAggregates = [];
     if (productIds.length > 0) {
       reviewAggregates = await withQueryTimeout(
-        prisma.review.groupBy({
+        () => prisma.review.groupBy({
           by: ['productId'],
           where: { productId: { in: productIds } },
           _avg: { rating: true },

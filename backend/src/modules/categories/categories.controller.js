@@ -4,7 +4,7 @@ import { sendSuccess, sendError } from '../../utils/response.js';
 export const getCategories = async (req, res) => {
   try {
     const categories = await withQueryTimeout(
-      prisma.category.findMany(),
+      () => prisma.category.findMany(),
       8000,
       'GET /api/categories'
     );

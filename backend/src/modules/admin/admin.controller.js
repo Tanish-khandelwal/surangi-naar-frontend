@@ -27,7 +27,7 @@ export const adminLogin = async (req, res) => {
     let adminUser;
     try {
       adminUser = await withQueryTimeout(
-        prisma.user.findFirst({
+        () => prisma.user.findFirst({
           where: {
             role: 'admin',
             email: { equals: cleanEmail, mode: 'insensitive' },

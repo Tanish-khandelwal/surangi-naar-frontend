@@ -4,7 +4,7 @@ import { sendSuccess, sendError } from '../../utils/response.js';
 export const getHeroSlides = async (req, res) => {
   try {
     const heroSlides = await withQueryTimeout(
-      prisma.heroSlide.findMany({
+      () => prisma.heroSlide.findMany({
         orderBy: { order: 'asc' },
       }),
       8000,

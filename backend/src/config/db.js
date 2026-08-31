@@ -65,7 +65,7 @@ function createPrismaInstance() {
   return new PrismaClient(options);
 }
 
-export function withQueryTimeout(promise, ms = 8000, label = 'Database query') {
+function runSingleTimeout(promiseOrFn, ms, label) {
   let timer;
   const timeoutPromise = new Promise((_, reject) => {
     timer = setTimeout(() => {
@@ -76,9 +76,26 @@ export function withQueryTimeout(promise, ms = 8000, label = 'Database query') {
     }, ms);
   });
 
-  return Promise.race([promise, timeoutPromise]).finally(() => {
+  const p = typeof promiseOrFn === 'function' ? promiseOrFn() : promiseOrFn;
+  return Promise.race([p, timeoutPromise]).finally(() => {
     if (timer) clearTimeout(timer);
   });
+}
+
+export async function withQueryTimeout(promiseOrFn, ms = 8000, label = 'Database query') {
+  try {
+    return await runSingleTimeout(promiseOrFn, ms, label);
+  } catch (err) {
+    if (err && err.isTimeout) {
+      console.warn(`⚠️ ${label} initial attempt timed out after ${ms / 1000}s. Retrying once...`);
+      try {
+        return await runSingleTimeout(promiseOrFn, ms, `${label} (retry 1)`);
+      } catch (retryErr) {
+        throw retryErr;
+      }
+    }
+    throw err;
+  }
 }
 
 let currentPrisma = createPrismaInstance();

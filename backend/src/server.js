@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import prisma from './config/db.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import userRoutes from './modules/users/users.routes.js';
@@ -126,10 +127,30 @@ app.use('/api/coupons', couponsRoutes);
 // Centralized Error Handler
 app.use(errorHandler);
 
+async function warmUpDatabase() {
+  console.log('🔄 Warming up database connection...');
+  let timer;
+  try {
+    const warmUpPromise = prisma.$queryRaw`SELECT 1`;
+    const timeoutPromise = new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error('Warm-up timed out after 20s')), 20000);
+    });
+    await Promise.race([warmUpPromise, timeoutPromise]);
+    console.log('✅ Database warmed up and ready');
+  } catch (err) {
+    console.error(`❌ Database warm-up failed after 20s: ${err?.message || err}`);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Suranghi Naar Backend running on port ${PORT}`);
-  });
+  (async () => {
+    await warmUpDatabase();
+    app.listen(PORT, () => {
+      console.log(`🚀 Suranghi Naar Backend running on port ${PORT}`);
+    });
+  })();
 }
 
 export default app;
