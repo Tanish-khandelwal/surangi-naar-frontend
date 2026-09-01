@@ -22,6 +22,8 @@ import addressesRoutes from './modules/addresses/addresses.routes.js';
 import ordersRoutes from './modules/orders/orders.routes.js';
 import paymentsRoutes from './modules/payments/payments.routes.js';
 import couponsRoutes from './modules/coupons/coupons.routes.js';
+import sitemapRoutes from './modules/sitemap/sitemap.routes.js';
+import { getSitemapXml } from './modules/sitemap/sitemap.controller.js';
 
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -148,6 +150,8 @@ app.use('/api/addresses', addressesRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/coupons', couponsRoutes);
+app.use('/api/sitemap.xml', sitemapRoutes);
+app.get('/sitemap.xml', getSitemapXml);
 
 // Centralized Error Handler
 app.use(errorHandler);
