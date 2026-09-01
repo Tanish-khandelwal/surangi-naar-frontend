@@ -3,6 +3,8 @@ import { z } from 'zod';
 import prisma, { isPrismaFatalError, withQueryTimeout } from '../../config/db.js';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.js';
 import { sendSuccess, sendError } from '../../utils/response.js';
+import { sendEmail } from '../../config/email.js';
+import { getOrderShippedEmailTemplate, getOrderDeliveredEmailTemplate } from '../../utils/emailTemplates.js';
 import {
   adminLoginSchema,
   productSchema,
@@ -349,6 +351,34 @@ export const updateOrderStatus = async (req, res) => {
       where: { id },
       data: updateData,
     });
+
+    // Fire-and-forget non-blocking status emails if status changed to Shipped or Delivered
+    if (order.customerEmail) {
+      const statusChanged = existingOrder.status !== newStatus;
+
+      if (statusChanged && newStatus === 'Shipped') {
+        const { html, text } = getOrderShippedEmailTemplate({ order });
+        sendEmail({
+          to: order.customerEmail,
+          subject: `Your Order ${order.id} Has Been Shipped! | SURANGHI NAAR`,
+          html,
+          text,
+        }).catch((emailErr) => {
+          console.error(`[EMAIL ERROR] Non-blocking shipped email failed for order ${order.id}:`, emailErr?.message || emailErr);
+        });
+      } else if (statusChanged && newStatus === 'Delivered') {
+        const { html, text } = getOrderDeliveredEmailTemplate({ order });
+        sendEmail({
+          to: order.customerEmail,
+          subject: `Your Order ${order.id} Has Been Delivered! | SURANGHI NAAR`,
+          html,
+          text,
+        }).catch((emailErr) => {
+          console.error(`[EMAIL ERROR] Non-blocking delivered email failed for order ${order.id}:`, emailErr?.message || emailErr);
+        });
+      }
+    }
+
     return sendSuccess(res, 200, { order }, 'Order status updated');
   } catch (error) {
     return sendError(res, 400, error.message);
