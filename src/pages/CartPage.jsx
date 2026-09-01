@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useShop } from '../context/ShopContext';
 import { getImageUrl } from '../utils/image';
 import api from '../services/api';
+import CouponModal from '../components/CouponModal';
 import { 
   ShoppingBag, 
   Trash2, 
@@ -28,6 +29,7 @@ export default function CartPage() {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [phoneError, setPhoneError] = useState('');
   const [placedOrder, setPlacedOrder] = useState(null);
   const [idempotencyKey, setIdempotencyKey] = useState(() => {
@@ -85,25 +87,30 @@ export default function CartPage() {
 
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
-  const handleApplyCoupon = async (e) => {
-    e.preventDefault();
-    if (!couponCode.trim()) return;
+  const handleApplyCoupon = async (codeToValidate) => {
+    const code = typeof codeToValidate === 'string' ? codeToValidate : couponCode;
+    if (!code || !code.trim()) return;
     try {
       const res = await api.post('/coupons/validate', {
-        code: couponCode,
+        code: code.trim(),
         cartSubtotal,
       });
       if (res.data?.valid) {
         setDiscountAmount(res.data.discountAmount);
         setAppliedCoupon(`${res.data.code} (${res.data.discountPercent}% OFF)`);
+        setCouponCode(res.data.code);
         setCouponError('');
+        return res.data;
       }
     } catch (err) {
-      setCouponError(err.response?.data?.message || 'Invalid coupon code');
+      const errMsg = err.response?.data?.message || 'Invalid coupon code';
+      setCouponError(errMsg);
       setDiscountAmount(0);
       setAppliedCoupon('');
+      throw new Error(errMsg);
     }
   };
+
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -521,63 +528,61 @@ export default function CartPage() {
                   Order Summary
                 </h3>
 
-                {/* Promo Code Form */}
-                <form onSubmit={handleApplyCoupon} className="space-y-2">
+                {/* Promo Code Trigger / Applied State */}
+                <div className="space-y-2">
                   <label className="flex items-center gap-1.5 text-xs font-semibold text-[#39322f] uppercase tracking-wider">
                     <Tag className="w-3.5 h-3.5 text-[#d4a373]" />
-                    <span>Apply Discount Coupon</span>
+                    <span>Coupons & Offers</span>
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Try HAPPY5 or LAH10"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      disabled={!!appliedCoupon}
-                      className="flex-1 px-3.5 py-2.5 bg-white border border-[#e8e2d9] rounded-lg text-xs uppercase font-sans text-[#39322f] focus:outline-none focus:border-[#d4a373] disabled:bg-gray-100 disabled:text-gray-500"
-                    />
-                    {appliedCoupon ? (
-                      <button
-                        type="button"
-                        disabled
-                        className="bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-xs font-sans uppercase font-semibold flex items-center gap-1 cursor-default shadow-xs"
-                      >
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Applied</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        className="bg-[#39322f] hover:bg-[#d4a373] text-white px-5 py-2.5 rounded-lg text-xs font-sans uppercase font-semibold transition-colors cursor-pointer"
-                      >
-                        Apply
-                      </button>
-                    )}
-                  </div>
-                  {appliedCoupon && (
-                    <div className="flex items-center justify-between text-xs text-emerald-600 font-semibold pt-1">
-                      <span className="flex items-center gap-1">
-                        <Sparkles className="w-3.5 h-3.5" /> Coupon Applied: {appliedCoupon}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAppliedCoupon('');
-                          setDiscountAmount(0);
-                          setCouponCode('');
-                          setCouponError('');
-                        }}
-                        className="text-xs text-rose-600 hover:underline flex items-center gap-1 font-sans cursor-pointer ml-2"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                        <span>Remove</span>
-                      </button>
+
+                  {appliedCoupon ? (
+                    <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2 shadow-xs">
+                      <div className="flex items-center justify-between text-xs text-emerald-800 font-semibold">
+                        <span className="flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Coupon Applied: {appliedCoupon}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAppliedCoupon('');
+                            setDiscountAmount(0);
+                            setCouponCode('');
+                            setCouponError('');
+                          }}
+                          className="text-xs text-rose-600 hover:underline flex items-center gap-1 font-sans font-semibold cursor-pointer shrink-0 ml-2"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsCouponModalOpen(true)}
+                      className="w-full flex items-center justify-between p-3.5 bg-white border border-dashed border-[#d4a373] rounded-xl text-xs font-semibold text-[#39322f] hover:bg-[#f7f3ee]/60 transition-all cursor-pointer group shadow-xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-[#f7f3ee] flex items-center justify-center text-[#d4a373] group-hover:bg-[#d4a373] group-hover:text-white transition-colors">
+                          <Tag className="w-4 h-4" />
+                        </div>
+                        <div className="text-left">
+                          <span className="block font-bold text-xs uppercase text-[#39322f]">Apply Coupon</span>
+                          <span className="block text-[11px] font-normal text-[#39322f]/60 font-sans">Browse active codes & offers</span>
+                        </div>
+                      </div>
+                      <span className="text-xs font-sans font-bold uppercase tracking-wider text-[#d4a373] group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                        APPLY <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                    </button>
                   )}
+
                   {couponError && (
-                    <p className="text-xs text-red-500">{couponError}</p>
+                    <p className="text-xs text-red-500 font-semibold">{couponError}</p>
                   )}
-                </form>
+                </div>
+
 
                 {/* Custom Note */}
                 <div className="space-y-2 pt-4 border-t border-[#e8e2d9]">
@@ -689,7 +694,17 @@ export default function CartPage() {
           </div>
         </div>
       )}
+
+      {/* Coupon Selection Modal */}
+      <CouponModal
+        isOpen={isCouponModalOpen}
+        onClose={() => setIsCouponModalOpen(false)}
+        cartSubtotal={cartSubtotal}
+        onApplyCoupon={handleApplyCoupon}
+        appliedCouponCode={couponCode}
+      />
     </div>
   );
 }
+
 
