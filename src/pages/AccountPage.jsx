@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -443,6 +443,19 @@ export default function AccountPage() {
                         Cancel Order
                       </button>
                     )}
+
+                    <p className="text-[11px] text-[#39322f]/60 font-sans leading-normal max-w-xs sm:text-right mt-1">
+                      Orders can only be cancelled while in Pending or Processing status. Once shipped, please refer to our{' '}
+                      <Link
+                        to="/refund-exchange-policy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#d4a373] hover:underline font-medium"
+                      >
+                        Refund & Exchange Policy
+                      </Link>{' '}
+                      for return options.
+                    </p>
                   </div>
                 </div>
 
