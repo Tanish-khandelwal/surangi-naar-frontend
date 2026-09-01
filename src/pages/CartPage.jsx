@@ -507,7 +507,28 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#e8e2d9]">
+                <div className="pt-4 border-t border-[#e8e2d9] space-y-3">
+                  <p className="text-[11px] text-[#39322f]/70 font-sans leading-relaxed text-center sm:text-left">
+                    By placing this order, you agree to our{' '}
+                    <Link
+                      to="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#d4a373] hover:underline font-medium"
+                    >
+                      Privacy Policy
+                    </Link>{' '}
+                    and{' '}
+                    <Link
+                      to="/refund-exchange-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#d4a373] hover:underline font-medium"
+                    >
+                      Refund &amp; Exchange Policy
+                    </Link>
+                    .
+                  </p>
                   <button
                     type="submit"
                     className="w-full bg-[#39322f] hover:bg-[#d4a373] text-white py-4 rounded-full text-xs font-sans uppercase tracking-widest font-semibold transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
@@ -636,6 +657,28 @@ export default function CartPage() {
                       )}
                     </span>
                   </div>
+
+                  <p className="text-[11px] text-[#39322f]/70 font-sans leading-relaxed pt-2 border-t border-[#e8e2d9]/60">
+                    By placing this order, you agree to our{' '}
+                    <Link
+                      to="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#d4a373] hover:underline font-medium"
+                    >
+                      Privacy Policy
+                    </Link>{' '}
+                    and{' '}
+                    <Link
+                      to="/refund-exchange-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#d4a373] hover:underline font-medium"
+                    >
+                      Refund &amp; Exchange Policy
+                    </Link>
+                    .
+                  </p>
                 </div>
 
                 <div className="bg-[#f7f3ee] p-4 rounded-xl text-[11px] text-[#39322f]/70 font-sans space-y-2">

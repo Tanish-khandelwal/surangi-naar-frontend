@@ -535,6 +535,16 @@ export default function ProductDetailPage() {
               <div className="space-y-2">
                 <p>{product.shipping || 'Complimentary express shipping across India on orders above ₹5,000.'}</p>
                 <p>14-Day Hassle-Free Returns & Exchanges available on all non-customized garments.</p>
+                <p className="pt-1">
+                  <Link
+                    to="/refund-exchange-policy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#d4a373] hover:underline font-medium"
+                  >
+                    Read our full Refund &amp; Exchange Policy
+                  </Link>
+                </p>
               </div>
             )}
           </div>
