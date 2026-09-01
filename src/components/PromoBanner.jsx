@@ -8,7 +8,7 @@ export default function PromoBanner({
   description = "Intricate handcrafted zardozi embroidery paired with flowing silk short kurtis and festive Anarkali suit sets.",
   ctaText = "Shop Festive Edit",
   categoryLink = "festive-wear",
-  bgImage = "/images/products/real_product_14.jpg"
+  bgImage = "https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png"
 }) {
 
   return (

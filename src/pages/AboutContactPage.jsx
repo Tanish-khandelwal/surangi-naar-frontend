@@ -51,7 +51,7 @@ export default function AboutContactPage() {
         {/* Hero Banner Header */}
         <div className="relative rounded-3xl overflow-hidden bg-[#231f1e] text-white p-6 sm:p-12 lg:p-16 text-center space-y-4 sm:space-y-6">
           <img
-            src="/images/products/real_product_14.jpg"
+            src="https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236569/surangi-naar/products/real_product_14.png"
             alt="Suranghi Naar Atelier"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-40"

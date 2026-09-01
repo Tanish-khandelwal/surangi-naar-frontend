@@ -20,27 +20,27 @@ export default function HomePage() {
       {/* Curated by Prints Product Carousel */}
       <ProductCarousel />
 
-      {/* Mid-Page Promo Banner #1 */}
-      <PromoBanner 
-        title="The Festive Silk & Anarkali Edit"
-        subtitle="Artisanal Hand-Highlighting"
-        description="Pure silk & Chanderi ensembles embellished with delicate metallic sequins and traditional dabka work."
-        ctaText="Explore Festive Wear"
+      {/* Mid Banner */}
+      <PromoBanner
+        title="Royal Festive Silk Edit"
+        subtitle="Exclusive Festive Couture 2026"
+        description="Crafted with pure Mulberry silks, intricate zardozi hand embroidery, and Jaipur heritage craftsmanship."
+        ctaText="Explore Festive Edit"
         categoryLink="festive-wear"
-        bgImage="/images/products/real_product_15.jpg"
+        bgImage="https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236573/surangi-naar/products/real_product_15.png"
       />
 
       {/* Exclusive Collection 3-Column Feature Cards */}
       <FeatureCards />
 
-      {/* Promo Banner #2 */}
-      <PromoBanner 
-        title="Contemporary Resort Short Kurtis"
-        subtitle="100% Mulberry Silk & Organic Linen"
-        description="Effortless luxury short kurtis designed for summer retreats and serene evening gatherings."
+      {/* Secondary Banner */}
+      <PromoBanner
+        title="Artisanal Short Kurtis"
+        subtitle="Fluid Silk & Linen Edit"
+        description="Effortless luxury silhouettes designed for modern elegance and sunshine drapes."
         ctaText="Discover Short Kurtis"
         categoryLink="short-kurtis"
-        bgImage="/images/products/real_product_9.jpg"
+        bgImage="https://res.cloudinary.com/ztgqdi6r/image/upload/v1787236595/surangi-naar/products/real_product_9.jpg"
         secondaryTheme={true}
       />
 

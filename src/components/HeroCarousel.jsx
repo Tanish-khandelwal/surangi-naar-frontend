@@ -36,7 +36,7 @@ export default function HeroCarousel() {
         <div
           key={slide.id || index}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === currentSlide ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+            index === currentSlide ? 'opacity-100 z-10 pointer-events-auto visible' : 'opacity-0 z-0 pointer-events-none invisible'
           }`}
         >
           {/* Background Image with srcSet & LCP prioritization */}
