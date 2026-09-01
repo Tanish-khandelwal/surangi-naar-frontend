@@ -5,4 +5,4 @@ Disallow: /account
 Disallow: /cart
 Disallow: /api/
 
-Sitemap: https://suranghinaar.com/sitemap.xml
+Sitemap: https://api.suranghinaar.com/api/sitemap.xml
