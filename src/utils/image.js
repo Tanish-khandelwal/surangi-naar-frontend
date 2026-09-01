@@ -16,7 +16,9 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
     if (url.includes('/upload/f_auto') || url.includes('/upload/q_auto') || url.includes('/upload/c_') || url.includes('/upload/w_')) {
       if (options.width && !url.includes(`w_${options.width}`)) {
         return url.replace(/\/upload\/([^/]+)\//, (match, existingTransforms) => {
-          if (existingTransforms.includes('w_')) return match;
+          if (existingTransforms.includes('w_')) {
+            return `/upload/${existingTransforms.replace(/w_\d+/, `w_${options.width}`)}/`;
+          }
           return `/upload/${existingTransforms},w_${options.width}/`;
         });
       }

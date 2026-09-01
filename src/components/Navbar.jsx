@@ -172,7 +172,7 @@ export default function Navbar() {
             <div className="lg:hidden flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="p-1.5 text-[#2d2624] hover:text-[#d4a373] transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] p-2 text-[#2d2624] hover:text-[#d4a373] transition-colors cursor-pointer flex items-center justify-center"
                 aria-label="Open Mobile Menu"
               >
                 <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -186,6 +186,10 @@ export default function Navbar() {
                   <img
                     src="/logo.jpg"
                     alt="Suranghi Naar Logo"
+                    width="40"
+                    height="40"
+                    decoding="async"
+                    style={{ aspectRatio: '1/1' }}
                     className="w-7 h-7 sm:w-10 sm:h-10 rounded-full object-cover border border-white"
                   />
                 </div>
@@ -206,8 +210,8 @@ export default function Navbar() {
               {/* Search Toggle */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-1.5 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer relative"
-                aria-label="Search"
+                className="min-w-[44px] min-h-[44px] p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer relative flex items-center justify-center"
+                aria-label="Search Catalog"
               >
                 <Search className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
               </button>
@@ -216,13 +220,16 @@ export default function Navbar() {
               {currentUser ? (
                 <button
                   onClick={openAccountModal}
-                  className="flex items-center gap-1.5 p-1 sm:p-1.5 rounded-full bg-[#d4a373]/15 hover:bg-[#d4a373]/30 border border-[#d4a373]/40 transition-all cursor-pointer"
+                  aria-label="My Account Profile"
+                  className="flex items-center gap-1.5 p-1 sm:p-1.5 rounded-full bg-[#d4a373]/15 hover:bg-[#d4a373]/30 border border-[#d4a373]/40 transition-all cursor-pointer min-h-[44px]"
                   title="My Account Profile"
                 >
                   {currentUser.avatar ? (
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.name}
+                      width="24"
+                      height="24"
                       className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-white"
                     />
                   ) : (
@@ -237,20 +244,19 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => openAuthModal('login')}
-                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#39322f] text-white hover:bg-[#d4a373] hover:text-[#39322f] transition-all cursor-pointer text-[10px] sm:text-xs font-semibold uppercase tracking-wider shadow-xs"
+                  aria-label="Sign In"
+                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full bg-[#39322f] text-white hover:bg-[#d4a373] hover:text-[#39322f] transition-all cursor-pointer text-[10px] sm:text-xs font-semibold uppercase tracking-wider shadow-xs min-h-[44px]"
                 >
                   <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Sign In</span>
                 </button>
               )}
 
-
-
               {/* Wishlist Trigger (Desktop/Tablet) */}
               <button
                 onClick={() => setIsWishlistOpen(true)}
-                className="hidden sm:flex p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer"
-                aria-label="Wishlist"
+                className="hidden sm:flex min-w-[44px] min-h-[44px] p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer items-center justify-center"
+                aria-label="Wishlist Items"
               >
                 <Heart className="w-5 h-5 stroke-[1.5]" />
                 {wishlist.length > 0 && (
@@ -263,10 +269,10 @@ export default function Navbar() {
               {/* Cart Drawer Trigger (Always Visible) */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="p-1 sm:p-2 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer shrink-0"
-                aria-label="Cart"
+                className="min-w-[44px] min-h-[44px] p-1 sm:p-1.5 text-[#39322f] hover:text-[#d4a373] transition-colors relative cursor-pointer shrink-0 flex items-center justify-center"
+                aria-label="Shopping Bag Cart"
               >
-                <div className="flex items-center gap-1 sm:gap-1.5 bg-[#39322f] text-[#f7f3ee] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full hover:bg-[#d4a373] transition-colors shadow-sm">
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-[#39322f] text-[#f7f3ee] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full hover:bg-[#d4a373] transition-colors shadow-sm min-h-[36px]">
                   <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
                   <span className="bg-[#f7f3ee] text-[#39322f] text-[10px] sm:text-[11px] font-bold w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full flex items-center justify-center">
                     {cartCount}
@@ -351,12 +357,20 @@ export default function Navbar() {
             <div>
               <div className="pt-6 pb-4 px-5 border-b border-[#e8e2d9] flex items-center justify-between bg-[#f7f3ee]">
                 <div className="flex items-center gap-2.5">
-                  <img src="/logo.jpg" alt="Suranghi Naar Logo" className="w-8 h-8 rounded-full border border-white shadow-xs shrink-0" />
+                  <img
+                    src="/logo.jpg"
+                    alt="Suranghi Naar Logo"
+                    width="32"
+                    height="32"
+                    decoding="async"
+                    style={{ aspectRatio: '1/1' }}
+                    className="w-8 h-8 rounded-full border border-white shadow-xs shrink-0"
+                  />
                   <span className="font-cinzel text-lg font-bold text-[#39322f] leading-none">Suranghi Naar</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1.5 rounded-full hover:bg-gray-200/60 text-[#39322f] transition-colors cursor-pointer"
+                  className="min-w-[44px] min-h-[44px] p-2 rounded-full hover:bg-gray-200/60 text-[#39322f] transition-colors cursor-pointer flex items-center justify-center"
                   aria-label="Close Mobile Menu"
                 >
                   <X className="w-5 h-5" />

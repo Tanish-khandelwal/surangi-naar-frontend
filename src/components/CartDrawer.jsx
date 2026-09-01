@@ -110,7 +110,7 @@ export default function CartDrawer() {
           <button 
             onClick={() => setIsCartOpen(false)}
             aria-label="Close Cart"
-            className="p-1.5 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer"
+            className="min-w-[44px] min-h-[44px] p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer flex items-center justify-center"
           >
             <X className="w-6 h-6" />
           </button>
@@ -176,9 +176,13 @@ export default function CartDrawer() {
                 {/* Thumbnail */}
                 <div className="w-20 h-24 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-[#e8e2d9]">
                   <img
-                    src={getImageUrl(item.product?.image)}
+                    src={getImageUrl(item.product?.image, { width: 200 })}
                     alt={item.product?.name}
+                    width="200"
+                    height="240"
                     loading="lazy"
+                    decoding="async"
+                    style={{ aspectRatio: '3/4' }}
                     className="w-full h-full object-cover"
                   />
                 </div>

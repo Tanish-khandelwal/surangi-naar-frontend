@@ -91,7 +91,7 @@ export default function CategoryPage() {
         </nav>
 
         {/* Header Title Banner */}
-        <div className="bg-[#fcfbfa] border border-[#e8e2d9] rounded-2xl p-8 sm:p-12 mb-10 text-center relative overflow-hidden shadow-xs">
+        <div className="bg-[#fcfbfa] border border-[#e8e2d9] rounded-2xl p-8 sm:p-12 mb-10 text-center relative overflow-hidden shadow-xs min-h-[160px] sm:min-h-[200px] flex items-center justify-center">
           <div className="max-w-2xl mx-auto space-y-3">
             <span className="text-xs uppercase font-sans tracking-[0.25em] text-[#d4a373] font-semibold">
               Curated Edit
@@ -275,7 +275,13 @@ export default function CategoryPage() {
           <div className="relative w-4/5 max-w-xs bg-[#fcfbfa] h-full shadow-2xl p-6 z-10 space-y-6 overflow-y-auto">
             <div className="flex justify-between items-center border-b pb-4">
               <h3 className="font-serif font-bold text-lg text-[#39322f]">Filters</h3>
-              <button onClick={() => setIsMobileFilterOpen(false)}><X className="w-6 h-6" /></button>
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                aria-label="Close filters"
+                className="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-[#39322f] hover:text-[#d4a373]"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
 
             <div className="space-y-3">

@@ -107,9 +107,13 @@ export default function ProductCard({ product }) {
             variantImages.map((imgUrl, idx) => (
               <img
                 key={idx}
-                src={getImageUrl(imgUrl, { width: 800 })}
+                src={getImageUrl(imgUrl, { width: 450 })}
                 alt={`${product.name} view ${idx + 1}`}
+                width="450"
+                height="600"
                 loading={idx === 0 ? "eager" : "lazy"}
+                decoding="async"
+                style={{ aspectRatio: '3/4' }}
                 className={`w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 absolute inset-0 ${
                   idx === hoverIndex ? 'opacity-100 z-1' : 'opacity-0 z-0'
                 }`}
@@ -117,9 +121,13 @@ export default function ProductCard({ product }) {
             ))
           ) : (
             <img
-              src={getImageUrl(variantImages[0] || product.image, { width: 800 })}
+              src={getImageUrl(variantImages[0] || product.image, { width: 450 })}
               alt={product.name}
+              width="450"
+              height="600"
               loading="lazy"
+              decoding="async"
+              style={{ aspectRatio: '3/4' }}
               className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
             />
           )}
@@ -150,8 +158,8 @@ export default function ProductCard({ product }) {
             e.stopPropagation();
             toggleWishlist(product.id);
           }}
-          aria-label="Wishlist"
-          className="absolute top-3 right-3 z-10 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 cursor-pointer"
+          aria-label={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+          className="absolute top-3 right-3 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 cursor-pointer flex items-center justify-center"
         >
           <Heart 
             className={`w-4 h-4 transition-colors ${
@@ -172,7 +180,7 @@ export default function ProductCard({ product }) {
                   <button
                     key={size}
                     onClick={(e) => handleQuickAddSize(e, size)}
-                    className="px-2.5 py-1 text-[10px] font-semibold uppercase rounded-md bg-[#f7f3ee] hover:bg-[#39322f] hover:text-white text-[#39322f] transition-all border border-[#e8e2d9] cursor-pointer"
+                    className="px-2.5 py-1 text-[10px] font-semibold uppercase rounded-md bg-[#f7f3ee] hover:bg-[#39322f] hover:text-white text-[#39322f] transition-all border border-[#e8e2d9] cursor-pointer min-h-[28px]"
                   >
                     {size}
                   </button>
@@ -183,14 +191,15 @@ export default function ProductCard({ product }) {
         )}
 
         {/* Quick View Floating Action */}
-        <div className="absolute top-14 right-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 hidden sm:block">
+        <div className="absolute top-16 right-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 hidden sm:block">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setQuickViewProduct(product);
             }}
             title="Quick View"
-            className="p-2.5 rounded-full bg-white/90 hover:bg-[#39322f] text-[#39322f] hover:text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 cursor-pointer"
+            aria-label="Quick View Product Details"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 hover:bg-[#39322f] text-[#39322f] hover:text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 cursor-pointer flex items-center justify-center"
           >
             <Eye className="w-4 h-4" />
           </button>
@@ -228,6 +237,7 @@ export default function ProductCard({ product }) {
                 key={idx}
                 onClick={() => setSelectedColor(color)}
                 title={color.name}
+                aria-label={`Select color ${color.name}`}
                 className={`w-3.5 h-3.5 rounded-full border border-gray-300 transition-all cursor-pointer ${
                   selectedColor?.name === color.name ? 'ring-2 ring-[#d4a373] scale-110' : 'hover:scale-105'
                 }`}
@@ -256,7 +266,8 @@ export default function ProductCard({ product }) {
           <button
             onClick={handleAddToCart}
             disabled={product.isSoldOut}
-            className={`p-2 sm:p-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+            aria-label={product.isSoldOut ? "Item Sold Out" : "Add to Shopping Bag"}
+            className={`min-w-[44px] min-h-[44px] p-2.5 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center ${
               product.isSoldOut
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 : 'bg-[#39322f] hover:bg-[#d4a373] text-white shadow-md hover:scale-110'

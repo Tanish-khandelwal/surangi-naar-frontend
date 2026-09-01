@@ -75,8 +75,8 @@ function QuickViewModalContent({ product, onClose }) {
         {/* Close Button */}
         <button
           onClick={onClose}
-          aria-label="Close modal"
-          className="absolute top-4 right-4 z-10 p-2 text-[#39322f]/60 hover:text-[#39322f] rounded-full bg-white/80 backdrop-blur-xs hover:bg-white transition-all cursor-pointer shadow-xs"
+          aria-label="Close Quick View modal"
+          className="absolute top-4 right-4 z-10 min-w-[44px] min-h-[44px] p-2 text-[#39322f]/60 hover:text-[#39322f] rounded-full bg-white/80 backdrop-blur-xs hover:bg-white transition-all cursor-pointer shadow-xs flex items-center justify-center"
         >
           <X className="w-5 h-5" />
         </button>
@@ -85,9 +85,13 @@ function QuickViewModalContent({ product, onClose }) {
         <div className="p-6 bg-[#f7f3ee] flex flex-col justify-between">
           <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-inner border border-[#e8e2d9] bg-white mb-4 group">
             <img 
-              src={getImageUrl(modalImages[activeImageIndex] || modalImages[0])} 
+              src={getImageUrl(modalImages[activeImageIndex] || modalImages[0], { width: 600 })} 
               alt={product.name} 
+              width="600"
+              height="800"
               loading="lazy"
+              decoding="async"
+              style={{ aspectRatio: '3/4' }}
               className="w-full h-full object-cover object-center transition-all duration-300"
             />
             {product.badge && (
@@ -101,14 +105,14 @@ function QuickViewModalContent({ product, onClose }) {
                 <button
                   onClick={handlePrevImage}
                   aria-label="Previous image"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-[#39322f] hover:bg-white shadow-md transition-all cursor-pointer"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] p-2.5 rounded-full bg-white/80 text-[#39322f] hover:bg-white shadow-md transition-all cursor-pointer flex items-center justify-center"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleNextImage}
                   aria-label="Next image"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-[#39322f] hover:bg-white shadow-md transition-all cursor-pointer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] p-2.5 rounded-full bg-white/80 text-[#39322f] hover:bg-white shadow-md transition-all cursor-pointer flex items-center justify-center"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

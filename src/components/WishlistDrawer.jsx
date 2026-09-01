@@ -55,7 +55,7 @@ export default function WishlistDrawer() {
           <button 
             onClick={() => setIsWishlistOpen(false)}
             aria-label="Close Wishlist"
-            className="p-1.5 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer"
+            className="min-w-[44px] min-h-[44px] p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer flex items-center justify-center"
           >
             <X className="w-6 h-6" />
           </button>
@@ -94,7 +94,16 @@ export default function WishlistDrawer() {
                   }}
                   className="w-20 h-24 rounded-md overflow-hidden bg-gray-100 shrink-0 cursor-pointer border border-[#e8e2d9]"
                 >
-                  <img src={getImageUrl(product.image)} alt={product.name} loading="lazy" className="w-full h-full object-cover" />
+                  <img
+                    src={getImageUrl(product.image, { width: 200 })}
+                    alt={product.name}
+                    width="200"
+                    height="240"
+                    loading="lazy"
+                    decoding="async"
+                    style={{ aspectRatio: '3/4' }}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 <div className="flex-1 flex flex-col justify-between">
@@ -111,7 +120,8 @@ export default function WishlistDrawer() {
                       </h4>
                       <button
                         onClick={() => toggleWishlist(product.id)}
-                        className="text-[#39322f]/40 hover:text-red-600 transition-colors p-1 cursor-pointer"
+                        aria-label="Remove from wishlist"
+                        className="text-[#39322f]/40 hover:text-red-600 transition-colors p-2 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
                         title="Remove from wishlist"
                       >
                         <Trash2 className="w-4 h-4" />

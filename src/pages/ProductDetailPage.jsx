@@ -227,13 +227,23 @@ export default function ProductDetailPage() {
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`relative aspect-[3/4] w-14 sm:w-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-[#f8f4ee] shrink-0 ${
+                    aria-label={`View thumbnail ${idx + 1}`}
+                    className={`relative aspect-[3/4] w-14 sm:w-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-[#f8f4ee] shrink-0 min-h-[44px] ${
                       activeImageIndex === idx
                         ? 'border-[#d4a373] ring-2 ring-[#d4a373]/30 scale-105 shadow-md'
                         : 'border-[#e8e2d9] opacity-70 hover:opacity-100 hover:border-[#d4a373]/60'
                     }`}
                   >
-                    <img src={getImageUrl(imgUrl, { width: 200 })} alt={`${product.name} thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={getImageUrl(imgUrl, { width: 160 })}
+                      alt={`${product.name} thumbnail ${idx + 1}`}
+                      width="160"
+                      height="213"
+                      loading="lazy"
+                      decoding="async"
+                      style={{ aspectRatio: '3/4' }}
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -248,15 +258,20 @@ export default function ProductDetailPage() {
                 onTouchEnd={onTouchEnd}
               >
                 <img
-                  src={getImageUrl(galleryImages[activeImageIndex] || galleryImages[0], { width: 1200 })}
+                  src={getImageUrl(galleryImages[activeImageIndex] || galleryImages[0], { width: 900 })}
                   alt={product.name}
+                  width="900"
+                  height="1200"
+                  loading="eager"
+                  decoding="async"
+                  style={{ aspectRatio: '3/4' }}
                   className="w-full h-full object-cover object-center transition-all duration-500"
                 />
               </div>
 
               {product.badge && (
                 <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                  <span className="bg-[#39322f] text-white text-[10px] uppercase font-sans tracking-widest px-3.5 py-1.5 rounded-full font-bold shadow-md flex items-center gap-1.5 border border-[#d4a373]/40">
+                  <span className="bg-[#39322f] text-white text-[10px] uppercase font-sans tracking-widest px-3.5 py-1.5 rounded-full font-bold shadow-md flex items-center gap-1.5 border border-[#d4a373]/40 min-h-[28px]">
                     <Sparkles className="w-3 h-3 text-[#d4a373]" />
                     {product.badge}
                   </span>
@@ -265,8 +280,8 @@ export default function ProductDetailPage() {
 
               <button
                 onClick={() => toggleWishlist(product.id)}
-                className="absolute top-4 right-4 p-3 rounded-full bg-white/80 backdrop-blur-md text-[#39322f] hover:bg-white hover:text-rose-500 transition-all duration-300 shadow-lg z-10 cursor-pointer"
-                aria-label="Wishlist"
+                className="absolute top-4 right-4 min-w-[44px] min-h-[44px] p-3 rounded-full bg-white/80 backdrop-blur-md text-[#39322f] hover:bg-white hover:text-rose-500 transition-all duration-300 shadow-lg z-10 cursor-pointer flex items-center justify-center"
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-rose-500 text-rose-500' : ''}`} />
               </button>
@@ -277,14 +292,14 @@ export default function ProductDetailPage() {
                   <button
                     onClick={handlePrevImage}
                     aria-label="Previous Image"
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/80 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-xs transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-10 min-w-[44px] min-h-[44px] p-2.5 rounded-full bg-white/80 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-xs transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer flex items-center justify-center"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={handleNextImage}
                     aria-label="Next Image"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/80 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-xs transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 min-w-[44px] min-h-[44px] p-2.5 rounded-full bg-white/80 hover:bg-white text-[#39322f] shadow-lg backdrop-blur-xs transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 cursor-pointer flex items-center justify-center"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>

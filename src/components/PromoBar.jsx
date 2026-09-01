@@ -25,12 +25,12 @@ export default function PromoBar() {
   };
 
   return (
-    <div className="bg-[#1a1716] text-[#f8f4ee] text-xs font-sans tracking-widest uppercase py-2.5 px-4 relative z-20 border-b border-[#d4a373]/30 shadow-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="bg-[#1a1716] text-[#f8f4ee] text-xs font-sans tracking-widest uppercase py-2 px-4 relative z-20 border-b border-[#d4a373]/30 shadow-md min-h-[38px] flex items-center">
+      <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
         <button 
           onClick={handlePrev}
-          aria-label="Previous Promo"
-          className="text-white/60 hover:text-[#d4a373] transition-colors p-1 hidden sm:block cursor-pointer"
+          aria-label="Previous Promo Message"
+          className="text-white/60 hover:text-[#d4a373] transition-colors p-2 hidden sm:flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
         </button>
@@ -45,8 +45,8 @@ export default function PromoBar() {
 
         <button 
           onClick={handleNext}
-          aria-label="Next Promo"
-          className="text-white/60 hover:text-[#d4a373] transition-colors p-1 hidden sm:block cursor-pointer"
+          aria-label="Next Promo Message"
+          className="text-white/60 hover:text-[#d4a373] transition-colors p-2 hidden sm:flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer"
         >
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
