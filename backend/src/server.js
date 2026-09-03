@@ -157,27 +157,43 @@ app.get('/sitemap.xml', getSitemapXml);
 app.use(errorHandler);
 
 async function testDatabaseConnection() {
-  let timer;
-  try {
-    const queryPromise = prisma.$queryRaw`SELECT 1`.catch((err) => {
-      // Prevent unhandled promise rejection if startup test times out
-      return 'FAILED_QUERY';
-    });
-    const timeoutPromise = new Promise((resolve) => {
-      timer = setTimeout(() => resolve('TIMEOUT'), 10000);
-    });
-    const result = await Promise.race([queryPromise, timeoutPromise]);
-    if (result === 'TIMEOUT') {
-      console.error('❌ Database connectivity FAILED at startup: Connection timed out after 10s (server will continue running)');
-    } else if (result === 'FAILED_QUERY') {
-      console.error('❌ Database connectivity FAILED at startup: Query execution failed (server will continue running)');
-    } else {
-      console.log('✅ Database connectivity confirmed at startup');
+  const maxAttempts = 3;
+  const timeoutMs = 10000;
+  const delayBetweenAttemptsMs = 2000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let timer;
+    try {
+      const queryPromise = prisma.$queryRaw`SELECT 1`.catch(() => 'FAILED_QUERY');
+      const timeoutPromise = new Promise((resolve) => {
+        timer = setTimeout(() => resolve('TIMEOUT'), timeoutMs);
+      });
+
+      const result = await Promise.race([queryPromise, timeoutPromise]);
+      if (timer) clearTimeout(timer);
+
+      if (result !== 'TIMEOUT' && result !== 'FAILED_QUERY') {
+        console.log(`✅ Database connectivity confirmed at startup (attempt ${attempt}/${maxAttempts})`);
+        return;
+      }
+
+      const reason = result === 'TIMEOUT' ? `timed out after ${timeoutMs / 1000}s` : 'query execution failed';
+      if (attempt < maxAttempts) {
+        console.warn(`⚠️ Warm-up attempt ${attempt}/${maxAttempts} failed (${reason}), retrying in ${delayBetweenAttemptsMs / 1000}s...`);
+        await new Promise((resolve) => setTimeout(resolve, delayBetweenAttemptsMs));
+      } else {
+        console.error(`❌ Database connectivity FAILED at startup after ${maxAttempts} attempts (${reason}) (server will continue running)`);
+      }
+    } catch (err) {
+      if (timer) clearTimeout(timer);
+      const reason = err?.message || err;
+      if (attempt < maxAttempts) {
+        console.warn(`⚠️ Warm-up attempt ${attempt}/${maxAttempts} failed (${reason}), retrying in ${delayBetweenAttemptsMs / 1000}s...`);
+        await new Promise((resolve) => setTimeout(resolve, delayBetweenAttemptsMs));
+      } else {
+        console.error(`❌ Database connectivity FAILED at startup after ${maxAttempts} attempts (${reason}) (server will continue running)`);
+      }
     }
-  } catch (err) {
-    console.error(`❌ Database connectivity FAILED at startup: ${err?.message || err} (server will continue running)`);
-  } finally {
-    if (timer) clearTimeout(timer);
   }
 }
 

@@ -90,19 +90,27 @@ function runSingleTimeout(promiseOrFn, ms, label) {
   });
 }
 
-export async function withQueryTimeout(promiseOrFn, ms = 15000, label = 'Database query') {
-  try {
-    return await runSingleTimeout(promiseOrFn, ms, label);
-  } catch (err) {
-    if (err && err.isTimeout) {
-      console.warn(`⚠️ ${label} initial attempt timed out after ${ms / 1000}s. Retrying once...`);
-      try {
-        return await runSingleTimeout(promiseOrFn, ms, `${label} (retry 1)`);
-      } catch (retryErr) {
-        throw retryErr;
+export async function withQueryTimeout(promiseOrFn, ms = 15000, label = 'Database query', maxRetries = 2) {
+  let attempt = 0;
+  while (true) {
+    attempt++;
+    const attemptLabel = attempt === 1 ? label : `${label} (retry ${attempt - 1})`;
+    try {
+      return await runSingleTimeout(promiseOrFn, ms, attemptLabel);
+    } catch (err) {
+      const isTimeout = err && (err.isTimeout || err.message?.includes('timeout'));
+      const canRetry = attempt <= maxRetries;
+
+      if (isTimeout && canRetry) {
+        const backoffMs = 1000 * Math.pow(2, attempt - 1);
+        console.warn(
+          `⚠️ ${label} attempt ${attempt} timed out after ${ms / 1000}s. Retrying in ${backoffMs / 1000}s (retry ${attempt}/${maxRetries})...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      } else {
+        throw err;
       }
     }
-    throw err;
   }
 }
 
