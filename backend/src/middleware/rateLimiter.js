@@ -43,3 +43,14 @@ export const writeRateLimiter = rateLimit({
     message: 'Too many write requests. Please try again after 15 minutes.',
   },
 });
+
+export const webhookRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300, // generous limit for Razorpay server retries/bursts (300 requests per 15 mins per IP)
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many webhook requests.',
+  },
+});

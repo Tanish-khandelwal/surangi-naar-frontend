@@ -184,3 +184,139 @@ export const verifyPaymentSignature = async (req, res) => {
     return sendError(res, 500, error.message);
   }
 };
+
+export const handleRazorpayWebhook = async (req, res) => {
+  const signature = req.headers['x-razorpay-signature'];
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    console.error('❌ RAZORPAY_WEBHOOK_SECRET is missing from environment variables');
+    return sendError(res, 500, 'RAZORPAY_WEBHOOK_SECRET environment variable is missing');
+  }
+
+  if (!signature) {
+    console.warn('⚠️ Razorpay webhook request missing x-razorpay-signature header');
+    return sendError(res, 400, 'Missing x-razorpay-signature header');
+  }
+
+  // 1. Verify Webhook Signature using HMAC SHA256 against raw body Buffer
+  try {
+    const rawBody = req.rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(rawBody)
+      .digest('hex');
+
+    if (expectedSignature !== signature) {
+      console.warn('⚠️ Invalid Razorpay webhook signature');
+      return sendError(res, 400, 'Invalid webhook signature');
+    }
+  } catch (sigErr) {
+    console.error('Error verifying Razorpay webhook signature:', sigErr);
+    return sendError(res, 400, 'Error verifying webhook signature');
+  }
+
+  // 2. Process Event (Always return 200 OK after signature verification passes)
+  try {
+    const eventObj = req.body;
+    const event = eventObj?.event;
+
+    if (event !== 'payment.captured') {
+      console.log(`ℹ️ Razorpay webhook event '${event}' received and ignored.`);
+      return res.status(200).json({ status: 'ok', message: `Event '${event}' ignored` });
+    }
+
+    const paymentEntity = eventObj?.payload?.payment?.entity;
+    const razorpay_order_id = paymentEntity?.order_id;
+    const razorpay_payment_id = paymentEntity?.id;
+    const capturedAmountInPaise = Number(paymentEntity?.amount);
+
+    if (!razorpay_order_id) {
+      console.warn('⚠️ Webhook payment.captured event missing order_id');
+      return res.status(200).json({ status: 'ok', message: 'Missing razorpay order_id' });
+    }
+
+    // 3. Find corresponding internal order by stored razorpayOrderId
+    const order = await prisma.order.findFirst({
+      where: { razorpayOrderId: razorpay_order_id },
+    });
+
+    if (!order) {
+      console.warn(`⚠️ Webhook: Internal order not found for razorpayOrderId: ${razorpay_order_id}`);
+      return res.status(200).json({ status: 'ok', message: 'Internal order not found' });
+    }
+
+    // 4. Idempotency Check: if order is already processed/paid, return 200 OK immediately
+    if (order.status !== 'Pending') {
+      console.log(`ℹ️ Webhook: Order ${order.id} is already processed (status: ${order.status}). Skipping.`);
+      return res.status(200).json({ status: 'ok', message: 'Order already processed' });
+    }
+
+    const expectedAmountInPaise = Math.round(Number(order.total) * 100);
+    const now = new Date().toISOString();
+    const currentHistory = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+
+    // 5. Amount Cross-Check
+    if (capturedAmountInPaise !== expectedAmountInPaise) {
+      console.warn(
+        `[SECURITY WARNING] Webhook: Payment amount mismatch for order ${order.id}. Expected ${expectedAmountInPaise} paise, got ${capturedAmountInPaise} paise.`
+      );
+
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          status: 'Flagged for Review',
+          razorpayOrderId: razorpay_order_id,
+          razorpayPaymentId: razorpay_payment_id,
+          paymentMethod: 'Prepaid (Razorpay)',
+          statusHistory: [
+            ...currentHistory,
+            { status: 'Flagged for Review', timestamp: now, reason: 'Payment amount mismatch via webhook' },
+          ],
+        },
+      });
+
+      return res.status(200).json({ status: 'ok', message: 'Order flagged for review due to amount mismatch' });
+    }
+
+    // 6. Update Order Status to Processing
+    const updatedOrder = await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        status: 'Processing',
+        razorpayOrderId: razorpay_order_id,
+        razorpayPaymentId: razorpay_payment_id,
+        paymentMethod: 'Prepaid (Razorpay)',
+        statusHistory: [
+          ...currentHistory,
+          { status: 'Processing', timestamp: now, reason: 'Payment captured via webhook' },
+        ],
+      },
+    });
+
+    // Clear user cart upon successful payment confirmation
+    if (order.userId) {
+      await prisma.cartItem.deleteMany({ where: { userId: order.userId } }).catch((err) => {
+        console.error('Error clearing cart on webhook:', err);
+      });
+    }
+
+    // Send order confirmation email (fire-and-forget)
+    if (updatedOrder.customerEmail) {
+      const { html, text } = getOrderConfirmationEmailTemplate({ order: updatedOrder });
+      sendEmail({
+        to: updatedOrder.customerEmail,
+        subject: `Order Confirmation - ${updatedOrder.id} | SURANGHI NAAR`,
+        html,
+        text,
+      }).catch((err) => console.error('Webhook order confirmation email error:', err));
+    }
+
+    console.log(`✅ Webhook: Order ${order.id} marked as Processing after payment.captured event.`);
+    return res.status(200).json({ status: 'ok', message: 'Order updated successfully via webhook' });
+  } catch (error) {
+    console.error('🔥 Razorpay Webhook Processing Error:', error);
+    // Always return 200 OK to Razorpay once signature is verified, logging errors internally
+    return res.status(200).json({ status: 'ok', message: 'Internal processing error logged' });
+  }
+};
