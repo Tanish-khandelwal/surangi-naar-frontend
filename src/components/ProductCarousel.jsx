@@ -41,14 +41,14 @@ export default function ProductCarousel() {
             <button
               onClick={() => scroll('left')}
               aria-label="Scroll left"
-              className="p-3 rounded-full border border-[#e8e2d9] bg-[#f7f3ee] hover:bg-[#39322f] hover:text-white text-[#39322f] transition-all cursor-pointer shadow-xs"
+              className="min-w-[44px] min-h-[44px] p-3 rounded-full border border-[#e8e2d9] bg-[#f7f3ee] hover:bg-[#39322f] hover:text-white text-[#39322f] transition-all cursor-pointer shadow-xs flex items-center justify-center"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll('right')}
               aria-label="Scroll right"
-              className="p-3 rounded-full border border-[#e8e2d9] bg-[#f7f3ee] hover:bg-[#39322f] hover:text-white text-[#39322f] transition-all cursor-pointer shadow-xs"
+              className="min-w-[44px] min-h-[44px] p-3 rounded-full border border-[#e8e2d9] bg-[#f7f3ee] hover:bg-[#39322f] hover:text-white text-[#39322f] transition-all cursor-pointer shadow-xs flex items-center justify-center"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -58,7 +58,7 @@ export default function ProductCarousel() {
         {/* Scrollable Track Container */}
         <div 
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-4 pt-1 px-1 -mx-1"
+          className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-4 pt-1 px-1 -mx-1 touch-pan-x touch-pan-y overscroll-x-contain"
         >
           {carouselItems.map((product) => (
             <div 

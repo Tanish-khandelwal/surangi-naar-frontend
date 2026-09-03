@@ -431,7 +431,7 @@ export default function CartPage() {
                       placeholder="e.g. Ananya Sharma"
                       value={address.fullName}
                       onChange={(e) => setAddress({...address, fullName: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-xs focus:outline-none focus:border-[#d4a373]"
+                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-base sm:text-xs focus:outline-none focus:border-[#d4a373] min-h-[44px]"
                     />
                   </div>
                   <div>
@@ -451,7 +451,7 @@ export default function CartPage() {
                           setPhoneError('');
                         }
                       }}
-                      className={`w-full p-3 bg-white border rounded-xl text-xs focus:outline-none ${
+                      className={`w-full p-3 bg-white border rounded-xl text-base sm:text-xs focus:outline-none min-h-[44px] ${
                         phoneError ? 'border-rose-500' : 'border-[#e8e2d9] focus:border-[#d4a373]'
                       }`}
                     />
@@ -469,7 +469,7 @@ export default function CartPage() {
                       placeholder="your.email@domain.com"
                       value={address.email}
                       onChange={(e) => setAddress({...address, email: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-xs focus:outline-none focus:border-[#d4a373]"
+                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-base sm:text-xs focus:outline-none focus:border-[#d4a373] min-h-[44px]"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -480,7 +480,7 @@ export default function CartPage() {
                       placeholder="House/Flat No., Building, Street Name"
                       value={address.street}
                       onChange={(e) => setAddress({...address, street: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-xs focus:outline-none focus:border-[#d4a373]"
+                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-base sm:text-xs focus:outline-none focus:border-[#d4a373] min-h-[44px]"
                     />
                   </div>
                   <div>
@@ -491,7 +491,7 @@ export default function CartPage() {
                       placeholder="Jaipur / Mumbai / Delhi"
                       value={address.city}
                       onChange={(e) => setAddress({...address, city: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-xs focus:outline-none focus:border-[#d4a373]"
+                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-base sm:text-xs focus:outline-none focus:border-[#d4a373] min-h-[44px]"
                     />
                   </div>
                   <div>
@@ -502,7 +502,7 @@ export default function CartPage() {
                       placeholder="302001"
                       value={address.pincode}
                       onChange={(e) => setAddress({...address, pincode: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-xs focus:outline-none focus:border-[#d4a373]"
+                      className="w-full p-3 bg-white border border-[#e8e2d9] rounded-xl text-base sm:text-xs focus:outline-none focus:border-[#d4a373] min-h-[44px]"
                     />
                   </div>
                 </div>
@@ -531,7 +531,7 @@ export default function CartPage() {
                   </p>
                   <button
                     type="submit"
-                    className="w-full bg-[#39322f] hover:bg-[#d4a373] text-white py-4 rounded-full text-xs font-sans uppercase tracking-widest font-semibold transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full bg-[#39322f] hover:bg-[#d4a373] text-white py-4 rounded-full text-xs font-sans uppercase tracking-widest font-semibold transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                   >
                     <span>Complete Order</span>
                     <ArrowRight className="w-4 h-4" />

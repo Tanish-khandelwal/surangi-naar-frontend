@@ -27,6 +27,8 @@ export default function ProductCard({ product }) {
   const [hoverIndex, setHoverIndex] = useState(0);
 
   const intervalRef = useRef(null);
+  const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
+  const isDraggingRef = useRef(false);
 
   useEffect(() => {
     const vars = (product.colorVariants && product.colorVariants.length > 0)
@@ -74,6 +76,34 @@ export default function ProductCard({ product }) {
     return () => stopCycling();
   }, [selectedColor, product.id]);
 
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches[0]) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now()
+      };
+      isDraggingRef.current = false;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches && e.touches[0]) {
+      const dx = Math.abs(e.touches[0].clientX - touchStartRef.current.x);
+      const dy = Math.abs(e.touches[0].clientY - touchStartRef.current.y);
+      if (dx > 8 || dy > 8) {
+        isDraggingRef.current = true;
+      }
+    }
+  };
+
+  const handleLinkClick = (e) => {
+    if (isDraggingRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   const isWishlisted = isInWishlist(product.id);
   const validSizes = (product.sizes || []).filter(s => ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size'].includes(s));
   const availableSizes = validSizes.length > 0 ? validSizes : (product.sizes && product.sizes.length > 0 ? product.sizes : ['M', 'L', 'XL', 'XXL']);
@@ -81,14 +111,15 @@ export default function ProductCard({ product }) {
   const handleQuickAddSize = (e, size) => {
     e.stopPropagation();
     e.preventDefault();
-    if (product.isSoldOut) return;
+    if (isDraggingRef.current || product.isSoldOut) return;
     setSelectedSize(size);
     addToCart(product, selectedColor, size, 1);
   };
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    if (product.isSoldOut) return;
+    e.preventDefault();
+    if (isDraggingRef.current || product.isSoldOut) return;
     addToCart(product, selectedColor, selectedSize || availableSizes[0]);
   };
 
@@ -96,13 +127,19 @@ export default function ProductCard({ product }) {
     <div 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group relative flex flex-col luxury-glass border border-[#d4a373]/30 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:border-[#d4a373] gold-glow-hover"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      className="group relative flex flex-col luxury-glass border border-[#d4a373]/30 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:border-[#d4a373] gold-glow-hover touch-pan-y"
     >
       {/* Image Container */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f8f4ee]">
         
         {/* Link to Product Details */}
-        <Link to={`/product/${product.id}`} className="block w-full h-full relative overflow-hidden">
+        <Link 
+          to={`/product/${product.id}`} 
+          onClick={handleLinkClick}
+          className="block w-full h-full relative overflow-hidden z-0"
+        >
           {variantImages.length > 1 ? (
             variantImages.map((imgUrl, idx) => (
               <img
@@ -156,6 +193,8 @@ export default function ProductCard({ product }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
+            e.preventDefault();
+            if (isDraggingRef.current) return;
             toggleWishlist(product.id);
           }}
           aria-label={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
@@ -168,9 +207,9 @@ export default function ProductCard({ product }) {
           />
         </button>
 
-        {/* Quick-Size Selector Drawer Bar on Hover */}
+        {/* Quick-Size Selector Drawer Bar on Hover (Desktop Only) */}
         {!product.isSoldOut && (
-          <div className="absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-3 group-hover:translate-y-0">
+          <div className="hidden sm:block absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform translate-y-3 group-hover:translate-y-0">
             <div className="bg-[#fcfbfa]/95 backdrop-blur-md p-2 rounded-xl shadow-xl border border-[#e8e2d9] text-center">
               <div className="text-[9px] uppercase tracking-widest text-[#39322f]/60 font-semibold mb-1">
                 Quick Add Size
@@ -191,10 +230,12 @@ export default function ProductCard({ product }) {
         )}
 
         {/* Quick View Floating Action */}
-        <div className="absolute top-16 right-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 hidden sm:block">
+        <div className="absolute top-16 right-3 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 hidden sm:block">
           <button
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
+              if (isDraggingRef.current) return;
               setQuickViewProduct(product);
             }}
             title="Quick View"
@@ -211,7 +252,11 @@ export default function ProductCard({ product }) {
         <div>
           {/* Category Tag & Rating */}
           <div className="flex items-center justify-between text-xs text-[#39322f]/60 font-sans mb-1">
-            <Link to={`/category/${product.categorySlug || 'kurtis'}`} className="uppercase tracking-wider text-[9px] sm:text-[10px] font-semibold text-[#d4a373] hover:underline">
+            <Link 
+              to={`/category/${product.categorySlug || 'kurtis'}`} 
+              onClick={handleLinkClick}
+              className="uppercase tracking-wider text-[9px] sm:text-[10px] font-semibold text-[#d4a373] hover:underline"
+            >
               {product.category}
             </Link>
             {product.reviewCount > 0 && (
@@ -225,6 +270,7 @@ export default function ProductCard({ product }) {
           {/* Product Title Link */}
           <Link 
             to={`/product/${product.id}`}
+            onClick={handleLinkClick}
             className="font-serif text-sm sm:text-base font-semibold text-[#39322f] hover:text-[#d4a373] transition-colors line-clamp-1 block"
           >
             {product.name}
@@ -235,14 +281,23 @@ export default function ProductCard({ product }) {
             {cardVariants.map((color, idx) => (
               <button
                 key={idx}
-                onClick={() => setSelectedColor(color)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (isDraggingRef.current) return;
+                  setSelectedColor(color);
+                }}
                 title={color.name}
                 aria-label={`Select color ${color.name}`}
-                className={`w-3.5 h-3.5 rounded-full border border-gray-300 transition-all cursor-pointer ${
+                className={`min-w-[24px] min-h-[24px] w-6 h-6 rounded-full border border-gray-300 transition-all cursor-pointer flex items-center justify-center ${
                   selectedColor?.name === color.name ? 'ring-2 ring-[#d4a373] scale-110' : 'hover:scale-105'
                 }`}
-                style={{ backgroundColor: color.hex || '#5a2d82' }}
-              />
+              >
+                <span 
+                  className="w-3.5 h-3.5 rounded-full" 
+                  style={{ backgroundColor: color.hex || '#5a2d82' }} 
+                />
+              </button>
             ))}
             <span className="text-[9px] sm:text-[10px] text-[#39322f]/60 font-sans ml-0.5 line-clamp-1">
               {selectedColor?.name || cardVariants[0]?.name}
@@ -282,3 +337,4 @@ export default function ProductCard({ product }) {
     </div>
   );
 }
+

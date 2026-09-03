@@ -77,27 +77,38 @@ export default function CategoryPage() {
     return `${matchingCount} Styles`;
   };
 
+  React.useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileFilterOpen]);
+
   return (
-    <div className="bg-[#f7f3ee] min-h-screen py-10">
+    <div className="bg-[#f7f3ee] min-h-screen py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs font-sans text-[#39322f]/60 mb-6 uppercase tracking-wider">
-          <Link to="/" className="hover:text-[#d4a373] transition-colors">Home</Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <Link to="/shop" className="hover:text-[#d4a373] transition-colors">Collections</Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-[#39322f] font-semibold">{categoryTitle}</span>
+        <nav className="flex items-center gap-2 text-xs font-sans text-[#39322f]/60 mb-6 uppercase tracking-wider overflow-x-auto no-scrollbar whitespace-nowrap">
+          <Link to="/" className="hover:text-[#d4a373] transition-colors min-h-[36px] flex items-center">Home</Link>
+          <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+          <Link to="/shop" className="hover:text-[#d4a373] transition-colors min-h-[36px] flex items-center">Collections</Link>
+          <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+          <span className="text-[#39322f] font-semibold flex items-center min-h-[36px]">{categoryTitle}</span>
         </nav>
 
         {/* Header Title Banner */}
-        <div className="bg-[#fcfbfa] border border-[#e8e2d9] rounded-2xl p-8 sm:p-12 mb-10 text-center relative overflow-hidden shadow-xs min-h-[160px] sm:min-h-[200px] flex items-center justify-center">
-          <div className="max-w-2xl mx-auto space-y-3">
+        <div className="bg-[#fcfbfa] border border-[#e8e2d9] rounded-2xl p-6 sm:p-12 mb-8 text-center relative overflow-hidden shadow-xs min-h-[140px] sm:min-h-[200px] flex items-center justify-center">
+          <div className="max-w-2xl mx-auto space-y-2 sm:space-y-3">
             <span className="text-xs uppercase font-sans tracking-[0.25em] text-[#d4a373] font-semibold">
               Curated Edit
             </span>
 
-            <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#39322f] capitalize">
+            <h1 className="font-serif text-2xl sm:text-5xl font-bold text-[#39322f] capitalize">
               {categoryTitle}
             </h1>
             <p className="text-xs sm:text-sm text-[#39322f]/70 font-sans font-light max-w-lg mx-auto">
@@ -109,10 +120,10 @@ export default function CategoryPage() {
         {/* Toolbar & Filter Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#fcfbfa] border border-[#e8e2d9] p-4 rounded-xl mb-8 shadow-2xs">
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-3 w-full sm:w-auto">
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 bg-[#39322f] text-white px-4 py-2 rounded-lg text-xs font-sans uppercase font-semibold cursor-pointer"
+              className="lg:hidden inline-flex items-center gap-2 bg-[#39322f] text-white px-4 py-2.5 rounded-lg text-xs font-sans uppercase font-semibold cursor-pointer min-h-[44px]"
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span>Filters</span>
@@ -124,14 +135,14 @@ export default function CategoryPage() {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <label className="text-xs font-sans font-medium text-[#39322f]/70 uppercase tracking-wider hidden sm:inline">
               Sort By:
             </label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-[#e8e2d9] text-xs font-sans text-[#39322f] font-semibold px-4 py-2 rounded-lg focus:outline-none focus:border-[#d4a373] cursor-pointer"
+              className="bg-white border border-[#e8e2d9] text-xs font-sans text-[#39322f] font-semibold px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#d4a373] cursor-pointer min-h-[44px] w-full sm:w-auto"
             >
               <option value="recommended">Featured & Recommended</option>
               <option value="price-low">Price: Low to High</option>
@@ -201,7 +212,7 @@ export default function CategoryPage() {
                     <button
                       key={sz}
                       onClick={() => setSelectedSizeFilter(sz)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold uppercase font-sans border transition-all cursor-pointer ${
+                      className={`px-3 py-2 rounded-lg text-xs font-semibold uppercase font-sans border transition-all cursor-pointer min-h-[40px] ${
                         isSelected
                           ? 'bg-[#39322f] text-white border-[#39322f] shadow-xs'
                           : 'bg-white text-[#39322f]/80 border-[#e8e2d9] hover:border-[#d4a373]'
@@ -226,7 +237,7 @@ export default function CategoryPage() {
                 step="1000"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full accent-[#d4a373] cursor-pointer"
+                className="w-full accent-[#d4a373] cursor-pointer min-h-[36px]"
               />
             </div>
 
@@ -250,13 +261,13 @@ export default function CategoryPage() {
                 <p className="text-xs text-gray-500 font-sans mt-1">Try adjusting your filters or price slider.</p>
                 <button
                   onClick={() => { setMaxPrice(40000); setInStockOnly(false); setSelectedSizeFilter('All'); }}
-                  className="mt-4 px-6 py-2 bg-[#39322f] text-white text-xs uppercase tracking-widest font-sans rounded-full cursor-pointer hover:bg-[#d4a373] transition-colors"
+                  className="mt-4 px-6 py-3 bg-[#39322f] text-white text-xs uppercase tracking-widest font-sans rounded-full cursor-pointer hover:bg-[#d4a373] transition-colors min-h-[44px]"
                 >
                   Reset Filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                 {products.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -271,14 +282,17 @@ export default function CategoryPage() {
       {/* Mobile Filter Modal */}
       {isMobileFilterOpen && (
         <div className="fixed inset-0 z-50 flex justify-end lg:hidden animate-in fade-in duration-200">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileFilterOpen(false)} />
-          <div className="relative w-4/5 max-w-xs bg-[#fcfbfa] h-full shadow-2xl p-6 z-10 space-y-6 overflow-y-auto">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setIsMobileFilterOpen(false)} />
+          <div 
+            className="relative w-4/5 max-w-xs bg-[#fcfbfa] h-full shadow-2xl p-6 z-10 space-y-6 overflow-y-auto overscroll-contain"
+            data-lenis-prevent
+          >
             <div className="flex justify-between items-center border-b pb-4">
               <h3 className="font-serif font-bold text-lg text-[#39322f]">Filters</h3>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
                 aria-label="Close filters"
-                className="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-[#39322f] hover:text-[#d4a373]"
+                className="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-[#39322f] hover:text-[#d4a373] cursor-pointer"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -286,7 +300,7 @@ export default function CategoryPage() {
 
             <div className="space-y-3">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-[#39322f]">Category</h4>
-              <div className="flex flex-col gap-2 text-xs">
+              <div className="flex flex-col gap-1 text-xs">
                 {catList.map(cat => {
                   const styleCount = getCategoryStyleCount(cat);
                   return (
@@ -294,7 +308,7 @@ export default function CategoryPage() {
                       key={cat.id || cat.slug}
                       to={`/category/${cat.slug}`}
                       onClick={() => setIsMobileFilterOpen(false)}
-                      className="flex items-center justify-between py-1 text-[#39322f]/80 hover:text-[#d4a373]"
+                      className="flex items-center justify-between py-2 px-1 text-[#39322f]/80 hover:text-[#d4a373] min-h-[40px]"
                     >
                       <span>{cat.name}</span>
                       <span className="text-[10px] text-[#39322f]/50 font-sans">{styleCount}</span>
@@ -304,7 +318,7 @@ export default function CategoryPage() {
               </div>
             </div>
 
-            <div className="space-y-2 pt-4 border-t">
+            <div className="space-y-2 pt-4 border-t border-[#e8e2d9]">
               <span className="text-xs font-semibold uppercase text-[#39322f]">Max Price: ₹{maxPrice.toLocaleString('en-IN')}</span>
               <input
                 type="range"
@@ -313,7 +327,7 @@ export default function CategoryPage() {
                 step="1000"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full accent-[#d4a373]"
+                className="w-full accent-[#d4a373] min-h-[36px] cursor-pointer"
               />
             </div>
 
@@ -323,20 +337,20 @@ export default function CategoryPage() {
                 {selectedSizeFilter !== 'All' && (
                   <button
                     onClick={() => setSelectedSizeFilter('All')}
-                    className="text-[10px] text-[#d4a373] hover:underline uppercase font-bold"
+                    className="text-[10px] text-[#d4a373] hover:underline uppercase font-bold min-h-[36px] px-2 flex items-center"
                   >
                     Clear
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {FILTER_SIZES.map((sz) => {
                   const isSelected = selectedSizeFilter === sz;
                   return (
                     <button
                       key={sz}
                       onClick={() => { setSelectedSizeFilter(sz); setIsMobileFilterOpen(false); }}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold uppercase font-sans border transition-all ${
+                      className={`px-3 py-2.5 rounded-lg text-xs font-semibold uppercase font-sans border transition-all min-h-[44px] cursor-pointer ${
                         isSelected
                           ? 'bg-[#39322f] text-white border-[#39322f]'
                           : 'bg-white text-[#39322f]/80 border-[#e8e2d9]'
@@ -347,6 +361,15 @@ export default function CategoryPage() {
                   );
                 })}
               </div>
+            </div>
+
+            <div className="pt-6 border-t border-[#e8e2d9]">
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-full bg-[#39322f] text-white py-3.5 rounded-full text-xs font-sans uppercase tracking-widest font-semibold cursor-pointer shadow-md hover:bg-[#d4a373] transition-colors min-h-[44px]"
+              >
+                Apply Filters
+              </button>
             </div>
           </div>
         </div>

@@ -337,7 +337,7 @@ export default function AccountPage() {
             <div className="bg-[#fcfbfa] rounded-2xl border border-[#e8e2d9] p-2 space-y-1 shadow-sm">
               <button
                 onClick={() => handleTabChange('orders')}
-                className={`w-full flex items-center justify-between p-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer min-h-[44px] ${
                   activeTab === 'orders'
                     ? 'bg-[#39322f] text-white shadow-sm'
                     : 'text-[#39322f] hover:bg-[#f7f3ee]'
@@ -347,7 +347,7 @@ export default function AccountPage() {
                   <Package className="w-4 h-4 text-[#d4a373]" />
                   Order History
                 </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold ${
                   activeTab === 'orders' ? 'bg-[#d4a373] text-white' : 'bg-[#e8e2d9] text-[#39322f]'
                 }`}>
                   {orders.length}
@@ -356,7 +356,7 @@ export default function AccountPage() {
 
               <button
                 onClick={() => handleTabChange('addresses')}
-                className={`w-full flex items-center justify-between p-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer min-h-[44px] ${
                   activeTab === 'addresses'
                     ? 'bg-[#39322f] text-white shadow-sm'
                     : 'text-[#39322f] hover:bg-[#f7f3ee]'
@@ -366,7 +366,7 @@ export default function AccountPage() {
                   <MapPin className="w-4 h-4 text-[#d4a373]" />
                   Saved Addresses
                 </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold ${
                   activeTab === 'addresses' ? 'bg-[#d4a373] text-white' : 'bg-[#e8e2d9] text-[#39322f]'
                 }`}>
                   {addresses.length}
@@ -375,7 +375,7 @@ export default function AccountPage() {
 
               <button
                 onClick={() => handleTabChange('profile')}
-                className={`w-full flex items-center justify-between p-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer min-h-[44px] ${
                   activeTab === 'profile'
                     ? 'bg-[#39322f] text-white shadow-sm'
                     : 'text-[#39322f] hover:bg-[#f7f3ee]'

@@ -161,21 +161,34 @@ export default function ProductDetailPage() {
   };
 
   const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    if (e.targetTouches && e.targetTouches[0]) {
+      setTouchEnd(null);
+      setTouchStart({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      });
+    }
   };
 
   const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (e.targetTouches && e.targetTouches[0]) {
+      setTouchEnd({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      });
+    }
   };
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > 40) {
-      handleNextImage();
-    } else if (distance < -40) {
-      handlePrevImage();
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    if (Math.abs(distanceX) > Math.abs(distanceY) * 1.2) {
+      if (distanceX > 40) {
+        handleNextImage();
+      } else if (distanceX < -40) {
+        handlePrevImage();
+      }
     }
   };
 
@@ -395,14 +408,18 @@ export default function ProductDetailPage() {
                           key={idx}
                           onClick={() => handleColorChange(col)}
                           title={colorName}
-                          className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
-                            isSelected ? 'ring-2 ring-[#d4a373] border-white scale-110 shadow-sm' : 'border-gray-300 hover:scale-105'
+                          className={`min-w-[44px] min-h-[44px] rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
+                            isSelected ? 'ring-2 ring-[#d4a373] border-white scale-105 shadow-sm' : 'border-gray-300 hover:scale-105'
                           }`}
-                          style={{ backgroundColor: hexColor }}
                         >
-                          {isSelected && (
-                            <Check className={`w-4 h-4 ${isLightColor ? 'text-[#39322f]' : 'text-white'}`} />
-                          )}
+                          <span 
+                            className="w-7 h-7 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: hexColor }}
+                          >
+                            {isSelected && (
+                              <Check className={`w-3.5 h-3.5 ${isLightColor ? 'text-[#39322f]' : 'text-white'}`} />
+                            )}
+                          </span>
                         </button>
                       );
                     })}
@@ -425,7 +442,7 @@ export default function ProductDetailPage() {
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase font-sans border transition-all cursor-pointer ${
+                      className={`min-w-[44px] min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-semibold uppercase font-sans border transition-all cursor-pointer flex items-center justify-center ${
                         selectedSize === size
                           ? 'bg-[#39322f] text-white border-[#39322f] shadow-md'
                           : 'bg-white text-[#39322f] border-[#e8e2d9] hover:border-[#d4a373]'
@@ -442,25 +459,27 @@ export default function ProductDetailPage() {
                 <div className="flex items-center border border-[#e8e2d9] bg-white rounded-full p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer"
+                    aria-label="Decrease quantity"
+                    className="min-w-[44px] min-h-[44px] p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer flex items-center justify-center"
                   >
-                    <Minus className="w-3.5 h-3.5" />
+                    <Minus className="w-4 h-4" />
                   </button>
                   <span className="w-8 text-center text-sm font-semibold font-sans text-[#39322f]">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer"
+                    aria-label="Increase quantity"
+                    className="min-w-[44px] min-h-[44px] p-2 text-[#39322f] hover:text-[#d4a373] transition-colors cursor-pointer flex items-center justify-center"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
 
                 <button
                   onClick={handleAddToCart}
                   disabled={product.isSoldOut}
-                  className={`flex-1 py-3.5 px-6 rounded-full text-xs font-semibold uppercase tracking-widest font-sans transition-all duration-300 flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+                  className={`flex-1 min-h-[48px] py-3.5 px-6 rounded-full text-xs font-semibold uppercase tracking-widest font-sans transition-all duration-300 flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
                     product.isSoldOut
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-[#39322f] hover:bg-[#d4a373] text-[#f7f3ee] hover:text-[#39322f]'
