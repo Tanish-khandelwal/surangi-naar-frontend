@@ -101,12 +101,17 @@ export async function withQueryTimeout(promiseOrFn, ms = 15000, label = 'Databas
       const isTimeout = err && (err.isTimeout || err.message?.includes('timeout'));
       const canRetry = attempt <= maxRetries;
 
-      if (isTimeout && canRetry) {
-        const backoffMs = 1000 * Math.pow(2, attempt - 1);
-        console.warn(
-          `⚠️ ${label} attempt ${attempt} timed out after ${ms / 1000}s. Retrying in ${backoffMs / 1000}s (retry ${attempt}/${maxRetries})...`
-        );
-        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      if (isTimeout) {
+        resetPrismaClient(err).catch(() => {});
+        if (canRetry) {
+          const backoffMs = 1000 * Math.pow(2, attempt - 1);
+          console.warn(
+            `⚠️ ${label} attempt ${attempt} timed out after ${ms / 1000}s. Resetting connection pool and retrying in ${backoffMs / 1000}s (retry ${attempt}/${maxRetries})...`
+          );
+          await new Promise((resolve) => setTimeout(resolve, backoffMs));
+        } else {
+          throw err;
+        }
       } else {
         throw err;
       }

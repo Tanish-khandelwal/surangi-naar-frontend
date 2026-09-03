@@ -200,8 +200,13 @@ export const handleRazorpayWebhook = async (req, res) => {
   }
 
   // 1. Verify Webhook Signature using HMAC SHA256 against raw body Buffer
+  let rawBody;
+  let eventObj;
   try {
-    const rawBody = req.rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
+    rawBody = Buffer.isBuffer(req.body)
+      ? req.body
+      : (req.rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body)));
+      
     const expectedSignature = crypto
       .createHmac('sha256', webhookSecret)
       .update(rawBody)
@@ -211,6 +216,8 @@ export const handleRazorpayWebhook = async (req, res) => {
       console.warn('⚠️ Invalid Razorpay webhook signature');
       return sendError(res, 400, 'Invalid webhook signature');
     }
+
+    eventObj = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString('utf8')) : req.body;
   } catch (sigErr) {
     console.error('Error verifying Razorpay webhook signature:', sigErr);
     return sendError(res, 400, 'Error verifying webhook signature');
@@ -218,7 +225,6 @@ export const handleRazorpayWebhook = async (req, res) => {
 
   // 2. Process Event (Always return 200 OK after signature verification passes)
   try {
-    const eventObj = req.body;
     const event = eventObj?.event;
 
     if (event !== 'payment.captured') {
