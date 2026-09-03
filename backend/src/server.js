@@ -158,7 +158,7 @@ app.use(errorHandler);
 
 async function testDatabaseConnection() {
   const maxAttempts = 3;
-  const timeoutMs = 10000;
+  const timeoutMs = 15000;
   const delayBetweenAttemptsMs = 2000;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
