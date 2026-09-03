@@ -18,9 +18,6 @@ export function getFormattedDatabaseUrl(urlStr) {
   if (!urlStr) return urlStr;
   try {
     const url = new URL(urlStr);
-    if (!url.searchParams.has('pgbouncer')) {
-      url.searchParams.set('pgbouncer', 'true');
-    }
     if (!url.searchParams.has('sslmode')) {
       url.searchParams.set('sslmode', 'verify-full');
     }
@@ -48,9 +45,6 @@ function createPrismaInstance() {
       keepAliveInitialDelayMillis: 10000,
       allowExitOnIdle: false,
       ssl: { rejectUnauthorized: false },
-      lookup: (hostname, opts, callback) => {
-        dns.lookup(hostname, { family: 4 }, callback);
-      },
     });
 
     pool.on('error', (err) => {
