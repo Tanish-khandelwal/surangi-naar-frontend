@@ -5,14 +5,14 @@ export const getCategories = async (req, res) => {
   try {
     const categories = await withQueryTimeout(
       () => prisma.category.findMany(),
-      15000,
+      45000,
       'GET /api/categories'
     );
     return sendSuccess(res, 200, { categories }, 'Categories fetched successfully');
   } catch (error) {
     console.error('🔥 GET /api/categories error:', error?.message || error, error?.stack || '');
     if (error.isTimeout || error.message?.includes('timeout')) {
-      return sendError(res, 503, 'Database query timeout after 15s');
+      return sendError(res, 503, 'Database query timeout after 45s');
     }
     return sendError(res, 500, error.message);
   }
