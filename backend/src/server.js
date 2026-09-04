@@ -260,12 +260,15 @@ app.get('/api/test-connection', async (req, res) => {
     const pool = new pg.Pool({
       connectionString: formattedUrl,
       ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 3500,
+      connectionTimeoutMillis: 5000,
+      lookup: (hostname, opts, cb) => {
+        dns.lookup(hostname, { family: 4 }, cb);
+      },
     });
     const adapter = new PrismaPg(pool);
     const testPrisma = new PrismaClient({ adapter });
     const start = Date.now();
-    const cats = await runWithTimeout(testPrisma.category.findMany({ take: 2 }), 4000, 'adapter-pg category query');
+    const cats = await runWithTimeout(testPrisma.category.findMany({ take: 2 }), 8000, 'adapter-pg category query');
     await testPrisma.$disconnect().catch(() => {});
     await pool.end().catch(() => {});
     results.adapter_pg_prisma = {
@@ -280,7 +283,7 @@ app.get('/api/test-connection', async (req, res) => {
   // 7. Test Main App Prisma instance (imported from ./config/db.js)
   try {
     const start = Date.now();
-    const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 4000, 'main app prisma query');
+    const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 8000, 'main app prisma query');
     results.main_app_prisma = {
       status: 'SUCCESS',
       time_ms: Date.now() - start,
