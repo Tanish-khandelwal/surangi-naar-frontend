@@ -1,4 +1,5 @@
 import dns from 'node:dns';
+import net from 'node:net';
 dns.setDefaultResultOrder('ipv4first');
 
 import 'dotenv/config';
@@ -132,6 +133,103 @@ app.get('/api/health', (req, res) => {
     service: 'Suranghi Naar Backend API',
     timestamp: new Date().toISOString(),
   });
+});
+
+// Diagnostic route for live database connection inspection
+app.get('/api/test-connection', async (req, res) => {
+  const results = {};
+  const host = 'ep-square-mouse-azh9s2y4-pooler.c-3.ap-southeast-1.aws.neon.tech';
+
+  // 1. DNS Resolution
+  try {
+    results.dns = await new Promise((resolve, reject) => {
+      dns.lookup(host, { all: true }, (err, addresses) => {
+        if (err) reject(err);
+        else resolve(addresses);
+      });
+    });
+  } catch (err) {
+    results.dns_error = err.message;
+  }
+
+  // 2. Outbound TCP to port 5432
+  try {
+    const start = Date.now();
+    results.tcp_5432 = await new Promise((resolve) => {
+      const socket = net.createConnection({ host, port: 5432, timeout: 5000 });
+      socket.on('connect', () => {
+        const time = Date.now() - start;
+        socket.destroy();
+        resolve(`SUCCESS in ${time}ms`);
+      });
+      socket.on('timeout', () => {
+        socket.destroy();
+        resolve('TIMED_OUT after 5000ms');
+      });
+      socket.on('error', (err) => {
+        resolve(`FAILED: ${err.message} (${err.code})`);
+      });
+    });
+  } catch (err) {
+    results.tcp_5432_error = err.message;
+  }
+
+  // 3. Outbound TCP to port 443
+  try {
+    const start = Date.now();
+    results.tcp_443 = await new Promise((resolve) => {
+      const socket = net.createConnection({ host, port: 443, timeout: 5000 });
+      socket.on('connect', () => {
+        const time = Date.now() - start;
+        socket.destroy();
+        resolve(`SUCCESS in ${time}ms`);
+      });
+      socket.on('timeout', () => {
+        socket.destroy();
+        resolve('TIMED_OUT after 5000ms');
+      });
+      socket.on('error', (err) => {
+        resolve(`FAILED: ${err.message} (${err.code})`);
+      });
+    });
+  } catch (err) {
+    results.tcp_443_error = err.message;
+  }
+
+  // 4. Neon HTTP SQL API (POST /sql)
+  try {
+    const start = Date.now();
+    const connStr = process.env.DATABASE_URL;
+    const response = await fetch(`https://${host}/sql`, {
+      method: 'POST',
+      headers: {
+        'Neon-Connection-String': connStr,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query: 'SELECT 1 as test, NOW() as time' }),
+      signal: AbortSignal.timeout(6000),
+    });
+    const data = await response.json();
+    results.neon_http_sql = {
+      status: response.status,
+      time_ms: Date.now() - start,
+      rows: data.rows,
+      error: data.message,
+    };
+  } catch (err) {
+    results.neon_http_sql_error = err.message;
+  }
+
+  // 5. Environment check
+  results.env = {
+    NODE_ENV: process.env.NODE_ENV,
+    has_DATABASE_URL: Boolean(process.env.DATABASE_URL),
+    db_host: process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).host : 'NOT_SET',
+    db_user: process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).username : 'NOT_SET',
+    db_params: process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).search : 'NOT_SET',
+  };
+
+  return res.status(200).json(results);
 });
 
 // API Routes
