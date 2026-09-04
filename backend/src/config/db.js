@@ -96,7 +96,7 @@ export async function withQueryTimeout(promiseOrFn, ms = 45000, label = 'Databas
       const canRetry = attempt <= maxRetries;
 
       if (isTimeout) {
-        resetPrismaClient(err).catch(() => {});
+        resetPrismaClient(err).catch(() => { });
         if (canRetry) {
           const backoffMs = 1000 * Math.pow(2, attempt - 1);
           console.warn(
@@ -120,7 +120,7 @@ const RESET_COOLDOWN_MS = 5000;
 
 export async function resetPrismaClient(triggerError) {
   const now = Date.now();
-  
+
   if (resetPromise) {
     return resetPromise;
   }
@@ -220,7 +220,7 @@ const prismaProxy = new Proxy(currentPrisma, {
           return result;
         } catch (err) {
           if (isPrismaFatalError(err)) {
-            resetPrismaClient(err).catch(() => {});
+            resetPrismaClient(err).catch(() => { });
           }
           throw err;
         }
@@ -257,7 +257,7 @@ const prismaProxy = new Proxy(currentPrisma, {
                 return result;
               } catch (err) {
                 if (isPrismaFatalError(err)) {
-                  resetPrismaClient(err).catch(() => {});
+                  resetPrismaClient(err).catch(() => { });
                 }
                 throw err;
               }
