@@ -44,7 +44,7 @@ export const getProducts = async (req, res) => {
         }),
         prisma.product.count({ where }),
       ]),
-      8000,
+      15000,
       'GET /api/products'
     );
 
@@ -58,7 +58,7 @@ export const getProducts = async (req, res) => {
           _avg: { rating: true },
           _count: { rating: true },
         }),
-        8000,
+        15000,
         'GET /api/products reviews'
       );
     }
@@ -91,7 +91,7 @@ export const getProducts = async (req, res) => {
   } catch (error) {
     console.error('🔥 GET /api/products error:', error?.message || error, error?.stack || '');
     if (error.isTimeout || error.message?.includes('timeout')) {
-      return sendError(res, 503, 'Database query timeout after 8s');
+      return sendError(res, 503, 'Database query timeout after 15s');
     }
     return sendError(res, 500, error.message);
   }

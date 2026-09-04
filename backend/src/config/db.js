@@ -25,6 +25,9 @@ export function getFormattedDatabaseUrl(urlStr) {
     if (!url.searchParams.has('connect_timeout')) {
       url.searchParams.set('connect_timeout', '30');
     }
+    if (url.searchParams.has('channel_binding')) {
+      url.searchParams.delete('channel_binding');
+    }
     return url.toString();
   } catch (e) {
     return urlStr;
@@ -41,14 +44,16 @@ function createPrismaInstance() {
   if (connectionString) {
     const pool = new pg.Pool({
       connectionString,
-      family: 4,
       max: 10,
       idleTimeoutMillis: 10000,
-      connectionTimeoutMillis: 8000,
+      connectionTimeoutMillis: 15000,
       keepAlive: true,
       keepAliveInitialDelayMillis: 10000,
       allowExitOnIdle: false,
       ssl: { rejectUnauthorized: false },
+      lookup: (hostname, opts, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
+      },
     });
 
     pool.on('error', (err) => {
@@ -88,11 +93,11 @@ function runSingleTimeout(promiseOrFn, ms, label) {
   });
 }
 
-export async function withQueryTimeout(promiseOrFn, ms = 8000, label = 'Database query', maxRetries = 2) {
+export async function withQueryTimeout(promiseOrFn, ms = 15000, label = 'Database query', maxRetries = 2) {
   if (typeof ms === 'string') {
     maxRetries = typeof label === 'number' ? label : 2;
     label = ms;
-    ms = 8000;
+    ms = 15000;
   }
   let attempt = 0;
   while (true) {
