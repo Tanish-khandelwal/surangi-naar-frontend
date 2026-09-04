@@ -43,6 +43,7 @@ export const categorySchema = z.object({
 });
 
 export const heroSlideSchema = z.object({
+  id: z.union([z.number(), z.string()]).optional(),
   subtitle: z.string(),
   title: z.string(),
   description: z.string(),
