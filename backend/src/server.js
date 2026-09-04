@@ -237,44 +237,18 @@ app.get('/api/test-connection', async (req, res) => {
       }
     })(),
 
-    // 5. Direct Adapter Prisma Query (3.5s timeout)
+    // 5. Main App Prisma Query (with pure-JS ClientEngine)
     (async () => {
       try {
-        const { PrismaPg } = await import('@prisma/adapter-pg');
-        const { PrismaClient } = await import('@prisma/client');
-        const pg = (await import('pg')).default;
-        const pool = new pg.Pool({ connectionString: formattedUrl, ssl: { rejectUnauthorized: false } });
-        const adapter = new PrismaPg(pool);
-        const p = new PrismaClient({ adapter });
         const start = Date.now();
-        const cats = await runWithTimeout(p.category.findMany({ take: 2 }), 3500, 'direct adapter prisma');
-        await p.$disconnect().catch(() => {});
-        await pool.end().catch(() => {});
-        results.direct_adapter_prisma = {
+        const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 3500, 'main app prisma query');
+        results.main_app_prisma = {
           status: 'SUCCESS',
           time_ms: Date.now() - start,
           count: cats.length,
         };
       } catch (err) {
-        results.direct_adapter_prisma_error = `${err.message} (${err.name || ''})`;
-      }
-    })(),
-
-    // 6. Native Prisma Query WITHOUT Adapter (3.5s timeout)
-    (async () => {
-      try {
-        const { PrismaClient } = await import('@prisma/client');
-        const p = new PrismaClient({ datasources: { db: { url: formattedUrl } } });
-        const start = Date.now();
-        const cats = await runWithTimeout(p.category.findMany({ take: 2 }), 3500, 'native prisma');
-        await p.$disconnect().catch(() => {});
-        results.native_prisma = {
-          status: 'SUCCESS',
-          time_ms: Date.now() - start,
-          count: cats.length,
-        };
-      } catch (err) {
-        results.native_prisma_error = `${err.message} (${err.name || ''})`;
+        results.main_app_prisma_error = `${err.message} (${err.name || ''})`;
       }
     })(),
   ];
