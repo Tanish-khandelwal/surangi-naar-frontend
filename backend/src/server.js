@@ -220,7 +220,41 @@ app.get('/api/test-connection', async (req, res) => {
     results.neon_http_sql_error = err.message;
   }
 
-  // 5. Environment check
+  // 5. pg.Client query test
+  try {
+    const pg = (await import('pg')).default;
+    const start = Date.now();
+    const client = new pg.Client({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 5000,
+    });
+    await client.connect();
+    const pgRes = await client.query('SELECT 1 as test, NOW() as time');
+    await client.end();
+    results.raw_pg_query = {
+      status: 'SUCCESS',
+      time_ms: Date.now() - start,
+      rows: pgRes.rows,
+    };
+  } catch (err) {
+    results.raw_pg_query_error = err.message;
+  }
+
+  // 6. Prisma query test
+  try {
+    const start = Date.now();
+    const cats = await prisma.category.findMany({ take: 2 });
+    results.prisma_categories_query = {
+      status: 'SUCCESS',
+      time_ms: Date.now() - start,
+      categories: cats,
+    };
+  } catch (err) {
+    results.prisma_categories_query_error = err.message;
+  }
+
+  // 7. Environment check
   results.env = {
     NODE_ENV: process.env.NODE_ENV,
     has_DATABASE_URL: Boolean(process.env.DATABASE_URL),
