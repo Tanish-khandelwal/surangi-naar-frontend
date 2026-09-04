@@ -21,6 +21,7 @@ export function getFormattedDatabaseUrl(urlStr) {
     if (!url.searchParams.has('sslmode') || url.searchParams.get('sslmode') === 'verify-full') {
       url.searchParams.set('sslmode', 'require');
     }
+    url.searchParams.set('uselibpqcompat', 'true');
     return url.toString();
   } catch (e) {
     return urlStr;
