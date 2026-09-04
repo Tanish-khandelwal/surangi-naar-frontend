@@ -192,7 +192,7 @@ app.get('/api/test-connection', async (req, res) => {
       }
     })(),
 
-    // 3. raw pg query to Category table
+    // 3. raw pg.Client query to Category table
     (async () => {
       try {
         const pg = (await import('pg')).default;
@@ -200,10 +200,10 @@ app.get('/api/test-connection', async (req, res) => {
         const client = new pg.Client({
           connectionString: formattedUrl,
           ssl: { rejectUnauthorized: false },
-          connectionTimeoutMillis: 2500,
+          connectionTimeoutMillis: 3500,
         });
-        await runWithTimeout(client.connect(), 2500, 'pg.connect');
-        const pgRes = await runWithTimeout(client.query('SELECT count(*) as count FROM "Category"'), 2500, 'pg.query');
+        await runWithTimeout(client.connect(), 3500, 'pg.connect');
+        const pgRes = await runWithTimeout(client.query('SELECT count(*) as count FROM "Category"'), 3500, 'pg.query');
         await client.end().catch(() => {});
         results.raw_pg_category_count = {
           status: 'SUCCESS',
@@ -215,11 +215,33 @@ app.get('/api/test-connection', async (req, res) => {
       }
     })(),
 
-    // 4. Main App Prisma Query
+    // 4. raw pg.Pool query to Category table
+    (async () => {
+      try {
+        const pg = (await import('pg')).default;
+        const start = Date.now();
+        const pool = new pg.Pool({
+          connectionString: formattedUrl,
+          ssl: { rejectUnauthorized: false },
+          connectionTimeoutMillis: 3500,
+        });
+        const pgRes = await runWithTimeout(pool.query('SELECT count(*) as count FROM "Category"'), 3500, 'pool.query');
+        await pool.end().catch(() => {});
+        results.raw_pool_category_count = {
+          status: 'SUCCESS',
+          count: pgRes.rows[0]?.count,
+          time_ms: Date.now() - start,
+        };
+      } catch (err) {
+        results.raw_pool_error = err.message;
+      }
+    })(),
+
+    // 5. Main App Prisma Query (5s timeout)
     (async () => {
       try {
         const start = Date.now();
-        const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 2500, 'main app prisma query');
+        const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 5000, 'main app prisma query');
         results.main_app_prisma = {
           status: 'SUCCESS',
           time_ms: Date.now() - start,

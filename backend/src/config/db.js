@@ -37,9 +37,6 @@ function createPrismaInstance() {
       connectionString,
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 10000,
-      lookup: (hostname, opts, cb) => {
-        dns.lookup(hostname, { family: 4 }, cb);
-      },
     });
 
     pool.on('error', (err) => {
