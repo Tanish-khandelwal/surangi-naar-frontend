@@ -1,15 +1,9 @@
-import dns from 'node:dns';
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { neonConfig } from '@neondatabase/serverless';
+import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
+import ws from 'ws';
 
-if (dns.setDefaultResultOrder) {
-  try {
-    dns.setDefaultResultOrder('ipv4first');
-  } catch (e) {
-    // Ignore if not supported in environment
-  }
-}
+neonConfig.webSocketConstructor = ws;
 
 /**
  * Ensures Neon PostgreSQL connection strings include ?pgbouncer=true when connecting via Neon's connection pooler.
@@ -34,39 +28,13 @@ export function getFormattedDatabaseUrl(urlStr) {
   }
 }
 
-let currentPool = null;
-
 function createPrismaInstance() {
   const rawUrl = process.env.DATABASE_URL;
   const connectionString = getFormattedDatabaseUrl(rawUrl);
 
   const options = {};
   if (connectionString) {
-    const pool = new pg.Pool({
-      connectionString,
-      max: 10,
-      idleTimeoutMillis: 10000,
-      connectionTimeoutMillis: 15000,
-      keepAlive: true,
-      keepAliveInitialDelayMillis: 10000,
-      allowExitOnIdle: false,
-      ssl: { rejectUnauthorized: false },
-      lookup: (hostname, opts, callback) => {
-        dns.lookup(hostname, { family: 4 }, callback);
-      },
-    });
-
-    pool.on('error', (err) => {
-      console.error('🔥 PG POOL ERROR:', err?.message || err, err?.stack || '');
-    });
-
-    pool.on('connect', () => {
-      console.log('✅ PG POOL CONNECTED TO DATABASE');
-    });
-
-    currentPool = pool;
-
-    const adapter = new PrismaPg(pool);
+    const adapter = new PrismaNeon({ connectionString });
     options.adapter = adapter;
   }
 
@@ -170,16 +138,12 @@ export async function resetPrismaClient(triggerError) {
 
 export async function closeDatabasePool() {
   try {
-    if (currentPool) {
-      await currentPool.end();
-      currentPool = null;
-    }
     if (currentPrisma) {
       await currentPrisma.$disconnect();
     }
-    console.log('✅ Gracefully closed database pool on shutdown');
+    console.log('✅ Gracefully closed database connection on shutdown');
   } catch (err) {
-    console.error('Error closing database pool on shutdown:', err?.message || err);
+    console.error('Error closing database connection on shutdown:', err?.message || err);
   }
 }
 
