@@ -139,88 +139,15 @@ app.get('/api/health', (req, res) => {
 app.get('/api/test-connection', async (req, res) => {
   const results = {};
   const host = 'ep-square-mouse-azh9s2y4-pooler.c-3.ap-southeast-1.aws.neon.tech';
+  const formattedUrl = getFormattedDatabaseUrl(process.env.DATABASE_URL);
 
-  // 1. DNS Resolution
-  try {
-    results.dns = await new Promise((resolve, reject) => {
-      dns.lookup(host, { all: true }, (err, addresses) => {
-        if (err) reject(err);
-        else resolve(addresses);
-      });
-    });
-  } catch (err) {
-    results.dns_error = err.message;
-  }
+  results.os_info = {
+    platform: process.platform,
+    arch: process.arch,
+    node: process.version,
+    openssl: process.versions.openssl,
+  };
 
-  // 2. Outbound TCP to port 5432
-  try {
-    const start = Date.now();
-    results.tcp_5432 = await new Promise((resolve) => {
-      const socket = net.createConnection({ host, port: 5432, timeout: 5000 });
-      socket.on('connect', () => {
-        const time = Date.now() - start;
-        socket.destroy();
-        resolve(`SUCCESS in ${time}ms`);
-      });
-      socket.on('timeout', () => {
-        socket.destroy();
-        resolve('TIMED_OUT after 5000ms');
-      });
-      socket.on('error', (err) => {
-        resolve(`FAILED: ${err.message} (${err.code})`);
-      });
-    });
-  } catch (err) {
-    results.tcp_5432_error = err.message;
-  }
-
-  // 3. Outbound TCP to port 443
-  try {
-    const start = Date.now();
-    results.tcp_443 = await new Promise((resolve) => {
-      const socket = net.createConnection({ host, port: 443, timeout: 5000 });
-      socket.on('connect', () => {
-        const time = Date.now() - start;
-        socket.destroy();
-        resolve(`SUCCESS in ${time}ms`);
-      });
-      socket.on('timeout', () => {
-        socket.destroy();
-        resolve('TIMED_OUT after 5000ms');
-      });
-      socket.on('error', (err) => {
-        resolve(`FAILED: ${err.message} (${err.code})`);
-      });
-    });
-  } catch (err) {
-    results.tcp_443_error = err.message;
-  }
-
-  // 4. Neon HTTP SQL API (POST /sql)
-  try {
-    const start = Date.now();
-    const connStr = process.env.DATABASE_URL;
-    const response = await fetch(`https://${host}/sql`, {
-      method: 'POST',
-      headers: {
-        'Neon-Connection-String': connStr,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query: 'SELECT 1 as test, NOW() as time' }),
-      signal: AbortSignal.timeout(6000),
-    });
-    const data = await response.json();
-    results.neon_http_sql = {
-      status: response.status,
-      time_ms: Date.now() - start,
-      rows: data.rows,
-      error: data.message,
-    };
-  } catch (err) {
-    results.neon_http_sql_error = err.message;
-  }
-
-  // Helper with strict timeout
   const runWithTimeout = (promise, ms, label) => {
     let t;
     const timeout = new Promise((_, reject) => {
@@ -229,71 +156,83 @@ app.get('/api/test-connection', async (req, res) => {
     return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
   };
 
-  const formattedUrl = getFormattedDatabaseUrl(process.env.DATABASE_URL);
+  const tasks = [
+    // 1. DNS Resolution
+    (async () => {
+      try {
+        results.dns = await new Promise((resolve, reject) => {
+          dns.lookup(host, { all: true }, (err, addresses) => err ? reject(err) : resolve(addresses));
+        });
+      } catch (err) {
+        results.dns_error = err.message;
+      }
+    })(),
 
-  // 5. pg.Client query test (Strict 4s timeout)
-  try {
-    const pg = (await import('pg')).default;
-    const start = Date.now();
-    const client = new pg.Client({
-      connectionString: formattedUrl,
-      ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 3500,
-    });
-    await runWithTimeout(client.connect(), 4000, 'pg.connect');
-    const pgRes = await runWithTimeout(client.query('SELECT 1 as test, NOW() as time'), 4000, 'pg.query');
-    await client.end().catch(() => {});
-    results.raw_pg_query = {
-      status: 'SUCCESS',
-      time_ms: Date.now() - start,
-      rows: pgRes.rows,
-    };
-  } catch (err) {
-    results.raw_pg_query_error = err.message;
-  }
+    // 2. Outbound TCP to port 5432
+    (async () => {
+      try {
+        const start = Date.now();
+        results.tcp_5432 = await new Promise((resolve) => {
+          const socket = net.createConnection({ host, port: 5432, timeout: 2500 });
+          socket.on('connect', () => {
+            const time = Date.now() - start;
+            socket.destroy();
+            resolve(`SUCCESS in ${time}ms`);
+          });
+          socket.on('timeout', () => {
+            socket.destroy();
+            resolve('TIMED_OUT after 2500ms');
+          });
+          socket.on('error', (err) => {
+            resolve(`FAILED: ${err.message}`);
+          });
+        });
+      } catch (err) {
+        results.tcp_5432_error = err.message;
+      }
+    })(),
 
-  // 6. Test @prisma/adapter-pg with simple pg.Pool
-  try {
-    const pg = (await import('pg')).default;
-    const { PrismaPg } = await import('@prisma/adapter-pg');
-    const { PrismaClient } = await import('@prisma/client');
-    const pool = new pg.Pool({
-      connectionString: formattedUrl,
-      ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 5000,
-      lookup: (hostname, opts, cb) => {
-        dns.lookup(hostname, { family: 4 }, cb);
-      },
-    });
-    const adapter = new PrismaPg(pool);
-    const testPrisma = new PrismaClient({ adapter });
-    const start = Date.now();
-    const cats = await runWithTimeout(testPrisma.category.findMany({ take: 2 }), 8000, 'adapter-pg category query');
-    await testPrisma.$disconnect().catch(() => {});
-    await pool.end().catch(() => {});
-    results.adapter_pg_prisma = {
-      status: 'SUCCESS',
-      time_ms: Date.now() - start,
-      count: cats.length,
-    };
-  } catch (err) {
-    results.adapter_pg_prisma_error = err.message;
-  }
+    // 3. raw pg query to Category table
+    (async () => {
+      try {
+        const pg = (await import('pg')).default;
+        const start = Date.now();
+        const client = new pg.Client({
+          connectionString: formattedUrl,
+          ssl: { rejectUnauthorized: false },
+          connectionTimeoutMillis: 2500,
+        });
+        await runWithTimeout(client.connect(), 2500, 'pg.connect');
+        const pgRes = await runWithTimeout(client.query('SELECT count(*) as count FROM "Category"'), 2500, 'pg.query');
+        await client.end().catch(() => {});
+        results.raw_pg_category_count = {
+          status: 'SUCCESS',
+          count: pgRes.rows[0]?.count,
+          time_ms: Date.now() - start,
+        };
+      } catch (err) {
+        results.raw_pg_error = err.message;
+      }
+    })(),
 
-  // 7. Test Main App Prisma instance (imported from ./config/db.js)
-  try {
-    const start = Date.now();
-    const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 8000, 'main app prisma query');
-    results.main_app_prisma = {
-      status: 'SUCCESS',
-      time_ms: Date.now() - start,
-      count: cats.length,
-    };
-  } catch (err) {
-    results.main_app_prisma_error = err.message;
-  }
+    // 4. Main App Prisma Query
+    (async () => {
+      try {
+        const start = Date.now();
+        const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 2500, 'main app prisma query');
+        results.main_app_prisma = {
+          status: 'SUCCESS',
+          time_ms: Date.now() - start,
+          count: cats.length,
+        };
+      } catch (err) {
+        results.main_app_prisma_error = err.message;
+      }
+    })(),
+  ];
 
-  // 7. Environment check
+  await Promise.allSettled(tasks);
+
   results.env = {
     NODE_ENV: process.env.NODE_ENV,
     has_DATABASE_URL: Boolean(process.env.DATABASE_URL),
