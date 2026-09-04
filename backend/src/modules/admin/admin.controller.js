@@ -25,7 +25,7 @@ export const adminLogin = async (req, res) => {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Look up the admin user by EXACT email match only (case-insensitive) with 45s timeout
+    // Look up the admin user by EXACT email match only (case-insensitive) with 8s timeout
     let adminUser;
     try {
       adminUser = await withQueryTimeout(
@@ -35,13 +35,13 @@ export const adminLogin = async (req, res) => {
             email: { equals: cleanEmail, mode: 'insensitive' },
           },
         }),
-        45000,
+        8000,
         'POST /api/admin/login'
       );
     } catch (dbErr) {
       console.error('🔥 Admin login DB query error:', dbErr?.message || dbErr, dbErr?.stack || '');
       if (dbErr.isTimeout || dbErr?.message?.includes('timeout')) {
-        return sendError(res, 503, 'Database query timeout after 45s');
+        return sendError(res, 503, 'Database query timeout after 8s');
       }
       if (isPrismaFatalError(dbErr) || dbErr?.code === 'P2024' || dbErr?.message?.includes('P2024')) {
         return sendError(res, 503, 'Server temporarily unavailable, please try again');
@@ -75,7 +75,7 @@ export const adminLogin = async (req, res) => {
       return sendError(res, 400, firstMsg, error.errors);
     }
     if (error.isTimeout || error?.message?.includes('timeout')) {
-      return sendError(res, 503, 'Database query timeout after 45s');
+      return sendError(res, 503, 'Database query timeout after 8s');
     }
     if (isPrismaFatalError(error) || error?.code === 'P2024' || error?.message?.includes('P2024')) {
       return sendError(res, 503, 'Server temporarily unavailable, please try again');

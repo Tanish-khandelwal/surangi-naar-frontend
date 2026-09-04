@@ -158,10 +158,11 @@ app.use(errorHandler);
 
 async function testDatabaseConnection() {
   const maxAttempts = 3;
-  const timeoutMs = 45000;
+  const timeoutMs = 20000;
   const delayBetweenAttemptsMs = 2000;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const startTime = Date.now();
     let timer;
     try {
       const queryPromise = prisma.$queryRaw`SELECT 1`.catch(() => 'FAILED_QUERY');
@@ -172,23 +173,25 @@ async function testDatabaseConnection() {
       const result = await Promise.race([queryPromise, timeoutPromise]);
       if (timer) clearTimeout(timer);
 
+      const elapsedMs = Date.now() - startTime;
       if (result !== 'TIMEOUT' && result !== 'FAILED_QUERY') {
-        console.log(`✅ Database connectivity confirmed at startup (attempt ${attempt}/${maxAttempts})`);
+        console.log(`✅ Database connectivity confirmed at startup in ${elapsedMs}ms (attempt ${attempt}/${maxAttempts})`);
         return;
       }
 
       const reason = result === 'TIMEOUT' ? `timed out after ${timeoutMs / 1000}s` : 'query execution failed';
       if (attempt < maxAttempts) {
-        console.warn(`⚠️ Warm-up attempt ${attempt}/${maxAttempts} failed (${reason}), retrying in ${delayBetweenAttemptsMs / 1000}s...`);
+        console.warn(`⚠️ Warm-up attempt ${attempt}/${maxAttempts} failed in ${elapsedMs}ms (${reason}), retrying in ${delayBetweenAttemptsMs / 1000}s...`);
         await new Promise((resolve) => setTimeout(resolve, delayBetweenAttemptsMs));
       } else {
         console.error(`❌ Database connectivity FAILED at startup after ${maxAttempts} attempts (${reason}) (server will continue running)`);
       }
     } catch (err) {
       if (timer) clearTimeout(timer);
+      const elapsedMs = Date.now() - startTime;
       const reason = err?.message || err;
       if (attempt < maxAttempts) {
-        console.warn(`⚠️ Warm-up attempt ${attempt}/${maxAttempts} failed (${reason}), retrying in ${delayBetweenAttemptsMs / 1000}s...`);
+        console.warn(`⚠️ Warm-up attempt ${attempt}/${maxAttempts} failed in ${elapsedMs}ms (${reason}), retrying in ${delayBetweenAttemptsMs / 1000}s...`);
         await new Promise((resolve) => setTimeout(resolve, delayBetweenAttemptsMs));
       } else {
         console.error(`❌ Database connectivity FAILED at startup after ${maxAttempts} attempts (${reason}) (server will continue running)`);

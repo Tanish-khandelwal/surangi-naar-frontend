@@ -21,7 +21,6 @@ export function getFormattedDatabaseUrl(urlStr) {
     if (!url.searchParams.has('sslmode') || url.searchParams.get('sslmode') === 'verify-full') {
       url.searchParams.set('sslmode', 'require');
     }
-    url.searchParams.set('uselibpqcompat', 'true');
     url.searchParams.set('pgbouncer', 'true');
     if (!url.searchParams.has('connect_timeout')) {
       url.searchParams.set('connect_timeout', '30');
@@ -45,7 +44,7 @@ function createPrismaInstance() {
       family: 4,
       max: 10,
       idleTimeoutMillis: 10000,
-      connectionTimeoutMillis: 45000,
+      connectionTimeoutMillis: 8000,
       keepAlive: true,
       keepAliveInitialDelayMillis: 10000,
       allowExitOnIdle: false,
@@ -89,7 +88,12 @@ function runSingleTimeout(promiseOrFn, ms, label) {
   });
 }
 
-export async function withQueryTimeout(promiseOrFn, ms = 45000, label = 'Database query', maxRetries = 2) {
+export async function withQueryTimeout(promiseOrFn, ms = 8000, label = 'Database query', maxRetries = 2) {
+  if (typeof ms === 'string') {
+    maxRetries = typeof label === 'number' ? label : 2;
+    label = ms;
+    ms = 8000;
+  }
   let attempt = 0;
   while (true) {
     attempt++;
