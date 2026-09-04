@@ -250,17 +250,47 @@ app.get('/api/test-connection', async (req, res) => {
     results.raw_pg_query_error = err.message;
   }
 
-  // 6. Prisma query test (Strict 4s timeout)
+  // 6. Test @prisma/adapter-pg with simple pg.Pool
   try {
+    const pg = (await import('pg')).default;
+    const { PrismaPg } = await import('@prisma/adapter-pg');
+    const { PrismaClient } = await import('@prisma/client');
+    const pool = new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 3500,
+    });
+    const adapter = new PrismaPg(pool);
+    const testPrisma = new PrismaClient({ adapter });
     const start = Date.now();
-    const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 4000, 'prisma.category.findMany');
-    results.prisma_categories_query = {
+    const cats = await runWithTimeout(testPrisma.category.findMany({ take: 2 }), 4000, 'adapter-pg category query');
+    await testPrisma.$disconnect().catch(() => {});
+    await pool.end().catch(() => {});
+    results.adapter_pg_prisma = {
       status: 'SUCCESS',
       time_ms: Date.now() - start,
-      categories: cats,
+      count: cats.length,
     };
   } catch (err) {
-    results.prisma_categories_query_error = err.message;
+    results.adapter_pg_prisma_error = err.message;
+  }
+
+  // 7. Test Native PrismaClient (NO ADAPTER AT ALL)
+  try {
+    const { PrismaClient } = await import('@prisma/client');
+    const start = Date.now();
+    const nativePrisma = new PrismaClient({
+      datasources: { db: { url: process.env.DATABASE_URL } },
+    });
+    const cats = await runWithTimeout(nativePrisma.category.findMany({ take: 2 }), 4000, 'native prisma query');
+    await nativePrisma.$disconnect().catch(() => {});
+    results.native_prisma = {
+      status: 'SUCCESS',
+      time_ms: Date.now() - start,
+      count: cats.length,
+    };
+  } catch (err) {
+    results.native_prisma_error = err.message;
   }
 
   // 7. Environment check
