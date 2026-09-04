@@ -1,12 +1,9 @@
-import { neonConfig } from '@neondatabase/serverless';
-import { PrismaNeon } from '@prisma/adapter-neon';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
-import ws from 'ws';
-
-neonConfig.webSocketConstructor = ws;
 
 /**
- * Ensures Neon PostgreSQL connection strings include ?pgbouncer=true when connecting via Neon's connection pooler.
+ * Sanitizes and prepares Neon PostgreSQL connection strings for node-postgres.
  */
 export function getFormattedDatabaseUrl(urlStr) {
   if (!urlStr) return urlStr;
@@ -15,9 +12,8 @@ export function getFormattedDatabaseUrl(urlStr) {
     if (!url.searchParams.has('sslmode') || url.searchParams.get('sslmode') === 'verify-full') {
       url.searchParams.set('sslmode', 'require');
     }
-    url.searchParams.set('pgbouncer', 'true');
-    if (!url.searchParams.has('connect_timeout')) {
-      url.searchParams.set('connect_timeout', '30');
+    if (url.searchParams.has('pgbouncer')) {
+      url.searchParams.delete('pgbouncer');
     }
     if (url.searchParams.has('channel_binding')) {
       url.searchParams.delete('channel_binding');
@@ -28,13 +24,30 @@ export function getFormattedDatabaseUrl(urlStr) {
   }
 }
 
+let currentPool = null;
+
 function createPrismaInstance() {
   const rawUrl = process.env.DATABASE_URL;
   const connectionString = getFormattedDatabaseUrl(rawUrl);
 
   const options = {};
   if (connectionString) {
-    const adapter = new PrismaNeon({ connectionString });
+    const pool = new pg.Pool({
+      connectionString,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 10000,
+    });
+
+    pool.on('error', (err) => {
+      console.error('🔥 PG POOL ERROR:', err?.message || err);
+    });
+
+    pool.on('connect', () => {
+      console.log('✅ PG POOL CONNECTED TO DATABASE');
+    });
+
+    currentPool = pool;
+    const adapter = new PrismaPg(pool);
     options.adapter = adapter;
   }
 
@@ -117,6 +130,7 @@ export async function resetPrismaClient(triggerError) {
       console.warn(`🔄 Prisma connection error detected ${errDetail}. Resetting PrismaClient instance...`);
 
       const oldPrisma = currentPrisma;
+      const oldPool = currentPool;
       currentPrisma = createPrismaInstance();
       lastResetTimestamp = Date.now();
 
@@ -125,6 +139,13 @@ export async function resetPrismaClient(triggerError) {
           await oldPrisma.$disconnect();
         } catch (err) {
           // Ignore errors when disconnecting an already crashed client
+        }
+      }
+      if (oldPool) {
+        try {
+          await oldPool.end();
+        } catch (err) {
+          // Ignore
         }
       }
       return currentPrisma;
@@ -140,6 +161,9 @@ export async function closeDatabasePool() {
   try {
     if (currentPrisma) {
       await currentPrisma.$disconnect();
+    }
+    if (currentPool) {
+      await currentPool.end();
     }
     console.log('✅ Gracefully closed database connection on shutdown');
   } catch (err) {

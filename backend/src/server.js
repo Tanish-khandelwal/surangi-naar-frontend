@@ -6,7 +6,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import prisma, { closeDatabasePool } from './config/db.js';
+import prisma, { closeDatabasePool, getFormattedDatabaseUrl } from './config/db.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import userRoutes from './modules/users/users.routes.js';
@@ -229,12 +229,14 @@ app.get('/api/test-connection', async (req, res) => {
     return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
   };
 
+  const formattedUrl = getFormattedDatabaseUrl(process.env.DATABASE_URL);
+
   // 5. pg.Client query test (Strict 4s timeout)
   try {
     const pg = (await import('pg')).default;
     const start = Date.now();
     const client = new pg.Client({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: formattedUrl,
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 3500,
     });
@@ -256,7 +258,7 @@ app.get('/api/test-connection', async (req, res) => {
     const { PrismaPg } = await import('@prisma/adapter-pg');
     const { PrismaClient } = await import('@prisma/client');
     const pool = new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: formattedUrl,
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 3500,
     });
@@ -275,22 +277,17 @@ app.get('/api/test-connection', async (req, res) => {
     results.adapter_pg_prisma_error = err.message;
   }
 
-  // 7. Test Native PrismaClient (NO ADAPTER AT ALL)
+  // 7. Test Main App Prisma instance (imported from ./config/db.js)
   try {
-    const { PrismaClient } = await import('@prisma/client');
     const start = Date.now();
-    const nativePrisma = new PrismaClient({
-      datasources: { db: { url: process.env.DATABASE_URL } },
-    });
-    const cats = await runWithTimeout(nativePrisma.category.findMany({ take: 2 }), 4000, 'native prisma query');
-    await nativePrisma.$disconnect().catch(() => {});
-    results.native_prisma = {
+    const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 4000, 'main app prisma query');
+    results.main_app_prisma = {
       status: 'SUCCESS',
       time_ms: Date.now() - start,
       count: cats.length,
     };
   } catch (err) {
-    results.native_prisma_error = err.message;
+    results.main_app_prisma_error = err.message;
   }
 
   // 7. Environment check
