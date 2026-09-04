@@ -22,6 +22,10 @@ export function getFormattedDatabaseUrl(urlStr) {
       url.searchParams.set('sslmode', 'require');
     }
     url.searchParams.set('uselibpqcompat', 'true');
+    url.searchParams.set('pgbouncer', 'true');
+    if (!url.searchParams.has('connect_timeout')) {
+      url.searchParams.set('connect_timeout', '30');
+    }
     return url.toString();
   } catch (e) {
     return urlStr;
