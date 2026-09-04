@@ -220,18 +220,27 @@ app.get('/api/test-connection', async (req, res) => {
     results.neon_http_sql_error = err.message;
   }
 
-  // 5. pg.Client query test
+  // Helper with strict timeout
+  const runWithTimeout = (promise, ms, label) => {
+    let t;
+    const timeout = new Promise((_, reject) => {
+      t = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
+  };
+
+  // 5. pg.Client query test (Strict 4s timeout)
   try {
     const pg = (await import('pg')).default;
     const start = Date.now();
     const client = new pg.Client({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 3500,
     });
-    await client.connect();
-    const pgRes = await client.query('SELECT 1 as test, NOW() as time');
-    await client.end();
+    await runWithTimeout(client.connect(), 4000, 'pg.connect');
+    const pgRes = await runWithTimeout(client.query('SELECT 1 as test, NOW() as time'), 4000, 'pg.query');
+    await client.end().catch(() => {});
     results.raw_pg_query = {
       status: 'SUCCESS',
       time_ms: Date.now() - start,
@@ -241,10 +250,10 @@ app.get('/api/test-connection', async (req, res) => {
     results.raw_pg_query_error = err.message;
   }
 
-  // 6. Prisma query test
+  // 6. Prisma query test (Strict 4s timeout)
   try {
     const start = Date.now();
-    const cats = await prisma.category.findMany({ take: 2 });
+    const cats = await runWithTimeout(prisma.category.findMany({ take: 2 }), 4000, 'prisma.category.findMany');
     results.prisma_categories_query = {
       status: 'SUCCESS',
       time_ms: Date.now() - start,
