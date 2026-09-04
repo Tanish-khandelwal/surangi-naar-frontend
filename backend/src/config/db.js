@@ -18,8 +18,8 @@ export function getFormattedDatabaseUrl(urlStr) {
   if (!urlStr) return urlStr;
   try {
     const url = new URL(urlStr);
-    if (!url.searchParams.has('sslmode')) {
-      url.searchParams.set('sslmode', 'verify-full');
+    if (!url.searchParams.has('sslmode') || url.searchParams.get('sslmode') === 'verify-full') {
+      url.searchParams.set('sslmode', 'require');
     }
     return url.toString();
   } catch (e) {
