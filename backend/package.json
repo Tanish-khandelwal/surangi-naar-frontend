@@ -11,7 +11,8 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "seed": "node prisma/seed.js",
-    "admin:set-password": "node scripts/set-admin-password.js"
+    "admin:set-password": "node scripts/set-admin-password.js",
+    "reset:test-data": "node prisma/reset-test-data.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
